@@ -30,7 +30,7 @@ env:
         - PYTHON_VERSION=3.6
         - NUMPY_VERSION=stable
         - ASTROPY_VERSION=stable
-        - SUNPY_VERSION=stable
+        - SUNPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test'
         - EVENT_TYPE='pull_request push'
@@ -38,7 +38,7 @@ env:
         
         # List other runtime dependencies for the package that are available as
         # conda packages here.
-        - CONDA_DEPENDENCIES='sunpy'
+        - CONDA_DEPENDENCIES='sunpy beautifulsoup4'
         
         # List other runtime dependencies for the package that are available as
         # pip packages here.
