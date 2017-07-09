@@ -30,7 +30,6 @@ env:
         - PYTHON_VERSION=3.6
         - NUMPY_VERSION=stable
         - ASTROPY_VERSION=stable
-        - SUNPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test'
         - EVENT_TYPE='pull_request push'
@@ -69,10 +68,6 @@ matrix:
         - os: osx
           env: SETUP_CMD='test'
 
-        # Do a coverage test.
-        - os: linux
-          env: SETUP_CMD='test --coverage'
-
         # Check for sphinx doc build warnings - we do this first because it
         # may run for a long time
         - os: linux
@@ -97,7 +92,7 @@ matrix:
         # Do a PEP8 test with pycodestyle
         # (allow to fail unless your code completely compliant)
         - os: linux
-          env: SETUP_CMD='test --remote-data=any'
+          env: SETUP_CMD='test --coverage --remote-data=any'
         - os: linux
           env: MAIN_CMD='pycodestyle sunpyspectra --count' SETUP_CMD=''
 
