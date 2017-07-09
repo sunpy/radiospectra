@@ -14,7 +14,8 @@ import numpy as np
 from numpy.testing import assert_array_almost_equal, assert_allclose
 from astropy.tests.helper import remote_data
 import sunpy.data.test
-from sunpy.spectra.sources.callisto import (
+
+from ..sources.callisto import (
     CallistoSpectrogram, query, download, minimal_pairs
 )
 
