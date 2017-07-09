@@ -1,16 +1,16 @@
 [run]
-source = {packagename}
+source = sunpyspectra
 omit =
-   {packagename}/_sunpy_init*
-   {packagename}/conftest*
-   {packagename}/cython_version*
-   {packagename}/setup_package*
-   {packagename}/*/setup_package*
-   {packagename}/*/*/setup_package*
-   {packagename}/tests/*
-   {packagename}/*/tests/*
-   {packagename}/*/*/tests/*
-   {packagename}/version*
+   sunpyspectra/_sunpy_init*
+   sunpyspectra/conftest*
+   sunpyspectra/cython_version*
+   sunpyspectra/setup_package*
+   sunpyspectra/*/setup_package*
+   sunpyspectra/*/*/setup_package*
+   sunpyspectra/tests/*
+   sunpyspectra/*/tests/*
+   sunpyspectra/*/*/tests/*
+   sunpyspectra/version*
 
 [report]
 exclude_lines =
