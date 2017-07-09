@@ -12,8 +12,8 @@ import os
 import glob
 import numpy as np
 from numpy.testing import assert_array_almost_equal, assert_allclose
+from astropy.tests.helper import remote_data
 import sunpy.data.test
-
 from sunpy.spectra.sources.callisto import (
     CallistoSpectrogram, query, download, minimal_pairs
 )
@@ -51,6 +51,7 @@ def test_read(CALLISTO_IMAGE):
 
 
 @pytest.mark.online
+@remote_data(source='any')
 def test_query():
     URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/'
 
@@ -76,6 +77,7 @@ def test_query():
 
 @pytest.mark.online
 @pytest.mark.xfail
+@remote_data(source='any')
 def test_query_number():
     URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/'
 
@@ -97,6 +99,7 @@ def test_query_number():
 
 @pytest.mark.online
 @pytest.mark.xfail
+@remote_data(source='any')
 def test_download():
     directory = mkdtemp()
     try:
@@ -126,6 +129,7 @@ def test_create_file_kw(CALLISTO_IMAGE):
 
 
 @pytest.mark.online
+@remote_data(source='any')
 def test_create_url():
     URL = (
         "http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/"
@@ -136,6 +140,7 @@ def test_create_url():
 
 
 @pytest.mark.online
+@remote_data(source='any')
 def test_create_url_kw():
     URL = (
         "http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/"
@@ -401,6 +406,7 @@ def test_homogenize_rightfq():
 
 
 @pytest.mark.online
+@remote_data(source='any')
 def test_extend(CALLISTO_IMAGE):
     im = CallistoSpectrogram.create(CALLISTO_IMAGE)
     im2 = im.extend()
