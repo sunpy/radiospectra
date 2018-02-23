@@ -19,10 +19,10 @@ from sunpy.time import parse_time
 from sunpy.util import minimal_pairs
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.util.net import download_file
-
-from ..spectrogram import LinearTimeSpectrogram, REFERENCE
 from sunpy.extern.six.moves import urllib
 from sunpy.extern.six import next, itervalues
+
+from ..spectrogram import LinearTimeSpectrogram, REFERENCE
 
 __all__ = ['CallistoSpectrogram']
 
@@ -380,7 +380,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
         Parameters
         ----------
-        other : `sunpyspectra.CallistoSpectrogram`
+        other : `radiospectra.CallistoSpectrogram`
             Spectrogram to be homogenized with the current one.
         maxdiff : float
             Threshold for which frequencies are considered equal.
@@ -423,7 +423,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
         Parameters
         ----------
-        other : `sunpyspectra.CallistoSpectrogram`
+        other : `radiospectra.CallistoSpectrogram`
             Spectrogram to be homogenized with the current one.
         maxdiff : float
             Threshold for which frequencies are considered equal.
@@ -476,7 +476,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
         Returns
         -------
-        newSpectrogram : `sunpyspectra.CallistoSpectrogram`
+        newSpectrogram : `radiospectra.CallistoSpectrogram`
         """
         return cls.read(url)
 

@@ -1,33 +1,33 @@
-sunpyspectra
+radiospectra
 -------
 
 .. image:: http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat
     :target: http://www.astropy.org
     :alt: Powered by Astropy Badge
-.. image:: https://secure.travis-ci.org/sunpy/spectra.svg
-    :target: http://travis-ci.org/sunpy/spectra
+.. image:: https://secure.travis-ci.org/sunpy/radiospectra.svg
+    :target: http://travis-ci.org/sunpy/radiospectra
     :alt: Build status
 .. image:: https://ci.appveyor.com/api/projects/status/rf1pg72fiifnxlxl?svg=true
-    :target: https://ci.appveyor.com/project/sunpy/spectra
+    :target: https://ci.appveyor.com/project/sunpy/radiospectra
     :alt: Build status
-.. image:: https://coveralls.io/repos/github/sunpy/spectra/badge.svg?branch=master
-    :target: https://coveralls.io/github/sunpy/spectra?branch=master
+.. image:: https://coveralls.io/repos/github/sunpy/radiospectra/badge.svg?branch=master
+    :target: https://coveralls.io/github/sunpy/radiospectra?branch=master
     :alt: Coverage status
 
-.. image:: https://landscape.io/github/sunpy/spectra/master/landscape.svg?style=flat
-   :target: https://landscape.io/github/sunpy/spectra/master
+.. image:: https://landscape.io/github/sunpy/radiospectra/master/landscape.svg?style=flat
+   :target: https://landscape.io/github/sunpy/radiospectra/master
    :alt: Code Health
-.. image:: https://www.codefactor.io/repository/github/sunpy/spectra/badge
-   :target: https://www.codefactor.io/repository/github/sunpy/spectra
+.. image:: https://www.codefactor.io/repository/github/sunpy/radiospectra/badge
+   :target: https://www.codefactor.io/repository/github/sunpy/radiospectra
    :alt: CodeFactor
-.. image:: https://codeclimate.com/github/sunpy/spectra/badges/gpa.svg
-   :target: https://codeclimate.com/github/sunpy/spectra
+.. image:: https://codeclimate.com/github/sunpy/radiospectra/badges/gpa.svg
+   :target: https://codeclimate.com/github/sunpy/radiospectra
    :alt: Code Climate
 .. image:: https://api.codacy.com/project/badge/Grade/cac252271b9943d78158be6a967d05fa
-   :target: https://www.codacy.com/app/sunpy/spectra
+   :target: https://www.codacy.com/app/sunpy/radiospectra
    :alt: Code grade
 
-This package aims to provide all the support needed for any type of spectra on solar physics.
+This package aims to provide all the support needed for any type of radiospectra on solar physics.
 
 If you are coming here from the `Warning` deprecation in sunpy you more probably need to change
 from
@@ -39,12 +39,12 @@ from
 to
 
 .. code-block:: python
-   from sunpyspectra.spectrum import Spectrum
+   from radiospectra.spectrum import Spectrum
 
 after installing it as:
 
 .. code-block:: bash
-   pip install git+https://github.com/sunpy/spectra.git
+   pip install git+https://github.com/sunpy/radiospectra.git
 
 
 License
