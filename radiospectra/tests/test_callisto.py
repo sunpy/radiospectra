@@ -6,13 +6,14 @@ from __future__ import absolute_import
 import shutil
 from tempfile import mkdtemp
 from datetime import datetime
-
-import pytest
 import os
 import glob
+
+import pytest
 import numpy as np
 from numpy.testing import assert_array_almost_equal, assert_allclose
 from astropy.tests.helper import remote_data
+
 import sunpy.data.test
 
 from ..sources.callisto import (

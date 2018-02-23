@@ -5,16 +5,13 @@
 from __future__ import division, print_function, absolute_import
 
 import datetime
-
 from random import randint
 from copy import copy
 from math import floor
 
 import numpy as np
 from numpy import ma
-
 from scipy import ndimage
-
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.ticker import FuncFormatter, MaxNLocator, IndexLocator

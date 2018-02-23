@@ -3,15 +3,11 @@
 from __future__ import absolute_import, print_function
 
 import datetime
-
-import numpy as np
-
-from astropy.io import fits
-
 from collections import defaultdict
 
+import numpy as np
+from astropy.io import fits
 from bs4 import BeautifulSoup
-
 from scipy.optimize import leastsq
 from scipy.ndimage import gaussian_filter1d
 
