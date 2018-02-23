@@ -258,6 +258,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         content = header["CONTENT"]
         instruments = set([header["INSTRUME"]])
 
+        fl.close()
         return cls(
             data, time_axis, freq_axis, start, end, t_init, t_delt,
             t_label, f_label, content, instruments,
