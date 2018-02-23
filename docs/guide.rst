@@ -9,7 +9,7 @@ Spectrograms
 ------------
 SunPy currently supports reading dynamic spectra from e-Callisto_ instruments.
 The main class that is used for this is
-:py:class:`CallistoSpectrogram <sunpy.spectra.sources.callisto.CallistoSpectrogram>`. SunPy also
+:py:class:`CallistoSpectrogram <sunpyspectra.sources.callisto.CallistoSpectrogram>`. SunPy also
 comes with an example image that shows a radio burst observed at `Rosse Observatory`_ (aka. BIR; Birr Castle, Co. Offaly, Ireland) that
 can be found in sunpy.data.sample.CALLISTO_SPECTRUM.
 
@@ -17,9 +17,9 @@ can be found in sunpy.data.sample.CALLISTO_SPECTRUM.
     :include-source:
 
     import matplotlib.pyplot as plt
-    import sunpy.spectra
+    import sunpyspectra
     import sunpy.data.sample
-    from sunpy.spectra.sources.callisto import CallistoSpectrogram
+    from sunpyspectra.sources.callisto import CallistoSpectrogram
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
     image.peek()
 
@@ -37,7 +37,7 @@ We will, for the purposes of this demonstration, continue working with the
 original image, though.
 
 You can then perform automatic constant background subtraction by using the
-:py:meth:`subtract_bg() <sunpy.spectra.spectrogram.Spectrogram.subtract_bg>`
+:py:meth:`subtract_bg() <sunpyspectra.spectrogram.Spectrogram.subtract_bg>`
 method. The resulting image will be clipped at 0 using the `min` parameter of
 peek in order to avoid negative values.
 
@@ -47,14 +47,14 @@ peek in order to avoid negative values.
     from matplotlib import pyplot as plt
     import sunpy
     import sunpy.data.sample
-    from sunpy.spectra.sources.callisto import CallistoSpectrogram
+    from sunpyspectra.sources.callisto import CallistoSpectrogram
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
     nobg = image.subtract_bg()
     nobg.peek(vmin=0)
 
 If you want to see the background determined by the automatic subtraction,
 you can use the
-:py:meth:`auto_const_bg() <sunpy.spectra.spectrogram.Spectrogram.auto_const_bg>`
+:py:meth:`auto_const_bg() <sunpyspectra.spectrogram.Spectrogram.auto_const_bg>`
 method and visualize the resulting
 data using :py:func:`pyplot.plot`.::
 
@@ -67,7 +67,7 @@ data using :py:func:`pyplot.plot`.::
 
 Now let us say we want to isolate the interesting bit (which starts around
 10:38) from the boring background; there is a method called
-:py:meth:`in_interval() <sunpy.spectra.spectrogram.LinearTimeSpectrogram.in_interval>`
+:py:meth:`in_interval() <sunpyspectra.spectrogram.LinearTimeSpectrogram.in_interval>`
 that allows us to take the part of an image that is
 within a specified interval. Leaving out the second argument it defaults
 to the end time of the file.
@@ -78,7 +78,7 @@ to the end time of the file.
     import matplotlib.pyplot as plt
     import sunpy
     import sunpy.data.sample
-    from sunpy.spectra.sources.callisto import CallistoSpectrogram
+    from sunpyspectra.sources.callisto import CallistoSpectrogram
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
     nobg = image.subtract_bg()
     interesting = nobg.in_interval("06:27")
@@ -91,7 +91,7 @@ To get rid of the noise, we could also clip low intensities by setting vmin.
     import matplotlib.pyplot as plt
     import sunpy
     import sunpy.data.sample
-    from sunpy.spectra.sources.callisto import CallistoSpectrogram
+    from sunpyspectra.sources.callisto import CallistoSpectrogram
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
     nobg = image.subtract_bg()
     interesting = nobg.in_interval("06:27")
@@ -109,7 +109,7 @@ We could also get the from_range method to get data between those two points
 directly from the archive and joined together (though that will fetch all
 frequencies of BIR): ::
 
-    from sunpy.spectra.sources.callisto import CallistoSpectrogram
+    from sunpyspectra.sources.callisto import CallistoSpectrogram
     d = CallistoSpectrogram.from_range('BIR', '2011-09-22 10:15:00', '2011-09-22 10:45:00')
 
 .. _e-Callisto: http://www.e-callisto.org/
