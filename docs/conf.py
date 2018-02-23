@@ -112,17 +112,13 @@ release = package.__version__
 # name of a builtin theme or the name of a custom theme in html_theme_path.
 #html_theme = None
 
-html_theme = "sphinx_rtd_theme"
-
-
-
-
 try:
-    import sphinx_rtd_theme
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+    from sunpy_sphinx_theme.conf import *
+
+    html_sidebars = {'**': ['docsidebar.html']}
+
 except ImportError:
     html_theme = 'default'
-
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
