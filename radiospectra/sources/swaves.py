@@ -65,6 +65,7 @@ class SWavesSpectrogram(LinearTimeSpectrogram):
         )
         self.bg = bg
 
+
 try:
     SWavesSpectrogram.create.im_func.__doc__ = (
         """ Create SWavesSpectrogram from given input dispatching to the
