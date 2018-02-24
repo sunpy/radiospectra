@@ -38,8 +38,9 @@ except ImportError:
         if os.path.isdir(a_h_path):
             sys.path.insert(1, a_h_path)
 
-# Load all of the global Astropy configuration
+# Load all of the global Astropy and Sunpy's configuration
 from astropy_helpers.sphinx.conf import *
+from sunpy_sphinx_theme.conf import *
 
 # Get configuration information from setup.cfg
 try:

@@ -1,12 +1,9 @@
-name: sunpyspectra
+name: radiospectra-rtd
 
 channels:
-    - astropy
+    - conda-forge
 
 dependencies:
-    - astropy
-    - Cython
-    - matplotlib
-    - numpy
-#   - pip:
-#       - dependency_from_pip
+    - sunpy
+    - pip:
+        - sunpy-sphinx-theme
