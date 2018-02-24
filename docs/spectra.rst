@@ -1,7 +1,7 @@
 .. _spectra_code_ref:
 
-SunPy radio spectra
-===================
+Code Reference
+==============
 
 Overview
 --------

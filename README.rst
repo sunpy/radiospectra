@@ -1,5 +1,5 @@
 radiospectra
--------
+------------
 
 .. image:: http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat
     :target: http://www.astropy.org
@@ -27,7 +27,7 @@ radiospectra
    :target: https://www.codacy.com/app/sunpy/radiospectra
    :alt: Code grade
 
-This package aims to provide all the support needed for any type of radiospectra on solar physics.
+This package aims to provide support for some type of radiospectra on solar physics.
 
 If you are coming here from the `Warning` deprecation in sunpy you more probably need to change
 from
@@ -42,6 +42,18 @@ to
    from radiospectra.spectrum import Spectrum
 
 after installing it as:
+
+.. code-block:: bash
+   pip install radiospectra
+
+Development
+-----------
+
+Note that this package may change a lot in the future! After the 0.1 release radiospectra will
+only support python 3.6+ and sunpy 1.0.
+
+If you wish to test the latest development versions you should install it directly from the
+git repository as:
 
 .. code-block:: bash
    pip install git+https://github.com/sunpy/radiospectra.git
