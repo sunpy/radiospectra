@@ -1,16 +1,16 @@
 [run]
-source = sunpyspectra
+source = radiospectra
 omit =
-   sunpyspectra/_sunpy_init*
-   sunpyspectra/conftest*
-   sunpyspectra/cython_version*
-   sunpyspectra/setup_package*
-   sunpyspectra/*/setup_package*
-   sunpyspectra/*/*/setup_package*
-   sunpyspectra/tests/*
-   sunpyspectra/*/tests/*
-   sunpyspectra/*/*/tests/*
-   sunpyspectra/version*
+   radiospectra/_sunpy_init*
+   radiospectra/conftest*
+   radiospectra/cython_version*
+   radiospectra/setup_package*
+   radiospectra/*/setup_package*
+   radiospectra/*/*/setup_package*
+   radiospectra/tests/*
+   radiospectra/*/tests/*
+   radiospectra/*/*/tests/*
+   radiospectra/version*
 
 [report]
 exclude_lines =

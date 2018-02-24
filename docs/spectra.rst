@@ -1,7 +1,7 @@
 .. _spectra_code_ref:
 
-SunPy spectra
-=============
+Code Reference
+==============
 
 Overview
 --------
@@ -15,7 +15,7 @@ are supported see :ref:`spectrum-classes` and :ref:`spectrogram-classes`.
 Spectrum
 --------
 
-.. automodapi:: sunpyspectra.spectrum
+.. automodapi:: radiospectra.spectrum
 
 .. _spectrum-classes:
 
@@ -26,7 +26,7 @@ None yet.
 Spectrogram
 -----------
 
-.. automodapi:: sunpyspectra.spectrogram
+.. automodapi:: radiospectra.spectrogram
 
 .. _spectrogram-classes:
 
@@ -35,4 +35,4 @@ Spectrogram Classes
 There are a series of subclasses which are specialised for each
 instrument.
 
-.. automodapi:: sunpyspectra.sources
+.. automodapi:: radiospectra.sources

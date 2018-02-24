@@ -3,15 +3,11 @@
 from __future__ import absolute_import, print_function
 
 import datetime
-
-import numpy as np
-
-from astropy.io import fits
-
 from collections import defaultdict
 
+import numpy as np
+from astropy.io import fits
 from bs4 import BeautifulSoup
-
 from scipy.optimize import leastsq
 from scipy.ndimage import gaussian_filter1d
 
@@ -19,10 +15,10 @@ from sunpy.time import parse_time
 from sunpy.util import minimal_pairs
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.util.net import download_file
-
-from ..spectrogram import LinearTimeSpectrogram, REFERENCE
 from sunpy.extern.six.moves import urllib
 from sunpy.extern.six import next, itervalues
+
+from ..spectrogram import LinearTimeSpectrogram, REFERENCE
 
 __all__ = ['CallistoSpectrogram']
 
@@ -69,7 +65,7 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
         directory = url + day.strftime('%Y/%m/%d/')
         opn = urllib.request.urlopen(directory)
         try:
-            soup = BeautifulSoup(opn)
+            soup = BeautifulSoup(opn, 'lxml')
             for link in soup.find_all("a"):
                 href = link.get("href")
                 for prefix, parser in PARSERS:
@@ -162,7 +158,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         """
         main_header = self.get_header()
         data = fits.PrimaryHDU(self, header=main_header)
-        ## XXX: Update axes header.
+        # XXX: Update axes header.
 
         freq_col = fits.Column(
             name="frequency", format="D8.3", array=self.freq_axis
@@ -181,11 +177,11 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         header = self.header.copy()
 
         if self.swapped:
-            header['NAXIS2'] = self.shape[1] # pylint: disable=E1101
-            header['NAXIS1'] = self.shape[0] # pylint: disable=E1101
+            header['NAXIS2'] = self.shape[1]  # pylint: disable=E1101
+            header['NAXIS1'] = self.shape[0]  # pylint: disable=E1101
         else:
-            header['NAXIS1'] = self.shape[1] # pylint: disable=E1101
-            header['NAXIS2'] = self.shape[0] # pylint: disable=E1101
+            header['NAXIS1'] = self.shape[1]  # pylint: disable=E1101
+            header['NAXIS2'] = self.shape[0]  # pylint: disable=E1101
         return header
 
     @classmethod
@@ -251,17 +247,18 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         else:
             # Otherwise, assume it's linear.
             time_axis = \
-                np.linspace(0, data.shape[1] - 1) * t_delt + t_init # pylint: disable=E1101
+                np.linspace(0, data.shape[1] - 1) * t_delt + t_init  # pylint: disable=E1101
 
         if fq is not None:
             freq_axis = np.squeeze(fq)
         else:
             freq_axis = \
-                np.linspace(0, data.shape[0] - 1) * f_delt + f_init # pylint: disable=E1101
+                np.linspace(0, data.shape[0] - 1) * f_delt + f_init  # pylint: disable=E1101
 
         content = header["CONTENT"]
         instruments = set([header["INSTRUME"]])
 
+        fl.close()
         return cls(
             data, time_axis, freq_axis, start, end, t_init, t_delt,
             t_label, f_label, content, instruments,
@@ -269,9 +266,9 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         )
 
     def __init__(self, data, time_axis, freq_axis, start, end,
-            t_init=None, t_delt=None, t_label="Time", f_label="Frequency",
-            content="", instruments=None, header=None, axes_header=None,
-            swapped=False):
+                 t_init=None, t_delt=None, t_label="Time", f_label="Frequency",
+                 content="", instruments=None, header=None, axes_header=None,
+                 swapped=False):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
         # pylint: disable=W0613
@@ -380,7 +377,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
         Parameters
         ----------
-        other : `sunpyspectra.CallistoSpectrogram`
+        other : `radiospectra.CallistoSpectrogram`
             Spectrogram to be homogenized with the current one.
         maxdiff : float
             Threshold for which frequencies are considered equal.
@@ -405,7 +402,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         # values.
         pairs_data_gaussian64 = np.float64(pairs_data_gaussian)
         least = [
-            leastsq(self._to_minimize(a,b), [1, 0])[0]
+            leastsq(self._to_minimize(a, b), [1, 0])[0]
             for a, b in pairs_data_gaussian64
         ]
 
@@ -423,7 +420,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
         Parameters
         ----------
-        other : `sunpyspectra.CallistoSpectrogram`
+        other : `radiospectra.CallistoSpectrogram`
             Spectrogram to be homogenized with the current one.
         maxdiff : float
             Threshold for which frequencies are considered equal.
@@ -476,7 +473,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
         Returns
         -------
-        newSpectrogram : `sunpyspectra.CallistoSpectrogram`
+        newSpectrogram : `radiospectra.CallistoSpectrogram`
         """
         return cls.read(url)
 

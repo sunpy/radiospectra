@@ -30,7 +30,7 @@ conf = ConfigParser()
 conf.read(['setup.cfg'])
 metadata = dict(conf.items('metadata'))
 
-PACKAGENAME = metadata.get('package_name', 'sunpyspectra')
+PACKAGENAME = metadata.get('package_name', 'radiospectra')
 DESCRIPTION = metadata.get('description', 'spectra')
 AUTHOR = metadata.get('author', 'SunPy Developers')
 AUTHOR_EMAIL = metadata.get('author_email', '')

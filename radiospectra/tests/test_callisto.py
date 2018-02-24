@@ -6,13 +6,14 @@ from __future__ import absolute_import
 import shutil
 from tempfile import mkdtemp
 from datetime import datetime
-
-import pytest
 import os
 import glob
+
+import pytest
 import numpy as np
 from numpy.testing import assert_array_almost_equal, assert_allclose
 from astropy.tests.helper import remote_data
+
 import sunpy.data.test
 
 from ..sources.callisto import (
@@ -80,7 +81,6 @@ def test_query():
 @pytest.mark.xfail
 @remote_data(source='any')
 def test_query_number():
-    URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/'
 
     result = list(query(
         datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), set([("BIR", 1)])
@@ -159,10 +159,10 @@ def test_create_single_glob(CALLISTO_IMAGE, CALLISTO_IMAGE_GLOB_INDEX, CALLISTO_
 
 
 # seems like this does not work anymore and can't figure out what it is for
-#def test_create_single_glob_kw(CALLISTO_IMAGE):
-#    PATTERN = os.path.join( os.path.dirname(CALLISTO_IMAGE), "BIR_*")
-#    ca = CallistoSpectrogram.create(singlepattern=PATTERN)
-#    assert np.array_equal(ca[0].data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
+# def test_create_single_glob_kw(CALLISTO_IMAGE):
+#     PATTERN = os.path.join( os.path.dirname(CALLISTO_IMAGE), "BIR_*")
+#     ca = CallistoSpectrogram.create(singlepattern=PATTERN)
+#     assert np.array_equal(ca[0].data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
 
 def test_create_glob_kw(CALLISTO_IMAGE, CALLISTO_IMAGE_GLOB_INDEX, CALLISTO_IMAGE_GLOB_KEY):
     PATTERN = os.path.join(

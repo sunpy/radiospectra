@@ -25,7 +25,7 @@ class Spectrum(np.ndarray):
 
     Examples
     --------
-    >>> from sunpyspectra.spectrum import Spectrum
+    >>> from radiospectra.spectrum import Spectrum
     >>> import numpy as np
     >>> data = np.linspace(1, 100, 100)
     >>> freq_axis = np.linspace(0, 10, 100)
@@ -77,7 +77,7 @@ class Spectrum(np.ndarray):
 
         .. plot::
 
-            from sunpyspectra.spectrum import Spectrum
+            from radiospectra.spectrum import Spectrum
             import numpy as np
             spec = Spectrum(np.linspace(1, 100, 100), np.linspace(0, 10, 100))
             spec.peek()

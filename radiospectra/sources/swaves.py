@@ -8,6 +8,7 @@ import datetime
 import numpy as np
 
 from sunpy.util.cond_dispatch import ConditionalDispatch
+
 from ..spectrogram import LinearTimeSpectrogram, REFERENCE, get_day
 
 __all__ = ['SWavesSpectrogram']
@@ -63,6 +64,7 @@ class SWavesSpectrogram(LinearTimeSpectrogram):
             content, set(["SWAVES"])
         )
         self.bg = bg
+
 
 try:
     SWavesSpectrogram.create.im_func.__doc__ = (

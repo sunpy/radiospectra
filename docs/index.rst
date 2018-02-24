@@ -1,7 +1,7 @@
 SunPy Radio Spectra Documentation
 =================================
 
-This is the documentation for spectra.
+This is the documentation for radiospectra.
 
 
 .. toctree::
