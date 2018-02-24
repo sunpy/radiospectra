@@ -1,13 +1,13 @@
 radiospectra
 ------------
 
-.. image:: http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat
-    :target: http://www.astropy.org
-    :alt: Powered by Astropy Badge
+.. image:: https://readthedocs.org/projects/radiospectra/badge/?version=latest
+    :target: http://radiospectra.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 .. image:: https://secure.travis-ci.org/sunpy/radiospectra.svg
     :target: http://travis-ci.org/sunpy/radiospectra
     :alt: Build status
-.. image:: https://ci.appveyor.com/api/projects/status/rf1pg72fiifnxlxl?svg=true
+.. image:: https://ci.appveyor.com/api/projects/status/9fh7gffk06dnrubh?svg=true
     :target: https://ci.appveyor.com/project/sunpy/radiospectra
     :alt: Build status
 .. image:: https://coveralls.io/repos/github/sunpy/radiospectra/badge.svg?branch=master
@@ -63,3 +63,7 @@ License
 -------
 
 This project is Copyright (c) SunPy Developers and licensed under the terms of the BSD 3-Clause license. See the licenses folder for more information.
+
+.. image:: http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat
+    :target: http://www.astropy.org
+    :alt: Powered by Astropy Badge
