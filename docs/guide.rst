@@ -87,6 +87,7 @@ to the end time of the file.
 To get rid of the noise, we could also clip low intensities by setting vmin.
 
 .. plot::
+    :include-source:
 
     import matplotlib.pyplot as plt
     import sunpy
