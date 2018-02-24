@@ -39,11 +39,13 @@ from
 to
 
 .. code-block:: python
+
    from radiospectra.spectrum import Spectrum
 
 after installing it as:
 
 .. code-block:: bash
+
    pip install radiospectra
 
 Development
@@ -56,6 +58,7 @@ If you wish to test the latest development versions you should install it direct
 git repository as:
 
 .. code-block:: bash
+
    pip install git+https://github.com/sunpy/radiospectra.git
 
 
