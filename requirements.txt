@@ -5,5 +5,5 @@ scipy==1.0.0
 # Dev
 pytest==3.4.2
 # Docs
-sphinx
+sphinx==1.7.1
 sunpy_sphinx_theme
