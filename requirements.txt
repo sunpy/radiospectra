@@ -3,7 +3,7 @@ numpy>=1.11
 astropy>=2.0.3
 scipy==1.0.0
 # Dev
-pytest
+pytest==3.4.2
 # Docs
 sphinx
 sunpy_sphinx_theme
