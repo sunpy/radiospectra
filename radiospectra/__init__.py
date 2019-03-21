@@ -33,23 +33,3 @@ try:
     from .version import version as __version__
 except ImportError:
     __version__ = ''
-
-if not _SUNPY_SETUP_:
-    from sunpy.util.config import load_config, print_config
-    from sunpy.util import system_info
-    from sunpy.tests.runner import SunPyTestRunner
-
-    self_test = SunPyTestRunner.make_test_runner_in(os.path.dirname(__file__))
-
-    # Load user configuration
-    config = load_config()
-
-    import logging
-
-    # Use the root logger as a dummy log before initializing Astropy's logger
-    log = logging.getLogger()
-
-    from sunpy.util.logger import _init_log
-    log = _init_log(config=config)
-
-    __all__ = ['config', 'self_test', 'system_info']
