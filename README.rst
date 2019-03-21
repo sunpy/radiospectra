@@ -28,8 +28,7 @@ You can also use pip:
 
    pip install radiospectra
 
-If you are coming here from the ``Warning`` deprecation in SunPy you more probably need to change
-from::
+If you are coming here from the ``Warning`` deprecation in SunPy you more probably need to change from::
 
    from sunpy.spectra.spectrum import Spectrum
 

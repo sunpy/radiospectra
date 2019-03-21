@@ -76,7 +76,7 @@ jobs:
           name: Install radiospectra
           command: pip install --progress-bar off -e .[all]
 
-          html-docs:
+  html-docs:
     docker:
       - image: continuumio/miniconda3
     steps:
