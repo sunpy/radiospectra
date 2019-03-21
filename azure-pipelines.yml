@@ -9,7 +9,7 @@ jobs:
   parameters:
     name: Linux_27_offline
     os: linux
-    tox: py27-offline --
+    tox: py27-offline -- -vvv
 
 - template: azure-templates.yml
   parameters:

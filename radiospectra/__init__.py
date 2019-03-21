@@ -25,10 +25,17 @@ if sys.version_info < tuple((int(val) for val in __minimum_python_version__.spli
 try:
     _SUNPY_SETUP_
 except NameError:
-    import builtins
+    try:
+        import builtins
+    except ImportError:
+        import __builtin__ as builtins
     builtins._SUNPY_SETUP_ = False
 
 try:
     from .version import version as __version__
 except ImportError:
     __version__ = ''
+try:
+    from .version import githash as __githash__
+except ImportError:
+    __githash__ = ''

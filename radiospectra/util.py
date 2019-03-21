@@ -73,6 +73,7 @@ TypeError: There are no functions matching your input parameter signature.
 """
 from __future__ import absolute_import, division, print_function
 
+import sys
 import inspect
 from itertools import chain, repeat
 
@@ -108,10 +109,7 @@ def arginize(fun, a, kw):
     """
     Turn args and kwargs into args by considering the function signature.
     """
-    argspec = correct_argspec(fun)
-    args = argspec.args
-    varargs = argspec.varargs
-    defaults = argspec.defaults
+    args, varargs, keywords, defaults = correct_argspec(fun)
 
     if varargs is not None:
         raise ValueError
@@ -127,21 +125,21 @@ def correct_argspec(fun):
     """
     Remove first argument if method is bound.
     """
-    fullargspec = inspect.getfullargspec(fun)
+    if sys.version_info[0] >= 3:
+        fullargspec = inspect.getfullargspec(fun)
+        args, varargs, keywords, defaults = fullargspec[0], fullargspec[1], fullargspec[2], fullargspec[3]
+    else:
+        args, varargs, keywords, defaults = inspect.getargspec(fun)
     if inspect.ismethod(fun):
-        fullargspec = fullargspec[1:]
-    return fullargspec
+        args = args[1:]
+    return args, varargs, keywords, defaults
 
 
 def matches_signature(fun, a, kw):
     """
     Check whether function can be called with a as args and kw as kwargs.
     """
-    argspec = correct_argspec(fun)
-    args = argspec.args
-    varargs = argspec.varargs
-    keywords = argspec.varkw
-    defaults = argspec.defaults
+    args, varargs, keywords, defaults = correct_argspec(fun)
 
     if varargs is None and len(a) > len(args):
         return False
@@ -248,11 +246,7 @@ class ConditionalDispatch(object):
             if types is not None:
                 yield prefix + fmt_argspec_types(condition, types, st)
             else:
-                argspec = correct_argspec(condition)
-                args = argspec.args
-                varargs = argspec.varargs
-                keywords = argspec.varkw
-                defaults = argspec.defaults
+                args, varargs, keywords, defaults = correct_argspec(condition)
                 args = args[st:]
                 yield prefix + inspect.formatargspec(
                     args, varargs, keywords, defaults
@@ -262,11 +256,7 @@ class ConditionalDispatch(object):
             if types is not None:
                 yield prefix + fmt_argspec_types(fun, types, st)
             else:
-                argspec = correct_argspec(condition)
-                args = argspec.args
-                varargs = argspec.varargs
-                keywords = argspec.varkw
-                defaults = argspec.defaults
+                args, varargs, keywords = correct_argspec(condition)
                 args = args[st:]
                 yield prefix + inspect.formatargspec(
                     args, varargs, keywords, defaults
@@ -283,12 +273,7 @@ class ConditionalDispatch(object):
 
 
 def fmt_argspec_types(fun, types, start=0):
-    argspec = correct_argspec(fun)
-    args = argspec.args
-    varargs = argspec.varargs
-    keywords = argspec.varkw
-    defaults = argspec.defaults
-
+    args, varargs, keywords, defaults = correct_argspec(fun)
     args = args[start:]
     types = types[start:]
 
