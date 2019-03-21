@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
-# Author: David Perez-Suarez <dps.helio-?-gmail.com>
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import, division, print_function
 
 import os
 import datetime
 
 import numpy as np
 
-from sunpy.util.cond_dispatch import ConditionalDispatch
-
-from ..spectrogram import LinearTimeSpectrogram, REFERENCE, get_day
+from radiospectra.spectrogram import REFERENCE, LinearTimeSpectrogram, get_day
+from radiospectra.util import ConditionalDispatch
 
 __all__ = ['SWavesSpectrogram']
 
@@ -31,7 +29,9 @@ class SWavesSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def read(cls, filename, **kwargs):
-        """Read in FITS file and return a new SWavesSpectrogram. """
+        """
+        Read in FITS file and return a new SWavesSpectrogram.
+        """
         data = np.genfromtxt(filename, skip_header=2)
         time_axis = data[:, 0] * 60.
         data = data[:, 1:].transpose()

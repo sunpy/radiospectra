@@ -1,8 +1,7 @@
-SunPy Radio Spectra Documentation
-=================================
+radiospectra Documentation
+==========================
 
 This is the documentation for radiospectra.
-
 
 .. toctree::
   :maxdepth: 2

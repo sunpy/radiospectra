@@ -107,7 +107,7 @@ To get rid of the noise, we could also clip low intensities by setting vmin.
 
     import matplotlib.pyplot as plt
     import sunpy
-ild    import sunpy.data.sample
+    import sunpy.data.sample
     from radiospectra.sources.callisto import CallistoSpectrogram
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
     nobg = image.subtract_bg()
@@ -129,6 +129,6 @@ frequencies of BIR): ::
     from radiospectra.sources.callisto import CallistoSpectrogram
     d = CallistoSpectrogram.from_range('BIR', '2011-09-22 10:15:00', '2011-09-22 10:45:00')
 
-.. _SunPy installation guide: http://docs.sunpy.org/en/stable/guide/installation/index.html 
+.. _SunPy installation guide: http://docs.sunpy.org/en/stable/guide/installation/index.html
 .. _e-Callisto: http://www.e-callisto.org/
 .. _Rosse Observatory: http://rosseobservatory.ie/

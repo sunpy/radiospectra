@@ -5,14 +5,12 @@ from __future__ import absolute_import, print_function
 
 from datetime import datetime
 
-import pytest
 import numpy as np
+import pytest
 from numpy.testing import assert_array_almost_equal
 
-from sunpy.extern.six.moves import range
-
-from ..spectrogram import (Spectrogram, LinearTimeSpectrogram,
-                           _LinearView)
+from ..extern.six.moves import range
+from ..spectrogram import LinearTimeSpectrogram, Spectrogram, _LinearView
 
 
 def is_linear(arr):
