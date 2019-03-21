@@ -8,6 +8,7 @@ import datetime
 from copy import copy
 from math import floor
 from random import randint
+from distutils.version import LooseVersion
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -17,6 +18,7 @@ from matplotlib.ticker import FuncFormatter, IndexLocator, MaxNLocator
 from numpy import ma
 from scipy import ndimage
 
+from sunpy import __version__
 from sunpy.time import get_day, parse_time
 from sunpy.util import common_base, merge, to_signed
 from sunpy.util.create import Parent
@@ -26,6 +28,8 @@ from radiospectra.spectrum import Spectrum
 from radiospectra.util import ConditionalDispatch
 
 __all__ = ['Spectrogram', 'LinearTimeSpectrogram']
+
+SUNPY_LT_1 = LooseVersion(__version__) < LooseVersion('1.0')
 
 # 1080 because that usually is the maximum vertical pixel count on modern
 # screens nowadays (2012).
@@ -1149,7 +1153,10 @@ class LinearTimeSpectrogram(Spectrogram):
         """
         # This is impossible for frequencies because that mapping
         # is not injective.
-        time = parse_time(time).datetime
+        if SUNPY_LT_1:
+            time = parse_time(time)
+        else:
+            time = parse_time(time).datetime
         diff = time - self.start
         diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
         result = diff_s // self.t_delt
@@ -1268,7 +1275,10 @@ class LinearTimeSpectrogram(Spectrogram):
         """
         if start is not None:
             try:
-                start = parse_time(start).datetime
+                if SUNPY_LT_1:
+                    start = parse_time(start)
+                else:
+                    start = parse_time(start).datetime
             except ValueError:
                 # XXX: We could do better than that.
                 if get_day(self.start) != get_day(self.end):
@@ -1282,7 +1292,10 @@ class LinearTimeSpectrogram(Spectrogram):
             start = self.time_to_x(start)
         if end is not None:
             try:
-                end = parse_time(end).datetime
+                if SUNPY_LT_1:
+                    end = parse_time(end)
+                else:
+                    end = parse_time(end).datetime
             except ValueError:
                 if get_day(self.start) != get_day(self.end):
                     raise TypeError(

@@ -9,7 +9,6 @@ Provide support for some type of radiospectra on solar physics.
 # This is the same check as the one at the top of setup.py
 from __future__ import absolute_import, division, print_function
 
-import os
 import sys
 
 __minimum_python_version__ = "2.7"
