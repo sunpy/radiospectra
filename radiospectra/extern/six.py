@@ -18,15 +18,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Utilities for writing code that runs on Python 2 and 3"""
+"""
+Utilities for writing code that runs on Python 2 and 3.
+"""
 
 from __future__ import absolute_import
 
-import functools
-import itertools
-import operator
 import sys
 import types
+import operator
+import functools
+import itertools
 
 __author__ = "Benjamin Peterson <benjamin@python.org>"
 __version__ = "1.12.0"
@@ -73,12 +75,16 @@ else:
 
 
 def _add_doc(func, doc):
-    """Add documentation to a function."""
+    """
+    Add documentation to a function.
+    """
     func.__doc__ = doc
 
 
 def _import_module(name):
-    """Import module, returning the module after the last dot."""
+    """
+    Import module, returning the module after the last dot.
+    """
     __import__(name)
     return sys.modules[name]
 
@@ -166,8 +172,8 @@ class _SixMetaPathImporter(object):
     """
     A meta path importer to import six.moves and its submodules.
 
-    This class implements a PEP302 finder and loader. It should be compatible
-    with Python 2.5 and all existing versions of Python3
+    This class implements a PEP302 finder and loader. It should be
+    compatible with Python 2.5 and all existing versions of Python3
     """
 
     def __init__(self, six_module_name):
@@ -210,15 +216,17 @@ class _SixMetaPathImporter(object):
         """
         Return true, if the named module is a package.
 
-        We need this method to get correct spec objects with
-        Python 3.4 (see PEP451)
+        We need this method to get correct spec objects with Python 3.4
+        (see PEP451)
         """
         return hasattr(self.__get_module(fullname), "__path__")
 
     def get_code(self, fullname):
-        """Return None
+        """
+        Return None.
 
-        Required, if is_package is implemented"""
+        Required, if is_package is implemented
+        """
         self.__get_module(fullname)  # eventually raises ImportError
         return None
     get_source = get_code  # same as get_code
@@ -228,7 +236,9 @@ _importer = _SixMetaPathImporter(__name__)
 
 class _MovedItems(_LazyModule):
 
-    """Lazy loading of moved objects"""
+    """
+    Lazy loading of moved objects.
+    """
     __path__ = []  # mark as package
 
 
@@ -321,7 +331,9 @@ _importer._add_module(moves, "moves")
 
 class Module_six_moves_urllib_parse(_LazyModule):
 
-    """Lazy loading of moved objects in six.moves.urllib_parse"""
+    """
+    Lazy loading of moved objects in six.moves.urllib_parse.
+    """
 
 
 _urllib_parse_moved_attributes = [
@@ -363,7 +375,9 @@ _importer._add_module(Module_six_moves_urllib_parse(__name__ + ".moves.urllib_pa
 
 class Module_six_moves_urllib_error(_LazyModule):
 
-    """Lazy loading of moved objects in six.moves.urllib_error"""
+    """
+    Lazy loading of moved objects in six.moves.urllib_error.
+    """
 
 
 _urllib_error_moved_attributes = [
@@ -383,7 +397,9 @@ _importer._add_module(Module_six_moves_urllib_error(__name__ + ".moves.urllib.er
 
 class Module_six_moves_urllib_request(_LazyModule):
 
-    """Lazy loading of moved objects in six.moves.urllib_request"""
+    """
+    Lazy loading of moved objects in six.moves.urllib_request.
+    """
 
 
 _urllib_request_moved_attributes = [
@@ -435,7 +451,9 @@ _importer._add_module(Module_six_moves_urllib_request(__name__ + ".moves.urllib.
 
 class Module_six_moves_urllib_response(_LazyModule):
 
-    """Lazy loading of moved objects in six.moves.urllib_response"""
+    """
+    Lazy loading of moved objects in six.moves.urllib_response.
+    """
 
 
 _urllib_response_moved_attributes = [
@@ -456,7 +474,9 @@ _importer._add_module(Module_six_moves_urllib_response(__name__ + ".moves.urllib
 
 class Module_six_moves_urllib_robotparser(_LazyModule):
 
-    """Lazy loading of moved objects in six.moves.urllib_robotparser"""
+    """
+    Lazy loading of moved objects in six.moves.urllib_robotparser.
+    """
 
 
 _urllib_robotparser_moved_attributes = [
@@ -474,7 +494,9 @@ _importer._add_module(Module_six_moves_urllib_robotparser(__name__ + ".moves.url
 
 class Module_six_moves_urllib(types.ModuleType):
 
-    """Create a six.moves.urllib namespace that resembles the Python 3 namespace"""
+    """
+    Create a six.moves.urllib namespace that resembles the Python 3 namespace.
+    """
     __path__ = []  # mark as package
     parse = _importer._get_module("moves.urllib_parse")
     error = _importer._get_module("moves.urllib_error")
@@ -490,12 +512,16 @@ _importer._add_module(Module_six_moves_urllib(__name__ + ".moves.urllib"),
 
 
 def add_move(move):
-    """Add an item to six.moves."""
+    """
+    Add an item to six.moves.
+    """
     setattr(_MovedItems, move.name, move)
 
 
 def remove_move(name):
-    """Remove item from six.moves."""
+    """
+    Remove item from six.moves.
+    """
     try:
         delattr(_MovedItems, name)
     except AttributeError:
@@ -697,7 +723,9 @@ if PY3:
 
 else:
     def exec_(_code_, _globs_=None, _locs_=None):
-        """Execute code in a namespace."""
+        """
+        Execute code in a namespace.
+        """
         if _globs_ is None:
             frame = sys._getframe(1)
             _globs_ = frame.f_globals
@@ -740,7 +768,9 @@ else:
 print_ = getattr(moves.builtins, "print", None)
 if print_ is None:
     def print_(*args, **kwargs):
-        """The new-style print function for Python 2.4 and 2.5."""
+        """
+        The new-style print function for Python 2.4 and 2.5.
+        """
         fp = kwargs.pop("file", sys.stdout)
         if fp is None:
             return
@@ -817,7 +847,9 @@ else:
 
 
 def with_metaclass(meta, *bases):
-    """Create a base class with a metaclass."""
+    """
+    Create a base class with a metaclass.
+    """
     # This requires a bit of explanation: the basic idea is to make a dummy
     # metaclass for one level of class instantiation that replaces itself with
     # the actual metaclass.
@@ -833,7 +865,9 @@ def with_metaclass(meta, *bases):
 
 
 def add_metaclass(metaclass):
-    """Class decorator for creating a class with a metaclass."""
+    """
+    Class decorator for creating a class with a metaclass.
+    """
     def wrapper(cls):
         orig_vars = cls.__dict__.copy()
         slots = orig_vars.get('__slots__')
@@ -851,7 +885,8 @@ def add_metaclass(metaclass):
 
 
 def ensure_binary(s, encoding='utf-8', errors='strict'):
-    """Coerce **s** to six.binary_type.
+    """
+    Coerce **s** to six.binary_type.
 
     For Python 2:
       - `unicode` -> encoded to `str`
@@ -870,7 +905,8 @@ def ensure_binary(s, encoding='utf-8', errors='strict'):
 
 
 def ensure_str(s, encoding='utf-8', errors='strict'):
-    """Coerce *s* to `str`.
+    """
+    Coerce *s* to `str`.
 
     For Python 2:
       - `unicode` -> encoded to `str`
@@ -890,7 +926,8 @@ def ensure_str(s, encoding='utf-8', errors='strict'):
 
 
 def ensure_text(s, encoding='utf-8', errors='strict'):
-    """Coerce *s* to six.text_type.
+    """
+    Coerce *s* to six.text_type.
 
     For Python 2:
       - `unicode` -> `unicode`
@@ -914,8 +951,8 @@ def python_2_unicode_compatible(klass):
     A decorator that defines __unicode__ and __str__ methods under Python 2.
     Under Python 3 it does nothing.
 
-    To support Python 2 and 3 with a single code base, define a __str__ method
-    returning text and apply this decorator to the class.
+    To support Python 2 and 3 with a single code base, define a __str__
+    method returning text and apply this decorator to the class.
     """
     if PY2:
         if '__str__' not in klass.__dict__:

@@ -3,22 +3,20 @@
 
 from __future__ import absolute_import
 
-import shutil
-from tempfile import mkdtemp
-from datetime import datetime
 import os
 import glob
+import shutil
+from datetime import datetime
+from tempfile import mkdtemp
 
-import pytest
 import numpy as np
-from numpy.testing import assert_array_almost_equal, assert_allclose
-from astropy.tests.helper import remote_data
+import pytest
+from numpy.testing import assert_allclose, assert_array_almost_equal
 
 import sunpy.data.test
+from astropy.tests.helper import remote_data
 
-from ..sources.callisto import (
-    CallistoSpectrogram, query, download, minimal_pairs
-)
+from ..sources.callisto import CallistoSpectrogram, download, minimal_pairs, query
 
 
 @pytest.fixture

@@ -7,7 +7,8 @@ Provide support for some type of radiospectra on solar physics.
 """
 # Enforce Python version check during package import.
 # This is the same check as the one at the top of setup.py
-from __future__ import (absolute_import, print_function, division)
+from __future__ import absolute_import, division, print_function
+
 import os
 import sys
 

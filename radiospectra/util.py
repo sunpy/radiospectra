@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
-""" Offer a callable object that dispatches based on arbitrary conditions
-and function signature. That means, whenever it is called, it finds the
-registered methods that match the input's signature and then checks for
-user-defined conditions and types.
+"""
+Offer a callable object that dispatches based on arbitrary conditions and
+function signature. That means, whenever it is called, it finds the registered
+methods that match the input's signature and then checks for user-defined
+conditions and types.
 
 First, we need to create a new ConditionalDispatch
 
@@ -70,10 +71,9 @@ Traceback (most recent call last):
     "There are no functions matching your input parameter "
 TypeError: There are no functions matching your input parameter signature.
 """
-from __future__ import (absolute_import, print_function, division)
+from __future__ import absolute_import, division, print_function
 
 import inspect
-
 from itertools import chain, repeat
 
 __all__ = ['run_cls', 'matches_types', 'arginize', 'correct_argspec',
@@ -81,7 +81,9 @@ __all__ = ['run_cls', 'matches_types', 'arginize', 'correct_argspec',
 
 
 def run_cls(name):
-    """ run_cls("foo")(cls, *args, **kwargs) -> cls.foo(*args, **kwargs) """
+    """
+    run_cls("foo")(cls, *args, **kwargs) -> cls.foo(*args, **kwargs)
+    """
     fun = lambda cls, *args, **kwargs: getattr(cls, name)(*args, **kwargs)
     fun.__name__ = str(name)
     fun.run_cls = True
@@ -89,9 +91,12 @@ def run_cls(name):
 
 
 def matches_types(fun, types, args, kwargs):
-    """ See if args and kwargs match are instances of types. types are given
-    in the order they are defined in the function. kwargs are automatically
-    converted into that order. """
+    """
+    See if args and kwargs match are instances of types.
+
+    types are given in the order they are defined in the function.
+    kwargs are automatically converted into that order.
+    """
     return all(
         isinstance(obj, cls) for obj, cls in zip(
             arginize(fun, args, kwargs), types
@@ -100,8 +105,9 @@ def matches_types(fun, types, args, kwargs):
 
 
 def arginize(fun, a, kw):
-    """ Turn args and kwargs into args by considering the function
-    signature. """
+    """
+    Turn args and kwargs into args by considering the function signature.
+    """
     argspec = correct_argspec(fun)
     args = argspec.args
     varargs = argspec.varargs
@@ -118,7 +124,9 @@ def arginize(fun, a, kw):
 
 
 def correct_argspec(fun):
-    """ Remove first argument if method is bound. """
+    """
+    Remove first argument if method is bound.
+    """
     fullargspec = inspect.getfullargspec(fun)
     if inspect.ismethod(fun):
         fullargspec = fullargspec[1:]
@@ -126,7 +134,8 @@ def correct_argspec(fun):
 
 
 def matches_signature(fun, a, kw):
-    """ Check whether function can be called with a as args and kw as kwargs.
+    """
+    Check whether function can be called with a as args and kw as kwargs.
     """
     argspec = correct_argspec(fun)
     args = argspec.args
@@ -172,16 +181,20 @@ class ConditionalDispatch(object):
         return _dec
 
     def add(self, fun, condition=None, types=None, check=True):
-        """ Add fun to ConditionalDispatch under the condition that the
-        arguments must match. If condition is left out, the function is
-        executed for every input that matches the signature. Functions are
-        considered in the order they are added, but ones with condition=None
-        are considered as the last: that means, a function with condition None
-        serves as an else branch for that signature.
-        conditions must be mutually exclusive because otherwise which will
-        be executed depends on the order they are added in. Function signatures
-        of fun and condition must match (if fun is bound, the bound parameter
-        needs to be left out in condition). """
+        """
+        Add fun to ConditionalDispatch under the condition that the arguments
+        must match.
+
+        If condition is left out, the function is executed for every
+        input that matches the signature. Functions are considered in
+        the order they are added, but ones with condition=None are
+        considered as the last: that means, a function with condition
+        None serves as an else branch for that signature. conditions
+        must be mutually exclusive because otherwise which will be
+        executed depends on the order they are added in. Function
+        signatures of fun and condition must match (if fun is bound, the
+        bound parameter needs to be left out in condition).
+        """
         if condition is None:
             self.nones.append((fun, types))
         elif check and correct_argspec(fun) != correct_argspec(condition):
@@ -218,12 +231,14 @@ class ConditionalDispatch(object):
         return lambda *args, **kwargs: self(*args, **kwargs)
 
     def get_signatures(self, prefix="", start=0):
-        """ Return an iterator containing all possible function signatures.
-        If prefix is given, use it as function name in signatures, else
-        leave it out. If start is given, leave out first n elements.
+        """
+        Return an iterator containing all possible function signatures. If
+        prefix is given, use it as function name in signatures, else leave it
+        out. If start is given, leave out first n elements.
 
-        If start is -1, leave out first element if the function was created
-        by run_cls. """
+        If start is -1, leave out first element if the function was
+        created by run_cls.
+        """
         for fun, condition, types in self.funcs:
             if start == -1:
                 st = getattr(fun, 'run_cls', 0)
