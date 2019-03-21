@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
-
 """Classes for spectral analysis."""
-from __future__ import division, print_function, absolute_import
+from __future__ import (absolute_import, print_function, division)
 
 import datetime
 from random import randint
@@ -19,11 +17,11 @@ from matplotlib.colorbar import Colorbar
 
 from sunpy.time import parse_time, get_day
 from sunpy.util import to_signed, common_base, merge
-from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.util.create import Parent
-from sunpy.extern.six.moves import zip, range
 
-from .spectrum import Spectrum
+from radiospectra.util import ConditionalDispatch
+from radiospectra.extern.six.moves import zip, range
+from radiospectra.spectrum import Spectrum
 
 
 __all__ = ['Spectrogram', 'LinearTimeSpectrogram']
@@ -1112,7 +1110,7 @@ class LinearTimeSpectrogram(Spectrogram):
         """
         # This is impossible for frequencies because that mapping
         # is not injective.
-        time = parse_time(time)
+        time = parse_time(time).datetime
         diff = time - self.start
         diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
         result = diff_s // self.t_delt
@@ -1227,7 +1225,7 @@ class LinearTimeSpectrogram(Spectrogram):
         """
         if start is not None:
             try:
-                start = parse_time(start)
+                start = parse_time(start).datetime
             except ValueError:
                 # XXX: We could do better than that.
                 if get_day(self.start) != get_day(self.end):
@@ -1241,7 +1239,7 @@ class LinearTimeSpectrogram(Spectrogram):
             start = self.time_to_x(start)
         if end is not None:
             try:
-                end = parse_time(end)
+                end = parse_time(end).datetime
             except ValueError:
                 if get_day(self.start) != get_day(self.end):
                     raise TypeError(

@@ -1,9 +1,0 @@
-sunpy>=0.8.0
-numpy>=1.11
-astropy>=2.0.3
-scipy
-# Dev
-pytest
-# Docs
-sphinx
-sunpy_sphinx_theme

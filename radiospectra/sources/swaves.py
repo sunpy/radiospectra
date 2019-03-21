@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
-# Author: David Perez-Suarez <dps.helio-?-gmail.com>
-from __future__ import absolute_import, print_function
+from __future__ import (absolute_import, print_function, division)
 
 import os
 import datetime
 
 import numpy as np
 
-from sunpy.util.cond_dispatch import ConditionalDispatch
-
-from ..spectrogram import LinearTimeSpectrogram, REFERENCE, get_day
+from radiospectra.util import ConditionalDispatch
+from radiospectra.spectrogram import LinearTimeSpectrogram, REFERENCE, get_day
 
 __all__ = ['SWavesSpectrogram']
 

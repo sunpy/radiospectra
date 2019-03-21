@@ -9,8 +9,7 @@ import pytest
 import numpy as np
 from numpy.testing import assert_array_almost_equal
 
-from sunpy.extern.six.moves import range
-
+from ..extern.six.moves import range
 from ..spectrogram import (Spectrogram, LinearTimeSpectrogram,
                            _LinearView)
 

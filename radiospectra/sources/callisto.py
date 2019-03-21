@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
-from __future__ import absolute_import, print_function
+from __future__ import (absolute_import, print_function, division)
 
 import datetime
 from collections import defaultdict
@@ -13,12 +12,12 @@ from scipy.ndimage import gaussian_filter1d
 
 from sunpy.time import parse_time
 from sunpy.util import minimal_pairs
-from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.util.net import download_file
-from sunpy.extern.six.moves import urllib
-from sunpy.extern.six import next, itervalues
 
-from ..spectrogram import LinearTimeSpectrogram, REFERENCE
+from radiospectra.util import ConditionalDispatch, run_cls
+from radiospectra.extern.six.moves import urllib
+from radiospectra.extern.six import next, itervalues
+from radiospectra.spectrogram import LinearTimeSpectrogram, REFERENCE
 
 __all__ = ['CallistoSpectrogram']
 
@@ -108,7 +107,7 @@ def _parse_header_time(date, time):
     header. """
     if time is not None:
         date = date + 'T' + time
-    return parse_time(date)
+    return parse_time(date).datetime
 
 
 class CallistoSpectrogram(LinearTimeSpectrogram):
@@ -341,8 +340,8 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         }
 
         kw.update(kwargs)
-        start = parse_time(start)
-        end = parse_time(end)
+        start = parse_time(start).datetime
+        end = parse_time(end).datetime
         urls = query(start, end, [instrument])
         data = list(map(cls.from_url, urls))
         freq_buckets = defaultdict(list)

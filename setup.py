@@ -4,9 +4,13 @@
 import glob
 import os
 import sys
-
-import ah_bootstrap
+import itertools
 from setuptools import setup
+
+
+# Append cwd for pip 19
+sys.path.append(os.path.abspath("."))
+import ah_bootstrap
 
 # A dirty hack to get around some early import/configurations ambiguities
 if sys.version_info[0] >= 3:
@@ -83,6 +87,7 @@ cmdclassd = register_commands(PACKAGENAME, VERSION, RELEASE)
 generate_version_py(PACKAGENAME, VERSION, RELEASE,
                     get_debug_option(PACKAGENAME))
 
+
 # Treat everything in scripts except README* as a script to be installed
 scripts = [fname for fname in glob.glob(os.path.join('scripts', '*'))
            if not os.path.basename(fname).startswith('README')]
@@ -118,15 +123,20 @@ for root, dirs, files in os.walk(PACKAGENAME):
                     os.path.relpath(root, PACKAGENAME), filename))
 package_info['package_data'][PACKAGENAME].extend(c_files)
 
-# Note that requires and provides should not be included in the call to
-# ``setup``, since these are now deprecated. See this link for more details:
-# https://groups.google.com/forum/#!topic/astropy-dev/urYO8ckB2uM
+extra_tags = [m.strip() for m in metadata.get("extra_requires", "").split(',')]
+if extra_tags:
+    extras_require = {tag: [m.strip() for m in metadata["{tag}_requires".format(tag=tag)].split(',')]
+                      for tag in extra_tags}
+    extras_require['all'] = list(itertools.chain.from_iterable(extras_require.values()))
+else:
+    extras_require = None
 
 setup(name=PACKAGENAME,
-      version=VERSION,
       description=DESCRIPTION,
       scripts=scripts,
-      install_requires=metadata.get('install_requires', 'astropy').strip().split(),
+      install_requires=[s.strip() for s in metadata['install_requires'].split(',')],
+      extras_require=extras_require,
+      tests_require=extras_require.get("all", ""),
       author=AUTHOR,
       author_email=AUTHOR_EMAIL,
       license=LICENSE,

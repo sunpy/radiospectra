@@ -1,9 +1,0 @@
-name: radiospectra-rtd
-
-channels:
-    - conda-forge
-
-dependencies:
-    - sunpy
-    - pip:
-        - sunpy-sphinx-theme

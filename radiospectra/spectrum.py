@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
-
-from __future__ import absolute_import
+from __future__ import (absolute_import, print_function, division)
 
 import numpy as np
 from matplotlib import pyplot as plt
