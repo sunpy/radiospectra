@@ -13,13 +13,12 @@ from scipy.optimize import leastsq
 from astropy.io import fits
 from sunpy import __version__
 from sunpy.time import parse_time
-from sunpy.util import minimal_pairs
 from sunpy.util.net import download_file
 
 from radiospectra.extern.six import itervalues, next
 from radiospectra.extern.six.moves import urllib
 from radiospectra.spectrogram import REFERENCE, LinearTimeSpectrogram
-from radiospectra.util import ConditionalDispatch, run_cls
+from radiospectra.util import ConditionalDispatch, run_cls, minimal_pairs
 
 __all__ = ['CallistoSpectrogram']
 

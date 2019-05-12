@@ -8,7 +8,7 @@ conditions and types.
 
 First, we need to create a new ConditionalDispatch
 
->>> from sunpy.util.cond_dispatch import ConditionalDispatch
+>>> from radiospectra.util import ConditionalDispatch
 >>> fun = ConditionalDispatch()
 
 We then can start adding branches, in this case we add a branch for
@@ -76,9 +76,121 @@ from __future__ import absolute_import, division, print_function
 import sys
 import inspect
 from itertools import chain, repeat
+from datetime import datetime
+import glob
+import os
+
+from sunpy.util.net import download_file
+
+import numpy as np
 
 __all__ = ['run_cls', 'matches_types', 'arginize', 'correct_argspec',
-           'matches_signature', 'ConditionalDispatch', 'fmt_argspec_types']
+           'matches_signature', 'ConditionalDispatch', 'fmt_argspec_types',
+           'minimal_pairs', 'get_day', 'to_signed', 'common_base', 'merge', 'Parent']
+
+
+def merge(items, key=(lambda x: x)):
+    """
+    Given sorted lists of iterables, return new iterable that returns
+    elements of all iterables sorted with respect to key.
+    """
+    state = {}
+    for item in map(iter, items):
+        try:
+            first = next(item)
+        except StopIteration:
+            continue
+        else:
+            state[item] = (first, key(first))
+
+    while state:
+        for item, (value, tk) in state.items():
+            # Value is biggest.
+            if all(tk >= k for it, (v, k) in state.items()
+                   if it is not item):
+                yield value
+                break
+        try:
+            n = next(item)
+            state[item] = (n, key(n))
+        except StopIteration:
+            del state[item]
+
+
+def common_base(objs):
+    """
+    Find class that every item of objs is an instance of.
+    """
+    for cls in objs[0].__class__.__mro__:
+        if all(isinstance(obj, cls) for obj in objs):
+            break
+    return cls
+
+
+def to_signed(dtype):
+    """
+    Return dtype that can hold data of passed dtype but is signed.
+    Raise ValueError if no such dtype exists.
+
+    Parameters
+    ----------
+    dtype : `numpy.dtype`
+        dtype whose values the new dtype needs to be able to represent.
+
+    Returns
+    -------
+    `numpy.dtype`
+    """
+    if dtype.kind == "u":
+        if dtype.itemsize == 8:
+            raise ValueError("Cannot losslessly convert uint64 to int.")
+        dtype = "int{0:d}".format(min(dtype.itemsize * 2 * 8, 64))
+    return np.dtype(dtype)
+
+
+def get_day(dt):
+    """ Return datetime for the beginning of the day of given datetime. """
+    return datetime(dt.year, dt.month, dt.day)
+
+
+def minimal_pairs(one, other):
+    """ Find pairs of values in one and other with minimal distance.
+    Assumes one and other are sorted in the same sort sequence.
+
+    Parameters
+    ----------
+    one, other : sequence
+        Sequence of scalars to find pairs from.
+
+    Returns
+    -------
+    `tuple`
+         Pairs of values in `one` and `other` with minimal distance
+    """
+    lbestdiff = bestdiff = bestj = besti = None
+    for i, freq in enumerate(one):
+        lbestj = bestj
+
+        bestdiff, bestj = None, None
+        for j, o_freq in enumerate(other[lbestj:]):
+            j = lbestj + j if lbestj else j
+            diff = abs(freq - o_freq)
+            if bestj is not None and diff > bestdiff:
+                break
+
+            if bestj is None or bestdiff > diff:
+                bestj = j
+                bestdiff = diff
+
+        if lbestj is not None and lbestj != bestj:
+            yield (besti, lbestj, lbestdiff)
+            besti = i
+            lbestdiff = bestdiff
+        elif lbestdiff is None or bestdiff < lbestdiff:
+            besti = i
+            lbestdiff = bestdiff
+
+    yield (besti, bestj, lbestdiff)
 
 
 def run_cls(name):
@@ -298,3 +410,108 @@ def fmt_argspec_types(fun, types, start=0):
     if keywords is not None:
         spec.append('**{!s}'.format(keywords))
     return '(' + ', '.join(spec) + ')'
+
+
+class Parent(object):
+    _create = ConditionalDispatch()
+
+    @classmethod
+    def read(cls, filename):
+        raise NotImplementedError
+
+    @classmethod
+    def read_many(cls, filenames):
+        return list(map(cls.read, filenames))
+
+    @classmethod
+    def from_glob(cls, pattern):
+        """ Read out files using glob (e.g., ~/BIR_2011*) pattern. Returns
+        list of objects made from all matched files.
+        """
+        return cls.read_many(glob.glob(pattern))
+
+    @classmethod
+    def from_single_glob(cls, singlepattern):
+        """ Read out a single file using glob (e.g., ~/BIR_2011*) pattern.
+        If more than one file matches the pattern, raise ValueError.
+        """
+        matches = glob.glob(os.path.expanduser(singlepattern))
+        if len(matches) != 1:
+            raise ValueError("Invalid number of matches: {0:d}".format(len(matches)))
+        return cls.read(matches[0])
+
+    @classmethod
+    def from_files(cls, filenames):
+        """ Return list of object read from given list of
+        filenames. """
+        filenames = list(map(os.path.expanduser, filenames))
+        return cls.read_many(filenames)
+
+    @classmethod
+    def from_file(cls, filename):
+        """ Return object from file. """
+        filename = os.path.expanduser(filename)
+        return cls.read(filename)
+
+    @classmethod
+    def from_dir(cls, directory):
+        """ Return list that contains all files in the directory read in. """
+        directory = os.path.expanduser(directory)
+        return cls.read_many(
+            (os.path.join(directory, elem) for elem in os.listdir(directory))
+        )
+
+    @classmethod
+    def from_url(cls, url):
+        """ Return object read from URL.
+
+        Parameters
+        ----------
+        url : str
+            URL to retrieve the data from
+        """
+        path = download_file(url, get_and_create_download_dir())
+        return cls.read(path)
+
+
+Parent._create.add(
+    run_cls('from_file'),
+    lambda cls, filename: os.path.isfile(os.path.expanduser(filename)),
+    [type, str], check=False
+)
+Parent._create.add(
+    # pylint: disable=W0108
+    # The lambda is necessary because introspection is performed on the
+    # argspec of the function.
+    run_cls('from_dir'),
+    lambda cls, directory: os.path.isdir(os.path.expanduser(directory)),
+    [type, str], check=False
+)
+# If it is not a kwarg and only one matches, do not return a list.
+Parent._create.add(
+    run_cls('from_single_glob'),
+    lambda cls, singlepattern: ('*' in singlepattern and
+                                len(glob.glob(
+                                os.path.expanduser(singlepattern))) == 1),
+    [type, str], check=False
+)
+# This case only gets executed under the condition that the previous one wasn't.
+# This is either because more than one file matched, or because the user
+# explicitly used pattern=, in both cases we want a list.
+Parent._create.add(
+    run_cls('from_glob'),
+    lambda cls, pattern: '*' in pattern and glob.glob(
+        os.path.expanduser(pattern)
+        ),
+    [type, str], check=False
+)
+Parent._create.add(
+    run_cls('from_files'),
+    lambda cls, filenames: True,
+    types=[type, list], check=False
+)
+Parent._create.add(
+    run_cls('from_url'),
+    lambda cls, url: True,
+    types=[type, str], check=False
+)
