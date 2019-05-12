@@ -2,8 +2,11 @@
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
 import pytest
+from datetime import datetime
 
-from radiospectra.util import ConditionalDispatch
+import numpy as np
+
+from radiospectra.util import ConditionalDispatch, minimal_pairs, get_day, common_base, merge, to_signed
 
 
 @pytest.fixture
@@ -65,3 +68,74 @@ def test_types():
     f.add(lambda x: 2 * x, lambda x: x % 2 == 0, [int])
     with pytest.raises(TypeError):
         f(2.0)
+
+
+def test_minimal_pairs():
+    """
+    This should return the pairs of elements from list1 and list2 with
+    minimal difference between their values.
+    """
+    list1 = [0, 5, 10, 15, 20, 25]
+    list2 = [3, 12, 19, 21, 26, 29]
+    assert list(minimal_pairs(list1, list2)) == [(1, 0, 2), (2, 1, 2),
+                                                 (4, 2, 1), (5, 4, 1)]
+
+
+def test_get_day():
+    end_of_day = datetime(year=2017, month=1, day=1, hour=23, minute=59, second=59,
+                          microsecond=999)
+
+    begining_of_day = get_day(end_of_day)
+    assert begining_of_day.year == 2017
+    assert begining_of_day.month == 1
+    assert begining_of_day.day == 1
+    assert begining_of_day.hour == 0
+    assert begining_of_day.minute == 0
+    assert begining_of_day.second == 0
+    assert begining_of_day.microsecond == 0
+
+
+def test_common_base():
+    """
+    This should return the base class common to each object in objs.
+    """
+    class TestA(object):
+        """Base test class."""
+        pass
+
+    class TestB(TestA):
+        """First inherited class."""
+        pass
+
+    class TestC(TestA):
+        """Second inherited class."""
+        pass
+    inst_b = TestB()
+    inst_c = TestC()
+    objs = [inst_b, inst_c]
+    assert common_base(objs) == TestA
+
+
+def test_merge():
+    """
+    This should return a sorted (from greatest to least) merged list
+    from list1 and list2.
+    """
+    list1 = [13, 11, 9, 7, 5, 3, 1]
+    list2 = [14, 12, 10, 8, 6, 4, 2]
+    result = list(merge([list1, list2]))
+    assert result[::-1] == sorted(result)
+
+    assert list(merge([[], [1], []])) == [1]
+
+
+def test_to_signed():
+    """
+    This should return a signed type that can hold uint32 and ensure that
+    an exception is raised when attempting to convert an unsigned 64 bit integer
+    to an integer
+    """
+    assert to_signed(np.dtype('uint32')) == np.dtype('int64')
+
+    with pytest.raises(ValueError):
+        to_signed(np.dtype('uint64')) == np.dtype('int64')

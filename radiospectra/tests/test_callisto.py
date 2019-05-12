@@ -16,7 +16,8 @@ from numpy.testing import assert_allclose, assert_array_almost_equal
 import sunpy.data.test
 from astropy.tests.helper import remote_data
 
-from ..sources.callisto import CallistoSpectrogram, download, minimal_pairs, query
+from ..sources.callisto import CallistoSpectrogram, download, query
+from radiospectra.util import minimal_pairs
 
 
 @pytest.fixture

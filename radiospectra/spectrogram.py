@@ -19,13 +19,11 @@ from numpy import ma
 from scipy import ndimage
 
 from sunpy import __version__
-from sunpy.time import get_day, parse_time
-from sunpy.util import common_base, merge, to_signed
-from sunpy.util.create import Parent
+from sunpy.time import parse_time
 
 from radiospectra.extern.six.moves import range, zip
 from radiospectra.spectrum import Spectrum
-from radiospectra.util import ConditionalDispatch
+from radiospectra.util import get_day, ConditionalDispatch, common_base, merge, to_signed, Parent
 
 __all__ = ['Spectrogram', 'LinearTimeSpectrogram']
 

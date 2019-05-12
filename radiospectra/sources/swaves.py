@@ -6,8 +6,8 @@ import datetime
 
 import numpy as np
 
-from radiospectra.spectrogram import REFERENCE, LinearTimeSpectrogram, get_day
-from radiospectra.util import ConditionalDispatch
+from radiospectra.spectrogram import REFERENCE, LinearTimeSpectrogram
+from radiospectra.util import get_day, ConditionalDispatch
 
 __all__ = ['SWavesSpectrogram']
 
