@@ -15,7 +15,7 @@ Our homepage `SunPy`_ has more information about the project.
 Installation
 ============
 
-The recommended way to install radiospectra is with `conda`_.
+The recommended way to install radiospectra is with `anaconda <https://www.anaconda.com/distribution/>`__.
 
 .. code:: bash
 
