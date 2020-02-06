@@ -46,7 +46,7 @@ For more information or to ask questions about radiospectra (and SunPy), check o
 -  `SunPy Mailing List`_
 
 .. _SunPy Documentation: https://docs.sunpy.org/en/stable/
-.. _SunPy Matrix Channel: https://chat.openastronomy.org/#/room/#sunpy:openastronomy.org
+.. _SunPy Matrix Channel: https://openastronomy.riot.im/#/room/#sunpy:openastronomy.org
 .. _SunPy Mailing List: https://groups.google.com/forum/#!forum/sunpy
 
 Contributing
