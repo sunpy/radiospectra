@@ -1,72 +1,48 @@
-************
-radiospectra
-************
+Provide support for some type of radio spectra in solar physics
+---------------------------------------------------------------
 
-.. |Powered by NumFOCUS| image:: https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A
-   :target: https://numfocus.org
+.. image:: http://img.shields.io/badge/powered%20by-SunPy-orange.svg?style=flat
+    :target: http://www.sunpy.org
+    :alt: Powered by SunPy Badge
 
-This package aims to provide support for some type of radiospectra on solar physics.
+License
+-------
 
-This uses SunPy underneath, which is an open-source Python library for Solar Physics data analysis and visualization.
-Our homepage `SunPy`_ has more information about the project.
+This project is Copyright (c) SunPy Developers and licensed under
+the terms of the BSD 2-Clause license. This package is based upon
+the `Openastronomy packaging guide <https://github.com/OpenAstronomy/packaging-guide>`_
+which is licensed under the BSD 3-clause licence. See the licenses folder for
+more information.
 
-.. _SunPy: https://sunpy.org
-
-Installation
-============
-
-The recommended way to install radiospectra is with `anaconda <https://www.anaconda.com/distribution/>`__.
-
-.. code:: bash
-
-    $ conda config --append channels conda-forge
-    $ conda install radiospectra
-
-You can also use pip:
-
-.. code-block:: bash
-
-   pip install radiospectra
-
-If you are coming here from the ``Warning`` deprecation in SunPy you more probably need to change from::
-
-   from sunpy.spectra.spectrum import Spectrum
-
-to::
-
-   from radiospectra.spectrum import Spectrum
-
-Getting Help
-============
-
-For more information or to ask questions about radiospectra (and SunPy), check out:
-
--  `SunPy Documentation`_
--  `SunPy Matrix Channel`_
--  `SunPy Mailing List`_
-
-.. _SunPy Documentation: https://docs.sunpy.org/en/stable/
-.. _SunPy Matrix Channel: https://openastronomy.riot.im/#/room/#sunpy:openastronomy.org
-.. _SunPy Mailing List: https://groups.google.com/forum/#!forum/sunpy
 
 Contributing
-============
+------------
 
-If you would like to get involved, start by joining the `SunPy mailing list`_ and check out the `Developers Guide`_ section of the SunPy docs.
-Stop by our chat room `#sunpy:openastronomy.org`_ if you have any questions.
-Help is always welcome so let us know what you like to work on, or check out the `issues page`_ for the list of known outstanding items.
+We love contributions! radiospectra is open source,
+built on open source, and we'd love to have you hang out in our community.
 
-For more information on contributing to SunPy, please read our `Newcomers guide`_.
+**Imposter syndrome disclaimer**: We want your help. No, really.
 
-.. _SunPy mailing list: https://groups.google.com/forum/#!forum/sunpy
-.. _Developers Guide: http://docs.sunpy.org/en/latest/dev_guide/index.html
-.. _`#sunpy:openastronomy.org`: https://chat.openastronomy.org/#/room/#sunpy:openastronomy.org
-.. _issues page: https://github.com/sunpy/sunpy/issues
-.. _Newcomers guide: https://docs.sunpy.org/en/latest/dev_guide/newcomers.html
+There may be a little voice inside your head that is telling you that you're not
+ready to be an open source contributor; that your skills aren't nearly good
+enough to contribute. What could you possibly offer a project like this one?
 
-Code of Conduct
-===============
+We assure you - the little voice in your head is wrong. If you can write code at
+all, you can contribute code to open source. Contributing to open source
+projects is a fantastic way to advance one's coding skills. Writing perfect code
+isn't the measure of a good developer (that would disqualify all of us!); it's
+trying to create something, making mistakes, and learning from those
+mistakes. That's how we all improve, and we are happy to help others learn.
 
-When you are interacting with the SunPy community you are asked to follow our `Code of Conduct`_.
+Being an open source contributor doesn't just mean writing code, either. You can
+help out by writing documentation, tests, or even giving feedback about the
+project (and yes - that includes giving feedback about the contribution
+process). Some of these contributions may be the most valuable to the project as
+a whole, because you're coming to the project with fresh eyes, so you can see
+the errors and assumptions that seasoned contributors have glossed over.
 
-.. _Code of Conduct: https://docs.sunpy.org/en/latest/coc.html
+Note: This disclaimer was originally written by
+`Adrienne Lowe <https://github.com/adriennefriend>`_ for a
+`PyCon talk <https://www.youtube.com/watch?v=6Uj746j9Heo>`_, and was adapted by
+radiospectra based on its use in the README file for the
+`MetPy project <https://github.com/Unidata/MetPy>`_.

@@ -51,8 +51,7 @@ def test_read(CALLISTO_IMAGE):
     assert ca.dtype == np.uint8
 
 
-@pytest.mark.online
-@remote_data(source='any')
+@pytest.mark.remote_data
 def test_query():
     URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/'
 
@@ -76,9 +75,8 @@ def test_query():
         assert URL + item in result
 
 
-@pytest.mark.online
+
 @pytest.mark.xfail
-@remote_data(source='any')
 def test_query_number():
 
     result = list(query(
@@ -97,9 +95,8 @@ def test_query_number():
     assert len(result) == len(RESULTS)
 
 
-@pytest.mark.online
 @pytest.mark.xfail
-@remote_data(source='any')
+@pytest.mark.remote_data
 def test_download():
     directory = mkdtemp()
     try:
@@ -128,8 +125,7 @@ def test_create_file_kw(CALLISTO_IMAGE):
     assert np.array_equal(ca.data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
 
 
-@pytest.mark.online
-@remote_data(source='any')
+@pytest.mark.remote_data
 def test_create_url():
     URL = (
         "http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/"
@@ -139,8 +135,7 @@ def test_create_url():
     assert np.array_equal(ca.data, CallistoSpectrogram.read(URL).data)
 
 
-@pytest.mark.online
-@remote_data(source='any')
+@pytest.mark.remote_data
 def test_create_url_kw():
     URL = (
         "http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/"
@@ -405,8 +400,7 @@ def test_homogenize_rightfq():
     assert_array_almost_equal(factors[0] * b + constants[0], a)
 
 
-@pytest.mark.online
-@remote_data(source='any')
+@pytest.mark.remote_data
 def test_extend(CALLISTO_IMAGE):
     im = CallistoSpectrogram.create(CALLISTO_IMAGE)
     im2 = im.extend()

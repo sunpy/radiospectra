@@ -826,7 +826,8 @@ class Spectrogram(Parent):
         if delta_freq is None:
             # Nyquist–Shannon sampling theorem
             delta_freq = _min_delt(self.freq_axis) / 2.
-        nsize = (self.freq_axis.max() - self.freq_axis.min()) / delta_freq + 1
+        nsize = int((self.freq_axis.max() - self.freq_axis.min()) /
+            delta_freq + 1)
         new = np.zeros((int(nsize), self.shape[1]), dtype=self.data.dtype)
 
         freqs = self.freq_axis - self.freq_axis.max()
