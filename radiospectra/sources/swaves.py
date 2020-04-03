@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function
+
 
 import os
 import datetime
@@ -67,7 +67,7 @@ class SWavesSpectrogram(LinearTimeSpectrogram):
 
 
 try:
-    SWavesSpectrogram.create.im_func.__doc__ = (
+    SWavesSpectrogram.create.__func__.__doc__ = (
         """ Create SWavesSpectrogram from given input dispatching to the
         appropriate from_* function.
 

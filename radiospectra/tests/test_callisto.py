@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
-from __future__ import absolute_import
+
 
 import os
 import glob
