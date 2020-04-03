@@ -1,3 +1,3 @@
-from radiospectra.net.sources.psp import RFSClient
+from radiospectra.net.sources.psp import RFSClient, SWAVESClient
 
-__all__ = ['RFSClient']
+__all__ = ['RFSClient', 'SWAVESClient']

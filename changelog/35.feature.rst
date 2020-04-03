@@ -1,0 +1,1 @@
+Add STEREO WAVES (SWAVES) Fido client `radiospectra.net.SWAVESClient`.
