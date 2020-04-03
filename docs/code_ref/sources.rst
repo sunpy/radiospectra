@@ -1,1 +1,1 @@
-.. automodapi:: radiospectra.sources
+.. automodapi:: radiospectra.net
