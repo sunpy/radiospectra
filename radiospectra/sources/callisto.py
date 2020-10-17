@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
-
-
-import datetime
 import urllib
+import datetime
 from collections import defaultdict
 from distutils.version import LooseVersion
 
@@ -17,7 +14,7 @@ from sunpy.time import parse_time
 from sunpy.util.net import download_file
 
 from radiospectra.spectrogram import REFERENCE, LinearTimeSpectrogram
-from radiospectra.util import ConditionalDispatch, run_cls, minimal_pairs
+from radiospectra.util import ConditionalDispatch, minimal_pairs, run_cls
 
 __all__ = ['CallistoSpectrogram']
 
@@ -81,7 +78,7 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
 
                 if (instruments is not None and
                     inst not in instruments and
-                    (inst, int(no)) not in instruments):
+                        (inst, int(no)) not in instruments):
                     continue
 
                 dend = dstart + DATA_SIZE
@@ -153,11 +150,11 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     # List of instruments retrieved in July 2012 from
     # http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/
-    INSTRUMENTS = set([
+    INSTRUMENTS = {
         'ALASKA', 'ALMATY', 'BIR', 'DARO', 'HB9SCT', 'HUMAIN',
         'HURBANOVO', 'KASI', 'KENYA', 'KRIM', 'MALAYSIA', 'MRT1',
         'MRT2', 'OOTY', 'OSRA', 'SWMC', 'TRIEST', 'UNAM'
-    ])
+    }
 
     def save(self, filepath):
         """
@@ -270,7 +267,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
                 np.linspace(0, data.shape[0] - 1) * f_delt + f_init  # pylint: disable=E1101
 
         content = header["CONTENT"]
-        instruments = set([header["INSTRUME"]])
+        instruments = {header["INSTRUME"]}
 
         fl.close()
         return cls(
@@ -532,9 +529,3 @@ except AttributeError:
     Possible signatures:
 
     """ + CallistoSpectrogram._create.generate_docs())
-
-
-if __name__ == "__main__":
-    opn = CallistoSpectrogram.read("callisto/BIR_20110922_103000_01.fit")
-    opn.subtract_bg().clip(0).plot(ratio=2).show()
-    print("Press return to exit")

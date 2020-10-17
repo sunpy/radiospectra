@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
-
-import pytest
 from datetime import datetime
 
 import numpy as np
+import pytest
 
-from radiospectra.util import ConditionalDispatch, minimal_pairs, get_day, common_base, merge, to_signed
+from radiospectra.util import ConditionalDispatch, common_base, get_day, merge, minimal_pairs, to_signed
 
 
 @pytest.fixture
@@ -101,15 +98,12 @@ def test_common_base():
     """
     class TestA(object):
         """Base test class."""
-        pass
 
     class TestB(TestA):
         """First inherited class."""
-        pass
 
     class TestC(TestA):
         """Second inherited class."""
-        pass
     inst_b = TestB()
     inst_c = TestC()
     objs = [inst_b, inst_c]

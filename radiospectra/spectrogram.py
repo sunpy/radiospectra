@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
 """
 Classes for spectral analysis.
 """
-
 
 import datetime
 from copy import copy
@@ -22,7 +20,7 @@ from sunpy import __version__
 from sunpy.time import parse_time
 
 from radiospectra.spectrum import Spectrum
-from radiospectra.util import get_day, ConditionalDispatch, common_base, merge, to_signed, Parent
+from radiospectra.util import ConditionalDispatch, Parent, common_base, get_day, merge, to_signed
 
 __all__ = ['Spectrogram', 'LinearTimeSpectrogram']
 
@@ -103,6 +101,7 @@ class _LinearView(object):
         Delta between frequency channels in linearized spectrogram. Defaults to
         (minimum delta / 2.) because of the Shannon sampling theorem.
     """
+
     def __init__(self, arr, delt=None):
         self.arr = arr
         if delt is None:
@@ -202,6 +201,7 @@ class TimeFreq(object):
     freq : `~numpy.ndarray`
         Frequency of the data points in MHz.
     """
+
     def __init__(self, start, time, freq):
         self.start = start
         self.time = time
@@ -233,7 +233,7 @@ class TimeFreq(object):
             FuncFormatter(
                 lambda x, pos: (
                     self.start + datetime.timedelta(seconds=x)
-                    ).strftime(time_fmt)
+                ).strftime(time_fmt)
             )
         )
 
@@ -336,9 +336,9 @@ class Spectrogram(Parent):
         """
         Implementation detail.
         """
-        return dict(
-            (name, getattr(self, name)) for name, _ in self.COPY_PROPERTIES
-        )
+        return {
+            name: getattr(self, name) for name, _ in self.COPY_PROPERTIES
+        }
 
     def _slice(self, y_range, x_range):
         """
@@ -521,7 +521,6 @@ class Spectrogram(Parent):
         params.update(matplotlib_args)
         if linear and max_dist is not None:
             toplot = ma.masked_array(data, mask=data.make_mask(max_dist))
-            pass
         else:
             toplot = data
         im = axes.imshow(toplot, **params)
@@ -826,7 +825,7 @@ class Spectrogram(Parent):
             # Nyquist–Shannon sampling theorem
             delta_freq = _min_delt(self.freq_axis) / 2.
         nsize = int((self.freq_axis.max() - self.freq_axis.min()) /
-            delta_freq + 1)
+                    delta_freq + 1)
         new = np.zeros((int(nsize), self.shape[1]), dtype=self.data.dtype)
 
         freqs = self.freq_axis - self.freq_axis.max()
@@ -905,7 +904,7 @@ class Spectrogram(Parent):
             else:
                 pixel = ""
 
-            return '{0!s} z={1!s}'.format(fmt_coord(x, y), pixel)
+            return '{!s} z={!s}'.format(fmt_coord(x, y), pixel)
 
         return format_coord
 

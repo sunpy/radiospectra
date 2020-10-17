@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
-
-
-
 from datetime import datetime
 
 import numpy as np
