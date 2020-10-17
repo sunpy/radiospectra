@@ -71,7 +71,7 @@ Traceback (most recent call last):
     "There are no functions matching your input parameter "
 TypeError: There are no functions matching your input parameter signature.
 """
-from __future__ import absolute_import, division, print_function
+
 
 import sys
 import inspect
@@ -80,6 +80,7 @@ from datetime import datetime
 import glob
 import os
 
+from sunpy.util.config import get_and_create_download_dir
 from sunpy.util.net import download_file
 
 import numpy as np
@@ -104,9 +105,9 @@ def merge(items, key=(lambda x: x)):
             state[item] = (first, key(first))
 
     while state:
-        for item, (value, tk) in state.items():
+        for item, (value, tk) in list(state.items()):
             # Value is biggest.
-            if all(tk >= k for it, (v, k) in state.items()
+            if all(tk >= k for it, (v, k) in list(state.items())
                    if it is not item):
                 yield value
                 break
@@ -211,9 +212,9 @@ def matches_types(fun, types, args, kwargs):
     kwargs are automatically converted into that order.
     """
     return all(
-        isinstance(obj, cls) for obj, cls in zip(
+        isinstance(obj, cls) for obj, cls in list(zip(
             arginize(fun, args, kwargs), types
-        )
+        ))
     )
 
 
@@ -227,7 +228,7 @@ def arginize(fun, a, kw):
         raise ValueError
     names = args[len(a):]
     if defaults:
-        defs = dict(zip(args[-len(defaults):], defaults))
+        defs = dict(list(zip(args[-len(defaults):], defaults)))
     else:
         defs = {}
     return list(a) + [kw.get(name, defs.get(name, None)) for name in names]
@@ -380,7 +381,7 @@ class ConditionalDispatch(object):
             for sig, fun in
             # The 1 prevents the cls from incorrectly being shown in the
             # documentation.
-            zip(self.get_signatures("create", -1), fns)
+            list(zip(self.get_signatures("create", -1), fns))
         )
 
 
