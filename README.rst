@@ -14,6 +14,10 @@ the `Openastronomy packaging guide <https://github.com/OpenAstronomy/packaging-g
 which is licensed under the BSD 3-clause licence. See the licenses folder for
 more information.
 
+Documentation
+-------------
+
+The `latest documentation <https://docs.sunpy.org/projects/radiospectra/en/latest/>`__.
 
 Contributing
 ------------
