@@ -2,4 +2,4 @@
 
 .. automodapi:: radiospectra.spectrum
 
-.. automodapi:: radiospectra.spectrograph
+.. automodapi:: radiospectra.spectrogram

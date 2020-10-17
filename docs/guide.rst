@@ -32,6 +32,7 @@ SunPy also comes with an example image that shows a radio burst observed at `Ros
     import radiospectra
     import sunpy.data.sample
     from radiospectra.sources.callisto import CallistoSpectrogram
+
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
     image.peek()
 
@@ -53,16 +54,22 @@ The resulting image will be clipped at 0 using the ``min`` parameter of peek in 
     import sunpy
     import sunpy.data.sample
     from radiospectra.sources.callisto import CallistoSpectrogram
+
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
     nobg = image.subtract_bg()
     nobg.peek(vmin=0)
 
-If you want to see the background determined by the automatic subtraction, you can use the :meth:`~radiospectra.spectrogram.Spectrogram.auto_const_bg` method and visualize the resulting data using :func:`pyplot.plot`::
+If you want to see the background determined by the automatic subtraction, you can use the :meth:`~radiospectra.spectrogram.Spectrogram.auto_const_bg` method and visualize the resulting data using :func:`pyplot.plot`
 
 .. plot::
     :include-source:
 
-    plt.figure()
+    from matplotlib import pyplot as plt
+    import sunpy
+    import sunpy.data.sample
+    from radiospectra.sources.callisto import CallistoSpectrogram
+
+    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
     bg = image.auto_const_bg()
     plt.plot(image.freq_axis, bg)
     plt.xlabel("Frequency [MHz]")
@@ -79,12 +86,13 @@ Leaving out the second argument it defaults to the end time of the file.
     import sunpy
     import sunpy.data.sample
     from radiospectra.sources.callisto import CallistoSpectrogram
+
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
     nobg = image.subtract_bg()
     interesting = nobg.in_interval("06:27")
     interesting.peek(vmin=0)
 
-To get rid of the noise, we could also clip low intensities by setting vmin::
+To get rid of the noise, we could also clip low intensities by setting vmin
 
 .. plot::
     :include-source:
@@ -92,6 +100,7 @@ To get rid of the noise, we could also clip low intensities by setting vmin::
     import matplotlib.pyplot as plt
     import sunpy
     import sunpy.data.sample
+
     from radiospectra.sources.callisto import CallistoSpectrogram
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
     nobg = image.subtract_bg()
