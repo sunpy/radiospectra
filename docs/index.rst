@@ -1,10 +1,15 @@
 radiospectra Documentation
-==========================
+--------------------------
 
 This is the documentation for radiospectra.
 
 .. toctree::
-  :maxdepth: 2
+   :maxdepth: 2
 
-  guide.rst
-  spectra.rst
+   whatsnew/index
+
+
+Reference/API
+=============
+
+.. automodapi:: radiospectra
