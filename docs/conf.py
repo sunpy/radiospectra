@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # Configuration file for the Sphinx documentation builder.
 #
 # This file does only contain a selection of the most common options. For a
@@ -9,12 +7,13 @@
 
 # -- Project information -----------------------------------------------------
 
+import os
+from radiospectra import __version__
 project = 'radiospectra'
 copyright = '2020, SunPy Developers'
 author = 'SunPy Developers'
 
 # The full version, including alpha/beta/rc tags
-from radiospectra import __version__
 release = __version__
 is_development = '.dev' in __version__
 

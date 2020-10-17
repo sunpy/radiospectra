@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
-
-
-
 import os
 import glob
 import shutil
@@ -14,10 +9,9 @@ import pytest
 from numpy.testing import assert_allclose, assert_array_almost_equal
 
 import sunpy.data.test
-from astropy.tests.helper import remote_data
 
-from ..sources.callisto import CallistoSpectrogram, download, query
 from radiospectra.util import minimal_pairs
+from ..sources.callisto import CallistoSpectrogram, download, query
 
 
 @pytest.fixture
@@ -56,7 +50,7 @@ def test_query():
     URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/'
 
     result = list(query(
-        datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), set(["BIR"])
+        datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), {"BIR"}
     ))
     RESULTS = [
         "BIR_20110922_050000_01.fit.gz",
@@ -75,12 +69,11 @@ def test_query():
         assert URL + item in result
 
 
-
 @pytest.mark.xfail
 def test_query_number():
 
     result = list(query(
-        datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), set([("BIR", 1)])
+        datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), {("BIR", 1)}
     ))
     RESULTS = [
         "BIR_20110922_050000_01.fit.gz",
@@ -101,7 +94,7 @@ def test_download():
     directory = mkdtemp()
     try:
         result = query(
-            datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), set([("BIR", 1)])
+            datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), {("BIR", 1)}
         )
         RESULTS = [
             "BIR_20110922_050000_01.fit.gz",
@@ -376,7 +369,7 @@ def test_homogenize_rightfq():
         np.concatenate([
             np.arange(3600)[np.newaxis, :], b,
             np.arange(3600)[np.newaxis, :]
-            ], 0),
+        ], 0),
         np.arange(3600),
         np.array([0, 1, 2]),
         datetime(2011, 1, 1),

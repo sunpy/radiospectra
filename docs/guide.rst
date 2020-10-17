@@ -2,15 +2,13 @@
 Guide
 =====
 
-.. warning:: This module is under development! It is being moved into its own
-             `repository <https://github.com/sunpy/spectra>`__.
-
 Radiospectra is a Python package to enable SunPy to access to radio spectra.
 
 Installation
 ------------
-To install radiospectra you can either use `conda` or `pip`. Follow the instructions
-on the `SunPy installation guide`_ to know more about it.
+
+To install radiospectra you can either use `conda` or `pip`.
+Follow the instructions on the `SunPy installation guide`_ to know more about it.
 
 To install it using `conda`, run::
 
@@ -20,14 +18,12 @@ If you prefer to use `pip` then simply run::
 
     pip install radiospectra
 
-
 Spectrograms
 ------------
-SunPy currently supports reading dynamic spectra from e-Callisto_ instruments.
-The main class that is used for this is
-:py:class:`CallistoSpectrogram <radiospectra.sources.callisto.CallistoSpectrogram>`. SunPy also
-comes with an example image that shows a radio burst observed at `Rosse Observatory`_ (aka. BIR; Birr Castle, Co. Offaly, Ireland) that
-can be found in sunpy.data.sample.CALLISTO_SPECTRUM.
+
+SunPy currently supports reading dynamic spectra from `e-Callisto`_ instruments.
+The main class that is used for this is `~radiospectra.sources.callisto.CallistoSpectrogram`.
+SunPy also comes with an example image that shows a radio burst observed at `Rosse Observatory`_ that can be found in `sunpy.data.sample.CALLISTO_SPECTRUM`.
 
 .. plot::
     :include-source:
@@ -39,23 +35,16 @@ can be found in sunpy.data.sample.CALLISTO_SPECTRUM.
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
     image.peek()
 
-We now notice that there seems to be something interesting that has been
-cut off at the corner of the image, so we use the extend method to request
-more data from the server. It optionally takes the amount of minutes we want
-to request from the server (negative values mean we want to add data that was
-registered before our existing local data), if none are given it defaults to
-15 minutes (the size of one e-Callisto file). ::
+We now notice that there seems to be something interesting that has been cut off at the corner of the image, so we use the extend method to request more data from the server.
+It optionally takes the amount of minutes we want to request from the server (negative values mean we want to add data that was registered before our existing local data), if none are given it defaults to 15 minutes (the size of one e-Callisto file)::
 
     more = image.extend()
     more.peek()
 
-We will, for the purposes of this demonstration, continue working with the
-original image, though.
+We will, for the purposes of this demonstration, continue working with the original image, though.
 
-You can then perform automatic constant background subtraction by using the
-:py:meth:`subtract_bg() <radiospectra.spectrogram.Spectrogram.subtract_bg>`
-method. The resulting image will be clipped at 0 using the `min` parameter of
-peek in order to avoid negative values.
+You can then perform automatic constant background subtraction by using the :meth:`~radiospectra.spectrogram.Spectrogram.subtract_bg` method.
+The resulting image will be clipped at 0 using the ``min`` parameter of peek in order to avoid negative values.
 
 .. plot::
     :include-source:
@@ -68,11 +57,10 @@ peek in order to avoid negative values.
     nobg = image.subtract_bg()
     nobg.peek(vmin=0)
 
-If you want to see the background determined by the automatic subtraction,
-you can use the
-:py:meth:`auto_const_bg() <radiospectra.spectrogram.Spectrogram.auto_const_bg>`
-method and visualize the resulting
-data using :py:func:`pyplot.plot`.::
+If you want to see the background determined by the automatic subtraction, you can use the :meth:`~radiospectra.spectrogram.Spectrogram.auto_const_bg` method and visualize the resulting data using :func:`pyplot.plot`::
+
+.. plot::
+    :include-source:
 
     plt.figure()
     bg = image.auto_const_bg()
@@ -81,12 +69,8 @@ data using :py:func:`pyplot.plot`.::
     plt.ylabel("Intensity")
     plt.show()
 
-Now let us say we want to isolate the interesting bit (which starts around
-10:38) from the boring background; there is a method called
-:py:meth:`in_interval() <radiospectra.spectrogram.LinearTimeSpectrogram.in_interval>`
-that allows us to take the part of an image that is
-within a specified interval. Leaving out the second argument it defaults
-to the end time of the file.
+Now let us say we want to isolate the interesting bit (which starts around 10:38) from the boring background; there is a method called :meth:`~radiospectra.spectrogram.LinearTimeSpectrogram.in_interval` that allows us to take the part of an image that is within a specified interval.
+Leaving out the second argument it defaults to the end time of the file.
 
 .. plot::
     :include-source:
@@ -100,7 +84,7 @@ to the end time of the file.
     interesting = nobg.in_interval("06:27")
     interesting.peek(vmin=0)
 
-To get rid of the noise, we could also clip low intensities by setting vmin.
+To get rid of the noise, we could also clip low intensities by setting vmin::
 
 .. plot::
     :include-source:
@@ -114,21 +98,17 @@ To get rid of the noise, we could also clip low intensities by setting vmin.
     interesting = nobg.in_interval("06:27")
     interesting.peek(vmin=20)
 
-If we want more context, we can also join together different images into
-a large one in time (note that this does more than just concatenating the
-array and the axes -- it also considers possible overlap or gaps).::
+If we want more context, we can also join together different images into a large one in time (note that this does more than just concatenating the array and the axes -- it also considers possible overlap or gaps)::
 
     c1 = CallistoSpectrogram.read('BIR_20110922_101500_01.fit')
     c2 = CallistoSpectrogram.read('BIR_20110922_103000_01.fit')
     d = CallistoSpectrogram.join_many([c1, c2])
 
-We could also get the from_range method to get data between those two points
-directly from the archive and joined together (though that will fetch all
-frequencies of BIR): ::
+We could also get the from_range method to get data between those two points directly from the archive and joined together (though that will fetch all frequencies of BIR)::
 
     from radiospectra.sources.callisto import CallistoSpectrogram
     d = CallistoSpectrogram.from_range('BIR', '2011-09-22 10:15:00', '2011-09-22 10:45:00')
 
-.. _SunPy installation guide: http://docs.sunpy.org/en/stable/guide/installation/index.html
+.. _SunPy installation guide: https://docs.sunpy.org/en/stable/guide/installation/index.html
 .. _e-Callisto: http://www.e-callisto.org/
-.. _Rosse Observatory: http://rosseobservatory.ie/
+.. _Rosse Observatory: http://www.rosseobservatory.ie/

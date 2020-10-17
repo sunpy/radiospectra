@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -93,7 +90,7 @@ class Spectrum(np.ndarray):
         """
 
         figure = plt.figure()
-        lines = self.plot(**matplot_args)
+        self.plot(**matplot_args)
         figure.show()
 
         return figure
