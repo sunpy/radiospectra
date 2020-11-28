@@ -440,7 +440,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         Return overlapping part of self and other as (self, other) tuple.
         Homogenize intensities so that the images can be used with
         combine_frequencies. Note that this works best when most of the picture
-        is signal, so use :py:meth:`in_interval` to select the subset of your
+        is signal, so use :meth:`in_interval` to select the subset of your
         image before applying this method.
 
         Parameters
@@ -515,7 +515,7 @@ CallistoSpectrogram._create.add(
 
 try:
     CallistoSpectrogram.create.__func__.__doc__ = (
-        """Create CallistoSpectrogram from given input dispatching to the
+        """ Create CallistoSpectrogram from given input dispatching to the
         appropriate from_* function.
 
     Possible signatures:
@@ -523,7 +523,7 @@ try:
     """ + CallistoSpectrogram._create.generate_docs())
 except AttributeError:
     CallistoSpectrogram.create.__func__.__doc__ = (
-        """Create CallistoSpectrogram from given input dispatching to the
+        """ Create CallistoSpectrogram from given input dispatching to the
         appropriate from_* function.
 
     Possible signatures:

@@ -193,7 +193,7 @@ def minimal_pairs(one, other):
 
 def run_cls(name):
     """
-    run_cls("foo")(cls, *args, **kwargs) -> cls.foo(*args, **kwargs)
+    run_cls("foo")(cls, \\*args, \\**kwargs) -> cls.foo(\\*args, \\**kwargs)
     """
     fun = lambda cls, *args, **kwargs: getattr(cls, name)(*args, **kwargs)  # NOQA
     fun.__name__ = str(name)
@@ -355,7 +355,10 @@ class ConditionalDispatch(object):
             else:
                 args, varargs, keywords, defaults = correct_argspec(condition)
                 args = args[st:]
-                yield prefix + str(inspect.signature(fun))
+                sig_str = str(inspect.signature(fun))
+                if sig_str == '(cls, *args, **kwargs)':
+                    sig_str = '(cls, \\*args, \\**kwargs)'
+                yield prefix + sig_str
 
         for fun, types in self.nones:
             if types is not None:
@@ -363,16 +366,18 @@ class ConditionalDispatch(object):
             else:
                 args, varargs, keywords = correct_argspec(condition)
                 args = args[st:]
-                yield prefix + str(inspect.signature(fun))
+                if sig_str == '(cls, *args, **kwargs)':
+                    sig_str = '(cls, \\*args, \\**kwargs)'
+                yield prefix + sig_str
 
     def generate_docs(self):
         fns = (item[0] for item in chain(self.funcs, self.nones))
-        return '\n\n'.join("{} -> :py:meth:`{}`".format(sig, fun.__name__)
-                           for sig, fun in
-                           # The 1 prevents the cls from incorrectly being shown in the
-                           # documentation.
-                           list(zip(self.get_signatures("create", -1), fns))
-                           )
+        return '\n\n    '.join("{} -> :meth:`{}`".format(sig, fun.__name__)
+                               for sig, fun in
+                               # The 1 prevents the cls from incorrectly being shown in the
+                               # documentation.
+                               list(zip(self.get_signatures("create", -1), fns))
+                               )
 
 
 def fmt_argspec_types(fun, types, start=0):
