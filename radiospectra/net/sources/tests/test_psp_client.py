@@ -49,7 +49,10 @@ def test_fido():
 @pytest.fixture
 def http_responces():
     paths = [Path(__file__).parent / 'data' / n for n in ['resp1.html', 'resp2.html']]
-    response_htmls = [p.open('r').read() for p in paths]
+    response_htmls = []
+    for p in paths:
+        with p.open('r') as f:
+            response_htmls.append(f.read())
     return response_htmls
 
 

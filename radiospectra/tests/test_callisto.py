@@ -1,6 +1,7 @@
 import os
 import glob
 import shutil
+from pathlib import Path
 from datetime import datetime
 from tempfile import mkdtemp
 
@@ -8,25 +9,14 @@ import numpy as np
 import pytest
 from numpy.testing import assert_allclose, assert_array_almost_equal
 
-import sunpy.data.sample
-
 from radiospectra.util import minimal_pairs
 from ..sources.callisto import CallistoSpectrogram, download, query
 
 
-@pytest.mark.remote_data
-def get_sameple_data():
-    import sunpy.data.sample  # NOQA
-
-
 @pytest.fixture
 def CALLISTO_IMAGE():
-
-    path = getattr(sunpy.data.sample, 'CALLISTO_SPECTRUM', None)
-    if not path:
-        path = getattr(sunpy.data.sample, 'CALLISTO_IMAGE', None)
-
-    return path
+    path = Path(__file__).parent / 'data' / 'BIR_20110607_062400_10.fit'
+    return str(path)
 
 
 @pytest.fixture
@@ -36,8 +26,7 @@ def CALLISTO_IMAGE_GLOB_KEY():
 
 @pytest.fixture
 def CALLISTO_IMAGE_GLOB_INDEX(CALLISTO_IMAGE, CALLISTO_IMAGE_GLOB_KEY):
-    testpath = sunpy.data._sample.get_and_create_sample_dir()
-    res = glob.glob(os.path.join(testpath, CALLISTO_IMAGE_GLOB_KEY))
+    res = glob.glob(os.path.join(str(Path(CALLISTO_IMAGE).parent), CALLISTO_IMAGE_GLOB_KEY))
     return res.index(CALLISTO_IMAGE)
 
 
@@ -168,9 +157,9 @@ def test_create_glob_kw(CALLISTO_IMAGE, CALLISTO_IMAGE_GLOB_INDEX, CALLISTO_IMAG
     assert_allclose(ca.data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
 
 
-def test_create_glob(CALLISTO_IMAGE_GLOB_KEY):
+def test_create_glob(CALLISTO_IMAGE_GLOB_KEY, CALLISTO_IMAGE):
     PATTERN = os.path.join(
-        sunpy.data._sample.get_and_create_sample_dir(),
+        str(Path(CALLISTO_IMAGE).parent),
         CALLISTO_IMAGE_GLOB_KEY
     )
     ca = CallistoSpectrogram.create(PATTERN)
