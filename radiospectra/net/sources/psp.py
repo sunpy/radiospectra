@@ -43,12 +43,14 @@ class RFSClient(GenericClient):
 
     baseurl = (r'https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/{Wavelength}/'
                r'{year}/psp_fld_l2_(\w){{7}}_(\d){{8}}_v(\d){{2}}.cdf')
-    pattern = r'{}/{Wavelength}/{year:4d}/psp_fld_l2_{Wavelength}_{year:4d}{month:2d}{day:2d}_v{:2d}.cdf'
+    pattern = r'{}/{Wavelength}/{year:4d}/' \
+              r'psp_fld_l2_{Wavelength}_{year:4d}{month:2d}{day:2d}_v{:2d}.cdf'
 
     @classmethod
     def _check_wavelengths(cls, wavelength):
         """
-        Check for overlap between given wavelength and receiver frequency coverage defined in `RECEIVER_FREQUENCIES`.
+        Check for overlap between given wavelength and receiver frequency coverage defined in
+        `RECEIVER_FREQUENCIES`.
 
         Parameters
         ----------
@@ -65,9 +67,11 @@ class RFSClient(GenericClient):
         # If not defined need to continue
         if not receivers:
             # Overlaps but not contained in, either max in lfr or min hfr
-            if wavelength.min in RECEIVER_FREQUENCIES['rfs_hfr'] or wavelength.max in RECEIVER_FREQUENCIES['rfs_hfr']:
+            if wavelength.min in RECEIVER_FREQUENCIES['rfs_hfr'] or \
+                    wavelength.max in RECEIVER_FREQUENCIES['rfs_hfr']:
                 receivers.append('rfs_hfr')
-            if wavelength.min in RECEIVER_FREQUENCIES['rfs_lfr'] or wavelength.max in RECEIVER_FREQUENCIES['rfs_lfr']:
+            if wavelength.min in RECEIVER_FREQUENCIES['rfs_lfr'] or \
+                    wavelength.max in RECEIVER_FREQUENCIES['rfs_lfr']:
                 receivers.append('rfs_lfr')
             # min in lfr and max in hfr
             # min and max of combined lft and hfr contained in give wavelength range
@@ -120,10 +124,12 @@ class RFSClient(GenericClient):
         rowdict = super().post_search_hook(exdict, matchdict)
         if rowdict['Wavelength'] == 'rfs_hfr':
             fr = RECEIVER_FREQUENCIES['rfs_hfr']
-            rowdict['Wavelength'] = u.Quantity([float(fr.min.value), float(fr.max.value)], unit=fr.unit)
+            rowdict['Wavelength'] = u.Quantity([float(fr.min.value), float(fr.max.value)],
+                                               unit=fr.unit)
         elif rowdict['Wavelength'] == 'rfs_lfr':
             fr = RECEIVER_FREQUENCIES['rfs_lfr']
-            rowdict['Wavelength'] = u.Quantity([float(fr.min.value), float(fr.max.value)], unit=fr.unit)
+            rowdict['Wavelength'] = u.Quantity([float(fr.min.value), float(fr.max.value)],
+                                               unit=fr.unit)
         return rowdict
 
     @classmethod

@@ -1,3 +1,5 @@
+from unittest import mock
+
 import numpy as np
 import pytest
 
@@ -44,17 +46,25 @@ def test_fido():
     assert tr.end.datetime == Time('2019-10-02T23:59:59.999').datetime
 
 
-@pytest.mark.remote_data
-def test_search_with_wavelength():
+@mock.patch('sunpy.util.scraper.urlopen')
+def test_search_with_wavelength(mock_urlopen, client):
+    mock_urlopen.return_value.read = mock.MagicMock()
+    mock_urlopen.return_value.read.side_effect = [http_resp1, http_resp2]
+    mock_urlopen.close = mock.MagicMock(return_value=None)
     tr = a.Time('2019/10/13', '2019/10/15')
     wr1 = a.Wavelength(1*u.kHz, 1.1*u.MHz)
     res1 = client.search(tr, wr1)
+
+    mock_urlopen.assert_called_with(
+        'https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_lfr/2019/')
     assert np.array_equal(res1.blocks[0]['Wavelength'], [10, 1700] * u.kHz)
     assert len(res1) == 3
     assert res1.time_range().start == Time('2019-10-13T00:00').datetime
     assert res1.time_range().end == Time('2019-10-15T23:59:59.999').datetime
     wr2 = a.Wavelength(2*u.MHz, 20*u.MHz)
     res2 = client.search(tr, wr2)
+    mock_urlopen.assert_called_with(
+        'https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_hfr/2019/')
     assert np.array_equal(res2.blocks[0]['Wavelength'], [1300, 19200] * u.kHz)
     assert len(res2) == 3
     assert res2.time_range().start == Time('2019-10-13T00:00').datetime
