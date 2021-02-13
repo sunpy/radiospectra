@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest import mock
 
 import numpy as np
@@ -38,18 +39,24 @@ def test_check_wavelength(req_wave, receivers):
 def test_fido():
     atr = a.Time('2019/10/01', '2019/10/02')
     res = Fido.search(atr, a.Instrument('rfs'))
-    res0 = res.get_response(0)
+    res0 = res[0]
     isinstance(res0.client, RFSClient)
     assert len(res0) == 4
-    tr = res0.time_range()
-    assert tr.start.datetime == Time('2019-10-01T00:00').datetime
-    assert tr.end.datetime == Time('2019-10-02T23:59:59.999').datetime
+    assert res['rfs']['Start Time'].min() == Time('2019-10-01T00:00').datetime
+    assert res['rfs']['End Time'].max() == Time('2019-10-02T23:59:59.999').datetime
+
+
+@pytest.fixture
+def http_responces():
+    paths = [Path(__file__).parent / 'data' / n for n in ['resp1.html', 'resp2.html']]
+    response_htmls = [p.open('r').read() for p in paths]
+    return response_htmls
 
 
 @mock.patch('sunpy.util.scraper.urlopen')
-def test_search_with_wavelength(mock_urlopen, client):
+def test_search_with_wavelength(mock_urlopen, client, http_responces):
     mock_urlopen.return_value.read = mock.MagicMock()
-    mock_urlopen.return_value.read.side_effect = [http_resp1, http_resp2]
+    mock_urlopen.return_value.read.side_effect = http_responces
     mock_urlopen.close = mock.MagicMock(return_value=None)
     tr = a.Time('2019/10/13', '2019/10/15')
     wr1 = a.Wavelength(1*u.kHz, 1.1*u.MHz)
@@ -57,15 +64,15 @@ def test_search_with_wavelength(mock_urlopen, client):
 
     mock_urlopen.assert_called_with(
         'https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_lfr/2019/')
-    assert np.array_equal(res1.blocks[0]['Wavelength'], [10, 1700] * u.kHz)
+    assert np.array_equal(res1[0]['Wavelength'], [10, 1700] * u.kHz)
     assert len(res1) == 3
-    assert res1.time_range().start == Time('2019-10-13T00:00').datetime
-    assert res1.time_range().end == Time('2019-10-15T23:59:59.999').datetime
+    assert res1['Start Time'].min().datetime == Time('2019-10-13T00:00').datetime
+    assert res1['End Time'].max().datetime == Time('2019-10-15T23:59:59.999').datetime
     wr2 = a.Wavelength(2*u.MHz, 20*u.MHz)
     res2 = client.search(tr, wr2)
     mock_urlopen.assert_called_with(
         'https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_hfr/2019/')
-    assert np.array_equal(res2.blocks[0]['Wavelength'], [1300, 19200] * u.kHz)
+    assert np.array_equal(res2[0]['Wavelength'], [1300, 19200] * u.kHz)
     assert len(res2) == 3
     assert res2.time_range().start == Time('2019-10-13T00:00').datetime
     assert res2.time_range().end == Time('2019-10-15T23:59:59.999').datetime

@@ -1,6 +1,7 @@
 import astropy.units as u
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import GenericClient, QueryResponse
+from sunpy.time.timerange import TimeRange
 from sunpy.util.scraper import Scraper
 
 __all__ = ['RFSClient']
@@ -103,13 +104,14 @@ class RFSClient(GenericClient):
             receivers = self._check_wavelengths(req_wave)
 
         metalist = []
-        start_year = matchdict['Time'].start.datetime.year
-        end_year = matchdict['Time'].end.datetime.year
+        start_year = matchdict['Start Time'].datetime.year
+        end_year = matchdict['End Time'].datetime.year
+        tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
         for receiver in receivers:
             for year in range(start_year, end_year+1):
                 urlpattern = self.baseurl.format(Wavelength=receiver, year=year)
                 scraper = Scraper(urlpattern, regex=True)
-                filesmeta = scraper._extract_files_meta(matchdict['Time'], extractor=self.pattern)
+                filesmeta = scraper._extract_files_meta(tr, extractor=self.pattern)
                 for i in filesmeta:
                     rowdict = self.post_search_hook(i, matchdict)
                     metalist.append(rowdict)
