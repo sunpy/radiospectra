@@ -123,13 +123,25 @@ class SpectrogramFactory(BasicRegistrationFactory):
             }
             return meta, data
         elif hd_pairs[0].header.get('TELESCOP', '') == 'EOVSA':
-            time = Time(hd_pairs[2].data['mjd'] + hd_pairs[2].data['time']/ 1000.0 / 86400.,
+            times = Time(hd_pairs[2].data['mjd'] + hd_pairs[2].data['time'] / 1000.0 / 86400.,
                         format='mjd')
-            hd_pairs[1].data['sfreq'] * u.GHz
+            freqs = hd_pairs[1].data['sfreq'] * u.GHz
             data = hd_pairs[0].data
             start_time = parse_time(hd_pairs[0].header['DATE_OBS'])
             end_time = parse_time(hd_pairs[0].header['DATE_END'])
 
+            meta = {
+                'fits_meta': hd_pairs[0].header,
+                'detector': 'EOVSA',
+                'instrument': 'EOVSA',
+                'observatory': 'Owens Valley',
+                'start_time': start_time,
+                'end_time': end_time,
+                'wavelength': a.Wavelength(freqs.min(), freqs.max()),
+                'times': times,
+                'freqs': freqs
+            }
+            return meta, data
 
 
 class PcolormeshPlotMixin:
@@ -158,7 +170,7 @@ class PcolormeshPlotMixin:
             data = self.data.value
         else:
             data = self.data
-        axes.pcolormesh(self.times.value, self.frequencies.value, data,
+        axes.pcolormesh(self.times.datetime, self.frequencies.value, data,
                         shading='auto', **kwargs)
 
 
@@ -323,12 +335,28 @@ class CALISTOSpectrogram(BaseSpectrogram):
 
     @classmethod
     def is_datasource_for(cls, *, meta, data, **kwargs):
-        return (meta['instrument'] == 'e-CALLISTO' or meta['detector'] == 'e-CALLISTO')
+        return meta['instrument'] == 'e-CALLISTO' or meta['detector'] == 'e-CALLISTO'
 
 
 class EOVSASpectrogram(BaseSpectrogram):
-    pass
+    def __init__(self, *, meta, data, **kwargs):
+        super().__init__(meta=meta, data=data, **kwargs)
 
+    @property
+    def polarisation(self):
+        return self.meta['fits_meta']['POLARIZA']
+
+    @classmethod
+    def is_datasource_for(cls, *, meta, data, **kwargs):
+        return meta['instrument'] == 'EOVSA' or meta['detector'] == 'EOVSA'
+
+    # TODO ask EOVSA team what to do here. Currently just dropping times which are not monotonically
+    #  increasing.
+    def fix_times(self):
+        dt = np.diff((self.times-self.times[0]).to('s'))
+        good_indices = np.hstack([[True], dt > 0])
+        self.meta['times'] = self.times[good_indices]
+        self.data = self.data[:, good_indices]
 
 
 Spectrogram = SpectrogramFactory(registry=BaseSpectrogram._registry)
