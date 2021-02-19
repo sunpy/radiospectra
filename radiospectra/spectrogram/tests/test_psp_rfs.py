@@ -5,7 +5,7 @@ import astropy.units as u
 
 from radiospectra import data
 from radiospectra.spectrogram import Spectrogram
-from radiospectra.spectrogram.spectrogram import RFSSpectrogram
+from radiospectra.spectrogram.sources import RFSSpectrogram
 
 
 def test_psp_rfs_lfr():
