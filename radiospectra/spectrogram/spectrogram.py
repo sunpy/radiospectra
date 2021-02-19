@@ -2,17 +2,22 @@ from pathlib import Path
 from datetime import datetime
 
 import cdflib
+import matplotlib.dates as mdates
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.image import NonUniformImage
 
 import astropy.units as u
-from astropy.coordinates.earth import EarthLocation
 from astropy.time import Time
+from astropy.visualization import quantity_support
 from sunpy.io import fits
 from sunpy.net import attrs as a
 from sunpy.time import parse_time
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
+
+quantity_support()
+
+__all__ = ['SpectrogramFactory', 'Spectrogram']
 
 
 class SpectrogramFactory(BasicRegistrationFactory):
@@ -60,8 +65,9 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 'wavelength': a.Wavelength(freqs[0], freqs[-1]),
                 'detector': receiver
             }
+
             meta['freqs'] = freqs
-            meta['times'] = times
+            meta['times'] = meta['start_time'] + times
             meta['end_time'] = meta['start_time'] + times[-1]
             return meta, data
 
@@ -70,8 +76,8 @@ class SpectrogramFactory(BasicRegistrationFactory):
         cdf = cdflib.CDF(file)
         cdf_meta = cdf.globalattsget()
         if (cdf_meta.get('Project', '') == 'PSP'
-            and cdf_meta.get('Source_name') == 'PSP_FLD>Parker Solar Probe FIELDS'
-            and 'Radio Frequency Spectrometer' in cdf_meta.get('Descriptor')):
+                and cdf_meta.get('Source_name') == 'PSP_FLD>Parker Solar Probe FIELDS'
+                and 'Radio Frequency Spectrometer' in cdf_meta.get('Descriptor')):
             short, _long = cdf_meta['Descriptor'].split('>')
             detector = short[4:].lower()
 
@@ -80,13 +86,13 @@ class SpectrogramFactory(BasicRegistrationFactory):
                                    f'psp_fld_l2_rfs_{detector}_auto_averages_ch0_V1V2',
                                    f'frequency_{detector}_auto_averages_ch0_V1V2']]
 
-            times = Time(times<<u.ns, format='cdf_tt2000')
-            freqs = freqs[0,:] << u.Hz
+            times = Time(times << u.ns, format='cdf_tt2000')
+            freqs = freqs[0, :] << u.Hz
             data = data.T << u.Unit('Volt**2/Hz')
 
             meta = {
-                'cdf_meta' : cdf_meta,
-                'detector' : detector,
+                'cdf_meta': cdf_meta,
+                'detector': detector,
                 'instrument': 'FIELDS/RFS',
                 'observatory': 'PSP',
                 'start_time': times[0],
@@ -109,7 +115,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                                     + ' ' + hd_pairs[0].header['TIME-OBS'])
             end_time = parse_time(hd_pairs[0].header['DATE-END']
                                   + ' ' + hd_pairs[0].header['TIME-END'])
-
+            times = start_time + times
             meta = {
                 'fits_meta': hd_pairs[0].header,
                 'detector': 'e-CALLISTO',
@@ -124,7 +130,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
             return meta, data
         elif hd_pairs[0].header.get('TELESCOP', '') == 'EOVSA':
             times = Time(hd_pairs[2].data['mjd'] + hd_pairs[2].data['time'] / 1000.0 / 86400.,
-                        format='mjd')
+                         format='mjd')
             freqs = hd_pairs[1].data['sfreq'] * u.GHz
             data = hd_pairs[0].data
             start_time = parse_time(hd_pairs[0].header['DATE_OBS'])
@@ -148,7 +154,7 @@ class PcolormeshPlotMixin:
     """
     Class provides plotting functions using `~pcolormesh`
     """
-    def plotc(self, axes=None, **kwargs):
+    def plot(self, axes=None, **kwargs):
         """
         Plot the spectrogram
 
@@ -165,13 +171,25 @@ class PcolormeshPlotMixin:
         """
         if axes is None:
             fig, axes = plt.subplots()
+        else:
+            fig = axes.get_figure()
 
         if hasattr(self.data, 'value'):
             data = self.data.value
         else:
             data = self.data
+
+        axes.set_title(f'{self.observatory}, {self.instrument}, {self.detector}')
+        axes.plot(self.times.datetime[[0, -1]], self.frequencies[[0, -1]],
+                  linestyle='None', marker='None')
         axes.pcolormesh(self.times.datetime, self.frequencies.value, data,
                         shading='auto', **kwargs)
+        axes.set_xlim(self.times.datetime[0], self.times.datetime[-1])
+        locator = mdates.AutoDateLocator(minticks=4, maxticks=8)
+        formatter = mdates.ConciseDateFormatter(locator)
+        axes.xaxis.set_major_locator(locator)
+        axes.xaxis.set_major_formatter(formatter)
+        fig.autofmt_xdate()
 
 
 class NonUniformImagePlotMixin:
@@ -277,86 +295,6 @@ class BaseSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
     def __repr__(self):
         return f'<{self.__class__.__name__} {self.observatory}, {self.instrument}, {self.detector}'\
                f' {self.wavelength}, {self.start_time}-{self.end_time}>'
-
-
-class SWAVESSpectrogram(BaseSpectrogram):
-    """
-    STEREO Waves or S/WAVES, SWAVES spectrogram
-    """
-    def __init__(self, *, meta, data, **kwargs):
-        super().__init__(meta=meta, data=data, **kwargs)
-
-    @property
-    def receiver(self):
-        """
-        The name of the receiver
-        """
-        return self.meta['receiver']
-
-    @classmethod
-    def is_datasource_for(cls, *, meta, data, **kwargs):
-        return meta['instrument'] == 'swaves'
-
-
-class RFSSpectrogram(BaseSpectrogram):
-    """
-    Parker Solar Probe FIELDS/ Radio Frequency Spectrometer (RFS) spectrogram
-    """
-    def __init__(self, *, meta, data, **kwargs):
-        super().__init__(meta=meta, data=data, **kwargs)
-
-
-    @property
-    def level(self):
-        return self.meta['cdf_meta']['Data_type'].split('>')[0]
-
-    @property
-    def version(self):
-        return int(self.meta['cdf_meta']['Data_version'])
-
-    @classmethod
-    def is_datasource_for(cls, *, meta, data, **kwargs):
-        return (meta['observatory'] == 'PSP' and meta['instrument'] == 'FIELDS/RFS'
-                and meta['detector'] in ('lfr', 'hfr'))
-
-
-class CALISTOSpectrogram(BaseSpectrogram):
-    def __init__(self, *, meta, data, **kwargs):
-        super().__init__(meta=meta, data=data, **kwargs)
-
-    @property
-    def observatory_location(self):
-        lat = self.meta['fits_meta']['OBS_LAT'] * u.deg * 1.0 if \
-            self.meta['fits_meta']['OBS_LAC'] == 'N' else -1.0
-        lon = self.meta['fits_meta']['OBS_LON'] * u.deg * 1.0 if \
-            self.meta['fits_meta']['OBS_LOC'] == 'E' else -1.0
-        height = self.meta['fits_meta']['OBS_ALT'] * u.m
-        return EarthLocation(lat=lat, lon=lon, height=height)
-
-    @classmethod
-    def is_datasource_for(cls, *, meta, data, **kwargs):
-        return meta['instrument'] == 'e-CALLISTO' or meta['detector'] == 'e-CALLISTO'
-
-
-class EOVSASpectrogram(BaseSpectrogram):
-    def __init__(self, *, meta, data, **kwargs):
-        super().__init__(meta=meta, data=data, **kwargs)
-
-    @property
-    def polarisation(self):
-        return self.meta['fits_meta']['POLARIZA']
-
-    @classmethod
-    def is_datasource_for(cls, *, meta, data, **kwargs):
-        return meta['instrument'] == 'EOVSA' or meta['detector'] == 'EOVSA'
-
-    # TODO ask EOVSA team what to do here. Currently just dropping times which are not monotonically
-    #  increasing.
-    def fix_times(self):
-        dt = np.diff((self.times-self.times[0]).to('s'))
-        good_indices = np.hstack([[True], dt > 0])
-        self.meta['times'] = self.times[good_indices]
-        self.data = self.data[:, good_indices]
 
 
 Spectrogram = SpectrogramFactory(registry=BaseSpectrogram._registry)

@@ -1,12 +1,11 @@
-from datetime import datetime
 from pathlib import Path
+from datetime import datetime
 
 import astropy.units as u
-import numpy as np
 
 from radiospectra import data
 from radiospectra.spectrogram import Spectrogram
-from radiospectra.spectrogram.spectrogram import EOVSASpectrogram
+from radiospectra.spectrogram.sources import EOVSASpectrogram
 
 
 def test_eovsa_xpall():
@@ -35,7 +34,3 @@ def test_eovsa_tpall():
     assert spec.wavelength.min.to(u.GHz) == 1.105371117591858 * u.GHz
     assert spec.wavelength.max.to(u.GHz) == 17.979686737060547 * u.GHz
     assert spec.polarisation == 'I'
-
-    assert np.any(np.diff(spec.times.tai) <= 0.0)
-    spec.fix_times()
-    assert np.all(np.any(np.diff(spec.times.to('s')) > 0.0))

@@ -5,7 +5,7 @@ import astropy.units as u
 
 from radiospectra import data
 from radiospectra.spectrogram import Spectrogram
-from radiospectra.spectrogram.spectrogram import CALISTOSpectrogram
+from radiospectra.spectrogram.sources import CALISTOSpectrogram
 
 
 def test_callisto():
