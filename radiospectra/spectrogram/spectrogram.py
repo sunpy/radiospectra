@@ -17,7 +17,7 @@ from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 
 quantity_support()
 
-__all__ = ['SpectrogramFactory', 'Spectrogram']
+__all__ = ['SpectrogramFactory', 'Spectrogram', 'BaseSpectrogram']
 
 
 class SpectrogramFactory(BasicRegistrationFactory):
@@ -57,16 +57,11 @@ class SpectrogramFactory(BasicRegistrationFactory):
             times = data[:, 0] * u.min
             data = data[:, 1:].T + bg.reshape(-1, 1)
 
-            meta = {
-                'instrument': name,
-                'observatory': f'STEREO {spacecraft.upper()}',
-                'product': prod,
-                'start_time': Time(datetime.strptime('20201128', '%Y%m%d')),
-                'wavelength': a.Wavelength(freqs[0], freqs[-1]),
-                'detector': receiver
-            }
+            meta = {'instrument': name, 'observatory': f'STEREO {spacecraft.upper()}',
+                    'product': prod, 'start_time': Time(datetime.strptime('20201128', '%Y%m%d')),
+                    'wavelength': a.Wavelength(freqs[0], freqs[-1]), 'detector': receiver,
+                    'freqs': freqs}
 
-            meta['freqs'] = freqs
             meta['times'] = meta['start_time'] + times
             meta['end_time'] = meta['start_time'] + times[-1]
             return meta, data
