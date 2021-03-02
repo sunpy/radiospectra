@@ -11,7 +11,10 @@ from sunpy.net import attrs as a
 
 from radiospectra.net.sources.psp import RFSClient
 
-client = RFSClient()
+
+@pytest.fixture
+def client():
+    return RFSClient()
 
 
 @pytest.mark.parametrize("req_wave,receivers", [
@@ -30,8 +33,8 @@ client = RFSClient()
     # Min and max in the over lap
     (a.Wavelength(1.4*u.MHz, 1.5*u.MHz), ['rfs_lfr', 'rfs_hfr'])
 ])
-def test_check_wavelength(req_wave, receivers):
-    res = RFSClient._check_wavelengths(req_wave)
+def test_check_wavelength(req_wave, receivers, client):
+    res = client._check_wavelengths(req_wave)
     assert set(res) == set(receivers)
 
 
@@ -82,7 +85,7 @@ def test_search_with_wavelength(mock_urlopen, client, http_responces):
 
 
 @pytest.mark.remote_data
-def test_get_url_for_time_range():
+def test_get_url_for_time_range(client):
     url_start = 'https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_lfr/2019/' \
                 'psp_fld_l2_rfs_lfr_20191001_v02.cdf'
     url_end = 'https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_hfr/2019/' \
@@ -94,7 +97,7 @@ def test_get_url_for_time_range():
     assert urls[-1] == url_end
 
 
-def test_can_handle_query():
+def test_can_handle_query(client):
     atr = a.Time('2019/10/01', '2019/11/01')
     res = client._can_handle_query(atr, a.Instrument('rfs'))
     assert res is True
@@ -103,7 +106,7 @@ def test_can_handle_query():
 
 
 @pytest.mark.remote_data
-def test_get():
+def test_get(client):
     query = client.search(a.Time('2019/10/05', '2019/10/10'), a.Instrument('rfr'))
     download_list = client.fetch(query)
     assert len(download_list) == len(query)
