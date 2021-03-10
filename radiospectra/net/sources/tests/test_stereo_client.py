@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest import mock
 
 import numpy as np
@@ -6,7 +7,6 @@ import pytest
 import astropy.units as u
 from sunpy.net import Fido
 from sunpy.net import attrs as a
-from sunpy.time import TimeRange
 
 from radiospectra.net.attrs import Spacecraft
 from radiospectra.net.sources.stereo import SWAVESClient
@@ -21,9 +21,9 @@ def client():
 def test_fido():
     atr = a.Time('2010/10/01', '2010/10/02')
     res = Fido.search(atr, a.Instrument('swaves'))
-    res1 = res.get_response(1)
-    # assert isinstance(res1, SWAVESQueryResponse)
-    assert len(res1) == 8
+
+    assert isinstance(res[1].client, SWAVESClient)
+    assert len(res[1]) == 8
 
 
 http_cont = """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
@@ -94,14 +94,16 @@ def test_swaves_client(mock_urlopen, client):
     query = client.search(atr, a.Instrument('swaves'), Spacecraft('a'))
     mock_urlopen.assert_called_with('https://solar-radio.gsfc.nasa.gov/data/stereo/summary/2010/')
     assert len(query) == 8
-    assert query[0]._data[0]['Source'] == 'STEREO'
-    assert query[0]._data[0]['Spacecraft'] == 'a'
-    assert np.array_equal(query[0]._data[0]['Wavelength'], [10, 160] * u.kHz)
-    assert query[0].time_range() == TimeRange('2010-01-02', '2010-01-02 23:59:59.999')
-    assert query[7]._data[0]['Source'] == 'STEREO'
-    assert query[7]._data[0]['Spacecraft'] == 'b'
-    assert np.array_equal(query[7]._data[0]['Wavelength'], [125, 16000] * u.kHz)
-    assert query[7].time_range() == TimeRange('2010-01-03', '2010-01-03 23:59:59.999')
+    assert query[0]['Source'] == 'STEREO'
+    assert query[0]['Spacecraft'] == 'a'
+    assert np.array_equal(query[0]['Wavelength'], [10, 160] * u.kHz)
+    assert query[0]['Start Time'].datetime == datetime(2010, 1, 2)
+    assert query[0]['End Time'].datetime == datetime(2010, 1, 2, 23, 59, 59, 999000)
+    assert query[7]['Source'] == 'STEREO'
+    assert query[7]['Spacecraft'] == 'b'
+    assert np.array_equal(query[7]['Wavelength'], [125, 16000] * u.kHz)
+    assert query[7]['Start Time'].datetime == datetime(2010, 1, 3)
+    assert query[7]['End Time'].datetime == datetime(2010, 1, 3, 23, 59, 59, 999000)
 
 
 @pytest.mark.parametrize("query_wave, receivers", [(a.Wavelength(1*u.GHz, 2*u.GHz), []),

@@ -3,6 +3,7 @@ from itertools import product
 import astropy.units as u
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import GenericClient, QueryResponse
+from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
 
 from radiospectra.net import attrs as ra
@@ -28,21 +29,17 @@ class SWAVESClient(GenericClient):
     >>> results = Fido.search(a.Time("2010/10/01", "2010/10/02"),
     ...                       a.Instrument('SWAVES'))  # doctest: +REMOTE_DATA
     >>> print(results[1])  # doctest: +REMOTE_DATA
-    Results from 1 Provider:
-    <BLANKLINE>
-    8 Results from the SWAVESClient:
-    Start Time           End Time      Instrument ... Provider  Wavelength [2]
-    ------------------- ------------------- ---------- ... -------- ----------------
-    2010-10-01 00:00:00 2010-10-01 23:59:59     SWAVES ...     NASA    10.0 .. 160.0
-    2010-10-02 00:00:00 2010-10-02 23:59:59     SWAVES ...     NASA    10.0 .. 160.0
-    2010-10-01 00:00:00 2010-10-01 23:59:59     SWAVES ...     NASA 125.0 .. 16000.0
-    2010-10-02 00:00:00 2010-10-02 23:59:59     SWAVES ...     NASA 125.0 .. 16000.0
-    2010-10-01 00:00:00 2010-10-01 23:59:59     SWAVES ...     NASA    10.0 .. 160.0
-    2010-10-02 00:00:00 2010-10-02 23:59:59     SWAVES ...     NASA    10.0 .. 160.0
-    2010-10-01 00:00:00 2010-10-01 23:59:59     SWAVES ...     NASA 125.0 .. 16000.0
-    2010-10-02 00:00:00 2010-10-02 23:59:59     SWAVES ...     NASA 125.0 .. 16000.0
-    <BLANKLINE>
-    <BLANKLINE>
+           Start Time               End Time        ... Provider  Wavelength [2]
+                                                    ...                kHz
+    ----------------------- ----------------------- ... -------- ----------------
+    2010-10-01 00:00:00.000 2010-10-01 23:59:59.999 ...     NASA    10.0 .. 160.0
+    2010-10-02 00:00:00.000 2010-10-02 23:59:59.999 ...     NASA    10.0 .. 160.0
+    2010-10-01 00:00:00.000 2010-10-01 23:59:59.999 ...     NASA 125.0 .. 16000.0
+    2010-10-02 00:00:00.000 2010-10-02 23:59:59.999 ...     NASA 125.0 .. 16000.0
+    2010-10-01 00:00:00.000 2010-10-01 23:59:59.999 ...     NASA    10.0 .. 160.0
+    2010-10-02 00:00:00.000 2010-10-02 23:59:59.999 ...     NASA    10.0 .. 160.0
+    2010-10-01 00:00:00.000 2010-10-01 23:59:59.999 ...     NASA 125.0 .. 16000.0
+    2010-10-02 00:00:00.000 2010-10-02 23:59:59.999 ...     NASA 125.0 .. 16000.0
 
     """
 
@@ -111,13 +108,14 @@ class SWAVESClient(GenericClient):
         spacecraft = matchdict.get('spacecraft', ['a', 'b'])
 
         metalist = []
-        start_year = matchdict['Time'].start.datetime.year
-        end_year = matchdict['Time'].end.datetime.year
+        start_year = matchdict['Start Time'].datetime.year
+        end_year = matchdict['End Time'].datetime.year
+        tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
         for spc, receiver in product(spacecraft, receivers):
             for year in range(start_year, end_year+1):
                 urlpattern = self.baseurl.format(Wavelength=receiver, Spacecraft=spc, year=year)
                 scraper = Scraper(urlpattern, regex=True)
-                filesmeta = scraper._extract_files_meta(matchdict['Time'], extractor=self.pattern)
+                filesmeta = scraper._extract_files_meta(tr, extractor=self.pattern)
                 for i in filesmeta:
                     rowdict = self.post_search_hook(i, matchdict)
                     metalist.append(rowdict)
