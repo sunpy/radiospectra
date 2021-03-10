@@ -137,10 +137,8 @@ class RFSClient(GenericClient):
 
     @classmethod
     def register_values(cls):
-        from sunpy.net import attrs
-        adict = {attrs.Instrument: [('RFS',
-                                     ('Radio Frequency Spectrometer'))],
-                 attrs.Source: [('PSP', 'Parker Solar Probe')],
-                 attrs.Provider: [('SPDF', 'NASA Goddard Space Physics Data Facility')],
-                 attrs.Wavelength: [('*')]}
+        adict = {a.Instrument: [('RFS', ('Radio Frequency Spectrometer'))],
+                 a.Source: [('PSP', 'Parker Solar Probe')],
+                 a.Provider: [('SPDF', 'NASA Goddard Space Physics Data Facility')],
+                 a.Wavelength: [('*')]}
         return adict
