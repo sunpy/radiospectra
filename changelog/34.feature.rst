@@ -1,0 +1,1 @@
+Add Parker Solar Probe (PSP) Radio Frequency Receiver (RFS) Fido client `radiospectra.net.sources.psp.RFSClient`.
