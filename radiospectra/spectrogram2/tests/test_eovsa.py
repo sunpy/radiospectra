@@ -4,14 +4,15 @@ from datetime import datetime
 import astropy.units as u
 
 from radiospectra import data
-from radiospectra.spectrogram import Spectrogram
-from radiospectra.spectrogram.sources import EOVSASpectrogram
+from radiospectra.spectrogram2 import Spectrogram
+from radiospectra.spectrogram2.sources import EOVSASpectrogram
 
 
 def test_eovsa_xpall():
     file = Path(data.__file__).parent / 'EOVSA_XPall_20210213.fts'
     spec = Spectrogram(file)
     assert isinstance(spec, EOVSASpectrogram)
+    spec.plot()
     assert spec.observatory == 'OWENS VALLEY'
     assert spec.instrument == 'EOVSA'
     assert spec.detector == 'EOVSA'

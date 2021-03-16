@@ -4,8 +4,8 @@ from datetime import datetime
 import astropy.units as u
 
 from radiospectra import data
-from radiospectra.spectrogram import Spectrogram
-from radiospectra.spectrogram.sources import RFSSpectrogram
+from radiospectra.spectrogram2 import Spectrogram
+from radiospectra.spectrogram2.sources import RFSSpectrogram
 
 
 def test_psp_rfs_lfr():

@@ -1,16 +1,15 @@
-import numpy as np
 
 import astropy.units as u
 from astropy.coordinates.earth import EarthLocation
 
-from radiospectra.spectrogram.spectrogram import BaseSpectrogram
+from radiospectra.spectrogram2.spectrogram import BaseSpectrogram
 
 __all__ = ['SWAVESSpectrogram', 'RFSSpectrogram', 'CALISTOSpectrogram', 'EOVSASpectrogram']
 
 
 class SWAVESSpectrogram(BaseSpectrogram):
     """
-    STEREO Waves or S/WAVES, SWAVES spectrogram
+    STEREO Waves or S/WAVES, SWAVES Spectrogram
     """
     def __init__(self, *, meta, data, **kwargs):
         super().__init__(meta=meta, data=data, **kwargs)
@@ -29,7 +28,7 @@ class SWAVESSpectrogram(BaseSpectrogram):
 
 class RFSSpectrogram(BaseSpectrogram):
     """
-    Parker Solar Probe FIELDS/ Radio Frequency Spectrometer (RFS) spectrogram
+    Parker Solar Probe FIELDS/Radio Frequency Spectrometer (RFS) Spectrogram
     """
     def __init__(self, *, meta, data, **kwargs):
         super().__init__(meta=meta, data=data, **kwargs)
@@ -49,6 +48,9 @@ class RFSSpectrogram(BaseSpectrogram):
 
 
 class CALISTOSpectrogram(BaseSpectrogram):
+    """
+    CALISTO Spectrogram from the e-CALISTO network
+    """
     def __init__(self, *, meta, data, **kwargs):
         super().__init__(meta=meta, data=data, **kwargs)
 
@@ -67,6 +69,9 @@ class CALISTOSpectrogram(BaseSpectrogram):
 
 
 class EOVSASpectrogram(BaseSpectrogram):
+    """
+    Extend Owen Valley Array (EOVSA) Spectrogram
+    """
     def __init__(self, *, meta, data, **kwargs):
         super().__init__(meta=meta, data=data, **kwargs)
 
@@ -78,10 +83,5 @@ class EOVSASpectrogram(BaseSpectrogram):
     def is_datasource_for(cls, *, meta, data, **kwargs):
         return meta['instrument'] == 'EOVSA' or meta['detector'] == 'EOVSA'
 
-    # TODO ask EOVSA team what to do here. Currently just dropping times which are not monotonically
-    #  increasing.
-    def fix_times(self):
-        dt = np.diff((self.times-self.times[0]).to('s'))
-        good_indices = np.hstack([[True], dt > 0])
-        self.meta['times'] = self.times[good_indices]
-        self.data = self.data[:, good_indices]
+    # TODO fix time gaps for plots need to render them as gaps
+    # can prob do when generateing proper pcolormesh gird but then prob doesn't belong here

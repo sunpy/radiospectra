@@ -151,7 +151,7 @@ class PcolormeshPlotMixin:
     """
     def plot(self, axes=None, **kwargs):
         """
-        Plot the spectrogram
+        Plot the spectrogram2
 
         Parameters
         ----------
@@ -174,10 +174,14 @@ class PcolormeshPlotMixin:
         else:
             data = self.data
 
-        axes.set_title(f'{self.observatory}, {self.instrument}, {self.detector}')
+        title = f'{self.observatory}, {self.instrument}'
+        if self.instrument != self.detector:
+            title = f'{title}, {self.detector}'
+
+        axes.set_title(title)
         axes.plot(self.times.datetime[[0, -1]], self.frequencies[[0, -1]],
                   linestyle='None', marker='None')
-        axes.pcolormesh(self.times.datetime, self.frequencies.value, data,
+        axes.pcolormesh(self.times.datetime, self.frequencies.value, data[:-1, :-1],
                         shading='auto', **kwargs)
         axes.set_xlim(self.times.datetime[0], self.times.datetime[-1])
         locator = mdates.AutoDateLocator(minticks=4, maxticks=8)
@@ -191,25 +195,26 @@ class NonUniformImagePlotMixin:
     """
     Class provides plotting functions using `NonUniformImage`
     """
-    def plotim(self, fig=None, axes=None):
+    def plotim(self, fig=None, axes=None, **kwargs):
         if axes is None:
             fig, axes = plt.subplots()
 
-        im = NonUniformImage(axes, interpolation=None)
-        im.set_data(self.times.value, self.freqs.value, self.data)
+        im = NonUniformImage(axes, interpolation=None, **kwargs)
+        im.set_data(mdates.date2num(self.times.datetime), self.frequencies.value, self.data)
         axes.images.append(im)
 
 
 class BaseSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
     """
-    Base Spectrogram class all spectrogram inherit from this class.
+    Base Spectrogram class all spectrogram2 inherit from this class.
 
     Attributes
     ----------
     meta : `dict-like`
-        Meta data about the
-    data : `numpy.ndarra`
-        The spectrogram data
+        Meta data for the specogram
+    data : `numpy.ndarray`
+        The spectrogram data itself a 2D array
+
     """
     _registry = {}
 
@@ -219,22 +224,13 @@ class BaseSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
             cls._registry[cls] = cls.is_datasource_for
 
     def __init__(self, meta, data, *args, **kwargs):
-        """
-
-        Parameters
-        ----------
-        meta
-        data
-        args
-        kwargs
-        """
         self.meta = meta
         self.data = data
 
     @property
     def observatory(self):
         """
-        The name of the instrument which recorded the spectrogram.
+        The name of the observatory which recorded the spectrogram.
         """
         return self.meta['observatory'].upper()
 
@@ -248,42 +244,42 @@ class BaseSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
     @property
     def detector(self):
         """
-        The detector which recorded the spectrogram
+        The detector which recorded the spectrogram.
         """
         return self.meta['detector'].upper()
 
     @property
     def start_time(self):
         """
-        The start time of the spectrogram
+        The start time of the spectrogram.
         """
         return self.meta['start_time']
 
     @property
     def end_time(self):
         """
-        The end time of the spectrogram
+        The end time of the spectrogram.
         """
         return self.meta['end_time']
 
     @property
     def wavelength(self):
         """
-        The wavelength range of the spectrogram
+        The wavelength range of the spectrogram.
         """
         return self.meta['wavelength']
 
     @property
     def times(self):
         """
-        The times of the spectrogram data
+        The times of the spectrogram.
         """
         return self.meta['times']
 
     @property
     def frequencies(self):
         """
-        The frequencies of the spectrogram data
+        The frequencies of the spectrogram.
         """
         return self.meta['freqs']
 
