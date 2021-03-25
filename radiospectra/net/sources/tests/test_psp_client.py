@@ -1,3 +1,4 @@
+import gzip
 from pathlib import Path
 from unittest import mock
 
@@ -51,10 +52,10 @@ def test_fido():
 
 @pytest.fixture
 def http_responces():
-    paths = [Path(__file__).parent / 'data' / n for n in ['resp1.html', 'resp2.html']]
+    paths = [Path(__file__).parent / 'data' / n for n in ['psp_resp1.html.gz', 'psp_resp2.html.gz']]
     response_htmls = []
     for p in paths:
-        with p.open('r') as f:
+        with gzip.open(p) as f:
             response_htmls.append(f.read())
     return response_htmls
 
