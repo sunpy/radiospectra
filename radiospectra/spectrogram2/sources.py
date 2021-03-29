@@ -85,3 +85,10 @@ class EOVSASpectrogram(BaseSpectrogram):
 
     # TODO fix time gaps for plots need to render them as gaps
     # can prob do when generateing proper pcolormesh gird but then prob doesn't belong here
+
+
+class RSTNSpectrogram(BaseSpectrogram):
+
+    @classmethod
+    def is_datasource_for(cls, *, meta, data, **kwargs):
+        return meta['instrument'] == 'RSTN'
