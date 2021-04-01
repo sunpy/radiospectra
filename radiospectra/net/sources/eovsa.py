@@ -1,23 +1,31 @@
 from sunpy.net import attrs as a
-from sunpy.net.attr import SimpleAttr
 from sunpy.net.dataretriever.client import GenericClient
 
-
-class PolType(SimpleAttr):
-    pass
+from radiospectra.net.attrs import PolType
 
 
 class EOVSAClient(GenericClient):
     """
-    e-Callisto client
+    Client provides access to `Extended Owens Valley Solar Array <http://www.ovsa.njit.edu>`__
+    (EOVSA) data.
 
-    For further information see http://www.e-callisto.org
-
-    Notes
-    -----
-    For specific information on the meaning of the filename in particualr the ID field please
-    see http://soleil.i4ds.ch/solarradio/data/readme.txt
-
+    Examples
+    --------
+    >>> from radiospectra import net
+    >>> from sunpy.net import Fido, attrs as a
+    >>> query = Fido.search(a.Time('2020/10/05 00:00', '2020/10/06 00:00'),
+    ...                     a.Instrument('EOVSA'), net.PolType.cross)
+    >>> query
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    2 Results from the EOVSAClient:
+           Start Time               End Time        Provider Instrument PolType
+    ----------------------- ----------------------- -------- ---------- -------
+    2020-10-05 00:00:00.000 2020-10-05 23:59:59.999    EOVSA      EOVSA   Cross
+    2020-10-06 00:00:00.000 2020-10-06 23:59:59.999    EOVSA      EOVSA   Cross
+    <BLANKLINE>
+    <BLANKLINE>
     """
     baseurl = r'http://ovsa.njit.edu/fits/synoptic/%Y/%m/%d/' \
               r'EOVSA_.*_%Y%m%d.fts'

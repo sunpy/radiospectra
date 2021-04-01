@@ -28,7 +28,8 @@ class SWAVESClient(GenericClient):
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2010/10/01", "2010/10/02"),
     ...                       a.Instrument('SWAVES'))  # doctest: +REMOTE_DATA
-    >>> print(results[1])  # doctest: +REMOTE_DATA
+    >>> results[1]
+    <sunpy.net.dataretriever.client.QueryResponse object at ...
            Start Time               End Time        ... Provider  Wavelength [2]
                                                     ...                kHz
     ----------------------- ----------------------- ... -------- ----------------
@@ -40,7 +41,7 @@ class SWAVESClient(GenericClient):
     2010-10-02 00:00:00.000 2010-10-02 23:59:59.999 ...     NASA    10.0 .. 160.0
     2010-10-01 00:00:00.000 2010-10-01 23:59:59.999 ...     NASA 125.0 .. 16000.0
     2010-10-02 00:00:00.000 2010-10-02 23:59:59.999 ...     NASA 125.0 .. 16000.0
-
+    <BLANKLINE>
     """
 
     baseurl = (r'https://solar-radio.gsfc.nasa.gov/data/stereo/summary/{year}/'

@@ -3,7 +3,8 @@ import pytest
 
 from sunpy.net import attrs as a
 
-from radiospectra.net.sources.eovsa import EOVSAClient, PolType
+from radiospectra.net.attrs import PolType
+from radiospectra.net.sources.eovsa import EOVSAClient
 
 
 @pytest.fixture

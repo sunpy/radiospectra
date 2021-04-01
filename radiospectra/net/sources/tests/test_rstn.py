@@ -2,7 +2,8 @@ import pytest
 
 from sunpy.net import attrs as a
 
-from radiospectra.net.sources.rstn import Observatory, RSTNClient
+from radiospectra.net.attrs import Observatory
+from radiospectra.net.sources.rstn import RSTNClient
 
 
 @pytest.fixture

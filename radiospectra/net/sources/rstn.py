@@ -1,27 +1,32 @@
 from sunpy.net import attrs as a
-from sunpy.net.attr import SimpleAttr
 from sunpy.net.dataretriever.client import GenericClient, QueryResponse
 from sunpy.time.timerange import TimeRange
 from sunpy.util.scraper import Scraper
 
-
-class Observatory(SimpleAttr):
-    """
-    Observatory
-    """
+from radiospectra.net.attrs import Observatory
 
 
 class RSTNClient(GenericClient):
     """
-    e-Callisto client
+    Radio Spectrometer Telescope Network (RSTN) hosted at NOAA
+    `National Geophysical Data <https://www.ngdc.noaa.gov>`__ (NGDC) archive.
 
-    For further information see http://www.e-callisto.org
-
-    Notes
-    -----
-    For specific information on the meaning of the filename in particualr the ID field please
-    see http://soleil.i4ds.ch/solarradio/data/readme.txt
-
+    Examples
+    --------
+    >>> from radiospectra import net
+    >>> from sunpy.net import Fido, attrs as a
+    >>> query = Fido.search(a.Time('2003/03/15 00:00', '2003/03/15 23:59'),
+    ...                     a.Instrument('RSTN'), net.Observatory('San Vito'))
+    >>> query
+    <sunpy.net.fido_factory.UnifiedResponse object at ...
+    Results from 1 Provider:
+    <BLANKLINE>
+    1 Results from the RSTNClient:
+           Start Time               End Time        Provider Instrument Observatory
+    ----------------------- ----------------------- -------- ---------- -----------
+    2003-03-15 00:00:00.000 2003-03-15 23:59:59.999     RSTN       RSTN    San Vito
+    <BLANKLINE>
+    <BLANKLINE>
     """
     baseurl = r'https://www.ngdc.noaa.gov/stp/space-weather/solar-data/' \
               r'solar-features/solar-radio/rstn-spectral/{obs}/%Y/%m/.*.gz'

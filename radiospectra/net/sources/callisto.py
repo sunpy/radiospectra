@@ -1,26 +1,41 @@
 import astropy.units as u
 from sunpy.net import attrs as a
-from sunpy.net.attr import SimpleAttr
 from sunpy.net.dataretriever.client import GenericClient
 
-
-class Observatory(SimpleAttr):
-    """
-    Observatory
-    """
+from radiospectra.net.attrs import Observatory
 
 
 class CALLISTOClient(GenericClient):
     """
-    e-Callisto client
+    Provides access to eCallisto radio spectrometer network
+    `archive <http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/>`__ at
+    `FHNW,  <https://spdf.gsfc.nasa.gov>`__.
 
-    For further information see http://www.e-callisto.org
+    For further information `see <http://www.e-callisto.org>`--
 
     Notes
     -----
-    For specific information on the meaning of the filename in particualr the ID field please
-    see http://soleil.i4ds.ch/solarradio/data/readme.txt
+    For specific information on the meaning of the filename in particular the ID field please
+    `see <http://soleil.i4ds.ch/solarradio/data/readme.txt>`
 
+    Examples
+    --------
+    >>> from radiospectra import net
+    >>> from sunpy.net import Fido, attrs as a
+    >>> query = Fido.search(a.Time('2019/10/05 23:00', '2019/10/05 23:30'),
+    ...                     a.Instrument('eCALLISTO'), net.Observatory('ALASKA'))
+    >>> query
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    3 Results from the CALLISTOClient:
+           Start Time               End Time         Provider Instrument Observatory  ID
+    ----------------------- ----------------------- --------- ---------- ----------- ---
+    2019-10-05 23:00:00.000 2019-10-05 23:14:59.999 ECALLISTO  ECALLISTO      ALASKA  59
+    2019-10-05 23:15:00.000 2019-10-05 23:29:59.999 ECALLISTO  ECALLISTO      ALASKA  59
+    2019-10-05 23:30:00.000 2019-10-05 23:44:59.999 ECALLISTO  ECALLISTO      ALASKA  59
+    <BLANKLINE>
+    <BLANKLINE>
     """
     baseurl = r'http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/' \
               r'%Y/%m/%d/{obs}_%Y%m%d_%H%M%S_(\d){{2}}.fit.gz'
@@ -30,7 +45,6 @@ class CALLISTOClient(GenericClient):
 
     @classmethod
     def pre_search_hook(cls, *args, **kwargs):
-
         baseurl, pattern, matchdict = super().pre_search_hook(*args, **kwargs)
         obs = matchdict.pop('Observatory')
         if obs[0] == '*':
@@ -54,5 +68,4 @@ class CALLISTOClient(GenericClient):
             a.Instrument: [('eCALLISTO',
                             'e-Callisto - International Network of Solar Radio Spectrometers.')],
             Observatory: [('*', 'Observatory Location')]}
-
         return adict
