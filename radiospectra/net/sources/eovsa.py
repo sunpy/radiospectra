@@ -14,8 +14,8 @@ class EOVSAClient(GenericClient):
     >>> from radiospectra import net
     >>> from sunpy.net import Fido, attrs as a
     >>> query = Fido.search(a.Time('2020/10/05 00:00', '2020/10/06 00:00'),
-    ...                     a.Instrument('EOVSA'), net.PolType.cross)
-    >>> query
+    ...                     a.Instrument('EOVSA'), net.PolType.cross)  #doctest: +REMOTE_DATA
+    >>> query  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>

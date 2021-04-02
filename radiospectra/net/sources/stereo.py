@@ -28,7 +28,7 @@ class SWAVESClient(GenericClient):
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2010/10/01", "2010/10/02"),
     ...                       a.Instrument('SWAVES'))  # doctest: +REMOTE_DATA
-    >>> results[1]
+    >>> results[1] #doctest: +REMOTE_DATA
     <sunpy.net.dataretriever.client.QueryResponse object at ...
            Start Time               End Time        ... Provider  Wavelength [2]
                                                     ...                kHz

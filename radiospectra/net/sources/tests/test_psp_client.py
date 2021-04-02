@@ -107,7 +107,7 @@ def test_can_handle_query(client):
 
 
 @pytest.mark.remote_data
-def test_get(client):
-    query = client.search(a.Time('2019/10/05', '2019/10/10'), a.Instrument('rfr'))
+def test_download(client):
+    query = client.search(a.Time('2019/10/05', '2019/10/06'), a.Instrument('rfr'))
     download_list = client.fetch(query)
     assert len(download_list) == len(query)

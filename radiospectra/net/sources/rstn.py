@@ -16,8 +16,8 @@ class RSTNClient(GenericClient):
     >>> from radiospectra import net
     >>> from sunpy.net import Fido, attrs as a
     >>> query = Fido.search(a.Time('2003/03/15 00:00', '2003/03/15 23:59'),
-    ...                     a.Instrument('RSTN'), net.Observatory('San Vito'))
-    >>> query
+    ...                     a.Instrument('RSTN'), net.Observatory('San Vito'))  #doctest: +REMOTE_DATA
+    >>> query  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...
     Results from 1 Provider:
     <BLANKLINE>

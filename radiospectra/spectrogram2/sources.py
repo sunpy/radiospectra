@@ -4,7 +4,8 @@ from astropy.coordinates.earth import EarthLocation
 
 from radiospectra.spectrogram2.spectrogram import BaseSpectrogram
 
-__all__ = ['SWAVESSpectrogram', 'RFSSpectrogram', 'CALISTOSpectrogram', 'EOVSASpectrogram']
+__all__ = ['SWAVESSpectrogram', 'RFSSpectrogram', 'CALISTOSpectrogram', 'EOVSASpectrogram',
+           'RSTNSpectrogram']
 
 
 class SWAVESSpectrogram(BaseSpectrogram):

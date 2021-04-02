@@ -24,8 +24,8 @@ class CALLISTOClient(GenericClient):
     >>> from radiospectra import net
     >>> from sunpy.net import Fido, attrs as a
     >>> query = Fido.search(a.Time('2019/10/05 23:00', '2019/10/05 23:30'),
-    ...                     a.Instrument('eCALLISTO'), net.Observatory('ALASKA'))
-    >>> query
+    ...                     a.Instrument('eCALLISTO'), net.Observatory('ALASKA'))  #doctest: +REMOTE_DATA
+    >>> query  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
