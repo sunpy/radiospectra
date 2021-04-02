@@ -12,7 +12,6 @@ def test_eovsa_xpall():
     file = Path(data.__file__).parent / 'EOVSA_XPall_20210213.fts'
     spec = Spectrogram(file)
     assert isinstance(spec, EOVSASpectrogram)
-    spec.plot()
     assert spec.observatory == 'OWENS VALLEY'
     assert spec.instrument == 'EOVSA'
     assert spec.detector == 'EOVSA'

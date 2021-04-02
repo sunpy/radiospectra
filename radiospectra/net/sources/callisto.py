@@ -1,5 +1,6 @@
 import astropy.units as u
 from sunpy.net import attrs as a
+from sunpy.net.attr import SimpleAttr
 from sunpy.net.dataretriever.client import GenericClient
 
 from radiospectra.net.attrs import Observatory
@@ -29,11 +30,11 @@ class CALLISTOClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the CALLISTOClient:
-           Start Time               End Time         Provider Instrument Observatory  ID
-    ----------------------- ----------------------- --------- ---------- ----------- ---
-    2019-10-05 23:00:00.000 2019-10-05 23:14:59.999 ECALLISTO  ECALLISTO      ALASKA  59
-    2019-10-05 23:15:00.000 2019-10-05 23:29:59.999 ECALLISTO  ECALLISTO      ALASKA  59
-    2019-10-05 23:30:00.000 2019-10-05 23:44:59.999 ECALLISTO  ECALLISTO      ALASKA  59
+           Start Time               End Time         Provider ... Observatory  ID
+    ----------------------- ----------------------- --------- ... ----------- ---
+    2019-10-05 23:00:00.000 2019-10-05 23:14:59.999 ECALLISTO ...      ALASKA  59
+    2019-10-05 23:15:00.000 2019-10-05 23:29:59.999 ECALLISTO ...      ALASKA  59
+    2019-10-05 23:30:00.000 2019-10-05 23:44:59.999 ECALLISTO ...      ALASKA  59
     <BLANKLINE>
     <BLANKLINE>
     """
@@ -69,3 +70,22 @@ class CALLISTOClient(GenericClient):
                             'e-Callisto - International Network of Solar Radio Spectrometers.')],
             Observatory: [('*', 'Observatory Location')]}
         return adict
+
+    @classmethod
+    def _can_handle_query(cls, *query):
+        """
+        Method the
+        `sunpy.net.fido_factory.UnifiedDownloaderFactory`
+        class uses to dispatch queries to this Client.
+        """
+        regattrs_dict = cls.register_values()
+        optional = {k for k in regattrs_dict.keys()} - cls.required
+        if not cls.check_attr_types_in_query(query, cls.required, optional):
+            return False
+        for key in regattrs_dict:
+            all_vals = [i[0].lower() for i in regattrs_dict[key]]
+            for x in query:
+                if (isinstance(x, key) and issubclass(key, SimpleAttr)
+                        and x.type_name != 'observatory' and str(x.value).lower() not in all_vals):
+                    return False
+        return True

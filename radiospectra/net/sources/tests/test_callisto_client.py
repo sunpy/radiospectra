@@ -5,6 +5,7 @@ from unittest import mock
 import pytest
 
 from sunpy.net import attrs as a
+from sunpy.net.fido_factory import Fido
 
 from radiospectra.net.sources.callisto import CALLISTOClient, Observatory
 
@@ -51,3 +52,11 @@ def test_client_with_observeratory(urlopen, client, http_responses):
     urlopen.assert_called_with(
         'http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/2019/10/06/')
     assert len(query) == 8
+
+
+@pytest.mark.remote_data
+def test_fido():
+    query = Fido.search(a.Time('2019/10/05 23:00', '2019/10/06 00:59'),
+                        a.Instrument('eCALLISTO'), Observatory('ALASKA'))
+    assert len(query[0]) == 8
+    assert all(query[0]['Observatory'] == 'ALASKA')
