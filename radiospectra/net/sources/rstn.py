@@ -5,6 +5,8 @@ from sunpy.util.scraper import Scraper
 
 from radiospectra.net.attrs import Observatory
 
+__all__ = ['RSTNClient']
+
 
 class RSTNClient(GenericClient):
     """
