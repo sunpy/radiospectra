@@ -11,6 +11,20 @@ __all__ = ['SWAVESSpectrogram', 'RFSSpectrogram', 'CALISTOSpectrogram', 'EOVSASp
 class SWAVESSpectrogram(BaseSpectrogram):
     """
     STEREO Waves or S/WAVES, SWAVES Spectrogram
+
+    Examples
+    --------
+    >>> import radiospectra.net
+    >>> from sunpy.net import Fido, attrs as a
+    >>> from radiospectra.spectrogram2 import Spectrogram
+    >>> from radiospectra.net import attrs as ra
+    >>> query = Fido.search(a.Time('2019/10/05 23:00', '2019/10/06 00:59'),  #doctest: +REMOTE_DATA
+    ...                     a.Instrument('SWAVES'))  #doctest: +REMOTE_DATA
+    >>> downloaded = Fido.fetch(query[1][0])  #doctest: +REMOTE_DATA
+    >>> spec = Spectrogram(downloaded[0])  #doctest: +REMOTE_DATA
+    >>> spec  #doctest: +REMOTE_DATA
+    <SWAVESSpectrogram STEREO A, SWAVES, LFR <sunpy.net.attrs.Wavelength(2.6, 153.4, 'kHz')>, 2020-11-28 00:00:00-2020-11-28 23:59:00>
+    >>> spec.plot() #doctest: +REMOTE_DATA
     """
     def __init__(self, *, meta, data, **kwargs):
         super().__init__(meta=meta, data=data, **kwargs)

@@ -23,6 +23,20 @@ __all__ = ['SpectrogramFactory', 'Spectrogram', 'BaseSpectrogram']
 
 
 class SpectrogramFactory(BasicRegistrationFactory):
+    """
+    A factory for generating spectrograms.
+
+    Parameters
+    ----------
+    \\*inputs
+        `str` or `pathlib.Path` to the file.
+
+    Returns
+    -------
+    `radiospectra.spectrogram2.Spectrogram`
+        The spectrogram for the give file
+    """
+
     def __call__(self, *args, **kwargs):
         if len(args) == 1 and not kwargs:
             arg = args[0]
@@ -47,7 +61,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
             meta, data = self._read_fits(file)
             return meta, data
         else:
-            raise ValueError('Extension %s not supported.', extensions)
+            raise ValueError(f'Extension {extensions[0]} not supported.')
 
     @staticmethod
     def _read_dat(file):
@@ -214,22 +228,20 @@ class SpectrogramFactory(BasicRegistrationFactory):
 
 class PcolormeshPlotMixin:
     """
-    Class provides plotting functions using `~pcolormesh`
+    Class provides plotting functions using `~pcolormesh`.
     """
     def plot(self, axes=None, **kwargs):
         """
-        Plot the spectrogram2
+        Plot the spectrogram.
 
         Parameters
         ----------
-        axes : `matplotlib.axis.Axes` Optional
-            The axes where the plot will be added
-
+        axes : `matplotlib.axis.Axes`, optional
+            The axes where the plot will be added.
         kwargs :
-            Arguments pass to the plot call `pcolormesh`
+            Arguments pass to the plot call `pcolormesh`.
         Returns
         -------
-
         """
         if axes is None:
             fig, axes = plt.subplots()
@@ -273,15 +285,14 @@ class NonUniformImagePlotMixin:
 
 class BaseSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
     """
-    Base Spectrogram class all spectrogram2 inherit from this class.
+     Base spectrogram class all new spectrograms will inherit.
 
     Attributes
     ----------
     meta : `dict-like`
-        Meta data for the specogram
+        Meta data for the spectrogram.
     data : `numpy.ndarray`
-        The spectrogram data itself a 2D array
-
+        The spectrogram data itself a 2D array.
     """
     _registry = {}
 
@@ -351,8 +362,8 @@ class BaseSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
         return self.meta['freqs']
 
     def __repr__(self):
-        return f'<{self.__class__.__name__} {self.observatory}, {self.instrument}, {self.detector}'\
-               f' {self.wavelength}, {self.start_time}-{self.end_time}>'
+        return (f'<{self.__class__.__name__} {self.observatory}, {self.instrument}, {self.detector}'
+                f' {self.wavelength}, {self.start_time}-{self.end_time}>')
 
 
 Spectrogram = SpectrogramFactory(registry=BaseSpectrogram._registry)
