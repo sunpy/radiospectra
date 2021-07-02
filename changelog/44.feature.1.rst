@@ -1,0 +1,1 @@
+Add `sunpy.net.Fido` clients for `~radiospectra.net.sources.callisto.CALLISTOClient`, `~radiospectra.net.sources.eovsa.EOVSAClient` and `~radiospectra.net.sources.rstn.RSTNClient`.
