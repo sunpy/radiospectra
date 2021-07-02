@@ -1,3 +1,4 @@
+import gzip
 import struct
 from pathlib import Path
 from datetime import datetime
@@ -48,16 +49,17 @@ class SpectrogramFactory(BasicRegistrationFactory):
 
     def _read_file(self, file):
         extensions = file.suffixes
-        if extensions[0] == '.dat':
+        first_extension = extensions[0].lower()
+        if first_extension == '.dat':
             meta, data = self._read_dat(file)
             return meta, data
-        elif extensions[0] == '.cdf':
+        elif first_extension == '.cdf':
             meta, data = self._read_cdf(file)
             return meta, data
-        elif extensions[0] == '.srs':
+        elif first_extension == '.srs':
             meta, data = self._read_srs(file)
             return meta, data
-        elif extensions[0] in ('.fits', '.fit', '.fts', 'fit.gz'):
+        elif first_extension in ('.fits', '.fit', '.fts', 'fit.gz'):
             meta, data = self._read_fits(file)
             return meta, data
         else:
@@ -87,65 +89,70 @@ class SpectrogramFactory(BasicRegistrationFactory):
 
     @staticmethod
     def _read_srs(file):
-        with file.open('rb') as file:
-            data = file.read()
-            # Data is store as a series of records made of different numbers of bytes
-            # General header information
-            # 1		Year (last 2 digits)				Byte integer (unsigned)
-            # 2		Month number (1 to 12)			    "
-            # 3		Day (1 to 31)					    "
-            # 4		Hour (0 to 23 UT)				    "
-            # 5		Minute (0 to 59)				    "
-            # 6		Second at start of scan (0 to 59)	"
-            # 7		Site Number (0 to 255)			    "
-            # 8		Number of bands in the record (2)	"
-            #
-            # Band 1 (A-band) header information
-            # 9,10		Start Frequency (MHz)			    Word integer (16 bits)
-            # 11,12		End Frequency (MHz)			        "
-            # 13,14		Number of bytes in data record (401)"
-            # 15		Analyser reference level		    Byte integer
-            # 16		Analyser attenuation (dB)		    "
-            #
-            # Band 2 (B-band) header information
-            # 17-24		As for band 1
-            #
-            # Spectrum Analyser data
-            # 25-425	401 data bytes for band 1 (A-band)
-            # 426-826	401 data bytes for band 2 (B-band)
-            record_struc = struct.Struct('B'*8 + 'H'*3 + 'B'*2
-                                         + 'H'*3 + 'B'*2 + 'B' * 401 + 'B' * 401)
-            records = record_struc.iter_unpack(data)
 
-            # Map of numeric records to locations
-            site_map = {1: 'Palehua', 2: 'Holloman', 3: 'Learmonth', 4: 'San Vito'}
+        with file.open('rb') as buff:
+            data = buff.read()
+            if file.suffixes[-1] == '.gz':
+                data = gzip.decompress(data)
 
-            df = pd.DataFrame([(*r[:18], np.array(r[18:419]), np.array(r[419:820]))
-                              for r in records])
-            df.columns = ['year', 'month', 'day', 'hour', 'minute', 'second', 'site', ' num_bands',
-                          'start_freq1', 'end_freq1', 'num_bytes1', 'analyser_ref1',
-                          'analyser_atten1', 'start_freq2', 'end_freq2', 'num_bytes2',
-                          'analyser_ref2', 'analyser_atten2', 'spec1', 'spec2']
+        # Data is store as a series of records made of different numbers of bytes
+        # General header information
+        # 1		Year (last 2 digits)				Byte integer (unsigned)
+        # 2		Month number (1 to 12)			    "
+        # 3		Day (1 to 31)					    "
+        # 4		Hour (0 to 23 UT)				    "
+        # 5		Minute (0 to 59)				    "
+        # 6		Second at start of scan (0 to 59)	"
+        # 7		Site Number (0 to 255)			    "
+        # 8		Number of bands in the record (2)	"
+        #
+        # Band 1 (A-band) header information
+        # 9,10		Start Frequency (MHz)			    Word integer (16 bits)
+        # 11,12		End Frequency (MHz)			        "
+        # 13,14		Number of bytes in data record (401)"
+        # 15		Analyser reference level		    Byte integer
+        # 16		Analyser attenuation (dB)		    "
+        #
+        # Band 2 (B-band) header information
+        # 17-24		As for band 1
+        #
+        # Spectrum Analyser data
+        # 25-425	401 data bytes for band 1 (A-band)
+        # 426-826	401 data bytes for band 2 (B-band)
+        record_struc = struct.Struct('B'*8 + 'H'*3 + 'B'*2
+                                     + 'H'*3 + 'B'*2 + 'B' * 401 + 'B' * 401)
 
-            # Hack to make to_datetime work - earliest dates seem to be 2000 and won't be
-            # around in 3000!
-            df['year'] = df['year'] + 2000
-            df['time'] = pd.to_datetime(df[['year', 'month', 'day', 'hour', 'minute', 'second']])
+        records = record_struc.iter_unpack(data)
 
-            # Equations taken from document
-            n = np.arange(1, 402)
-            freq_a = (25 + 50 * (n - 1) / 400) * u.MHz
-            freq_b = (75 + 105 * (n - 1) / 400) * u.MHz
-            freqs = np.hstack([freq_a, freq_b])
+        # Map of numeric records to locations
+        site_map = {1: 'Palehua', 2: 'Holloman', 3: 'Learmonth', 4: 'San Vito'}
 
-            data = np.hstack([np.vstack(df[name].to_numpy()) for name in ['spec1', 'spec2']]).T
-            times = Time(df['time'])
+        df = pd.DataFrame([(*r[:18], np.array(r[18:419]), np.array(r[419:820]))
+                          for r in records])
+        df.columns = ['year', 'month', 'day', 'hour', 'minute', 'second', 'site', ' num_bands',
+                      'start_freq1', 'end_freq1', 'num_bytes1', 'analyser_ref1',
+                      'analyser_atten1', 'start_freq2', 'end_freq2', 'num_bytes2',
+                      'analyser_ref2', 'analyser_atten2', 'spec1', 'spec2']
 
-            meta = {'instrument': 'RSTN', 'observatory': site_map[df['site'][0]],
-                    'start_time': times[0], 'end_time': times[-1], 'detector': 'RSTN',
-                    'wavelength': a.Wavelength(freqs[0], freqs[-1]), 'freqs': freqs, 'times': times}
+        # Hack to make to_datetime work - earliest dates seem to be 2000 and won't be
+        # around in 3000!
+        df['year'] = df['year'] + 2000
+        df['time'] = pd.to_datetime(df[['year', 'month', 'day', 'hour', 'minute', 'second']])
 
-            return meta, data
+        # Equations taken from document
+        n = np.arange(1, 402)
+        freq_a = (25 + 50 * (n - 1) / 400) * u.MHz
+        freq_b = (75 + 105 * (n - 1) / 400) * u.MHz
+        freqs = np.hstack([freq_a, freq_b])
+
+        data = np.hstack([np.vstack(df[name].to_numpy()) for name in ['spec1', 'spec2']]).T
+        times = Time(df['time'])
+
+        meta = {'instrument': 'RSTN', 'observatory': site_map[df['site'][0]],
+                'start_time': times[0], 'end_time': times[-1], 'detector': 'RSTN',
+                'wavelength': a.Wavelength(freqs[0], freqs[-1]), 'freqs': freqs, 'times': times}
+
+        return meta, data
 
     @staticmethod
     def _read_cdf(file):
