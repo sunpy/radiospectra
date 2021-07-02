@@ -69,7 +69,7 @@ def test_callisto(read_fits):
     }
     array = np.zeros((200, 3600))
     read_fits.return_value = (meta, array)
-    file = Path('fake.fits')
+    file = Path('fake.fit.gz')
     spec = Spectrogram(file)
     assert isinstance(spec, CALISTOSpectrogram)
     assert spec.observatory == 'BIR'

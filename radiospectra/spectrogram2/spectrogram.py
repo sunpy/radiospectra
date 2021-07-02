@@ -33,21 +33,21 @@ class SpectrogramFactory(BasicRegistrationFactory):
         return self._check_registered_widget(meta=meta, data=data, **kwargs)
 
     def _read_file(self, file):
-        extension = file.suffix
-        if extension == '.dat':
+        extensions = file.suffixes
+        if extensions[0] == '.dat':
             meta, data = self._read_dat(file)
             return meta, data
-        elif extension == '.cdf':
+        elif extensions[0] == '.cdf':
             meta, data = self._read_cdf(file)
             return meta, data
-        elif extension == '.srs':
+        elif extensions[0] == '.srs':
             meta, data = self._read_srs(file)
             return meta, data
-        elif extension in ('.fits', '.fit', '.fts'):
+        elif extensions[0] in ('.fits', '.fit', '.fts', 'fit.gz'):
             meta, data = self._read_fits(file)
             return meta, data
         else:
-            raise ValueError('Extension %s not supported.', extension)
+            raise ValueError('Extension %s not supported.', extensions)
 
     @staticmethod
     def _read_dat(file):

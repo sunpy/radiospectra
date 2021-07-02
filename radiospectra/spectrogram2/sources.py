@@ -51,6 +51,20 @@ class RFSSpectrogram(BaseSpectrogram):
 class CALISTOSpectrogram(BaseSpectrogram):
     """
     CALISTO Spectrogram from the e-CALISTO network
+
+    Examples
+    --------
+    >>> import radiospectra.net
+    >>> from sunpy.net import Fido, attrs as a
+    >>> from radiospectra.spectrogram2 import Spectrogram
+    >>> from radiospectra.net import attrs as ra
+    >>> query = Fido.search(a.Time('2019/10/05 23:00', '2019/10/06 00:59'),  #doctest: +REMOTE_DATA
+    ...                     a.Instrument('eCALLISTO'), ra.Observatory('ALASKA'))  #doctest: +REMOTE_DATA
+    >>> downloaded = Fido.fetch(query[0][0])  #doctest: +REMOTE_DATA
+    >>> spec = Spectrogram(downloaded[0])  #doctest: +REMOTE_DATA
+    >>> spec  #doctest: +REMOTE_DATA
+    <CALISTOSpectrogram ALASKA, E-CALLISTO, E-CALLISTO <sunpy.net.attrs.Wavelength(215000.0, 418937.98828125, 'kHz')>, 2019-10-05T23:00:00.757-2019-10-05T23:15:00.000>
+    >>> spec.plot()  #doctest: +REMOTE_DATA
     """
     def __init__(self, *, meta, data, **kwargs):
         super().__init__(meta=meta, data=data, **kwargs)
