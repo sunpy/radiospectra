@@ -2,13 +2,13 @@
 import astropy.units as u
 from astropy.coordinates.earth import EarthLocation
 
-from radiospectra.spectrogram2.spectrogram import BaseSpectrogram
+from radiospectra.spectrogram2.spectrogram import GenericSpectrogram
 
 __all__ = ['SWAVESSpectrogram', 'RFSSpectrogram', 'CALISTOSpectrogram', 'EOVSASpectrogram',
            'RSTNSpectrogram']
 
 
-class SWAVESSpectrogram(BaseSpectrogram):
+class SWAVESSpectrogram(GenericSpectrogram):
     """
     STEREO Waves or S/WAVES, SWAVES Spectrogram
 
@@ -37,11 +37,11 @@ class SWAVESSpectrogram(BaseSpectrogram):
         return self.meta['receiver']
 
     @classmethod
-    def is_datasource_for(cls, *, meta, data, **kwargs):
+    def is_datasource_for(cls, data, meta, **kwargs):
         return meta['instrument'] == 'swaves'
 
 
-class RFSSpectrogram(BaseSpectrogram):
+class RFSSpectrogram(GenericSpectrogram):
     """
     Parker Solar Probe FIELDS/Radio Frequency Spectrometer (RFS) Spectrogram
     """
@@ -57,12 +57,12 @@ class RFSSpectrogram(BaseSpectrogram):
         return int(self.meta['cdf_meta']['Data_version'])
 
     @classmethod
-    def is_datasource_for(cls, *, meta, data, **kwargs):
+    def is_datasource_for(cls, data, meta, **kwargs):
         return (meta['observatory'] == 'PSP' and meta['instrument'] == 'FIELDS/RFS'
                 and meta['detector'] in ('lfr', 'hfr'))
 
 
-class CALISTOSpectrogram(BaseSpectrogram):
+class CALISTOSpectrogram(GenericSpectrogram):
     """
     CALISTO Spectrogram from the e-CALISTO network
 
@@ -80,7 +80,7 @@ class CALISTOSpectrogram(BaseSpectrogram):
     <CALISTOSpectrogram ALASKA, E-CALLISTO, E-CALLISTO <sunpy.net.attrs.Wavelength(215000.0, 418937.98828125, 'kHz')>, 2019-10-05T23:00:00.757-2019-10-05T23:15:00.000>
     >>> spec.plot()  #doctest: +REMOTE_DATA
     """
-    def __init__(self, *, meta, data, **kwargs):
+    def __init__(self, data, meta, **kwargs):
         super().__init__(meta=meta, data=data, **kwargs)
 
     @property
@@ -93,11 +93,11 @@ class CALISTOSpectrogram(BaseSpectrogram):
         return EarthLocation(lat=lat, lon=lon, height=height)
 
     @classmethod
-    def is_datasource_for(cls, *, meta, data, **kwargs):
+    def is_datasource_for(cls, data, meta, **kwargs):
         return meta['instrument'] == 'e-CALLISTO' or meta['detector'] == 'e-CALLISTO'
 
 
-class EOVSASpectrogram(BaseSpectrogram):
+class EOVSASpectrogram(GenericSpectrogram):
     """
     Extend Owen Valley Array (EOVSA) Spectrogram
     """
@@ -109,15 +109,15 @@ class EOVSASpectrogram(BaseSpectrogram):
         return self.meta['fits_meta']['POLARIZA']
 
     @classmethod
-    def is_datasource_for(cls, *, meta, data, **kwargs):
+    def is_datasource_for(cls, data, meta, **kwargs):
         return meta['instrument'] == 'EOVSA' or meta['detector'] == 'EOVSA'
 
     # TODO fix time gaps for plots need to render them as gaps
     # can prob do when generateing proper pcolormesh gird but then prob doesn't belong here
 
 
-class RSTNSpectrogram(BaseSpectrogram):
+class RSTNSpectrogram(GenericSpectrogram):
 
     @classmethod
-    def is_datasource_for(cls, *, meta, data, **kwargs):
+    def is_datasource_for(cls, data, meta, **kwargs):
         return meta['instrument'] == 'RSTN'
