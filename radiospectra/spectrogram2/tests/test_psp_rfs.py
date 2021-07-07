@@ -12,8 +12,8 @@ from radiospectra.spectrogram2 import Spectrogram
 from radiospectra.spectrogram2.sources import RFSSpectrogram
 
 
-@mock.patch('radiospectra.spectrogram2.spectrogram.SpectrogramFactory._read_cdf')
-def test_psp_rfs_lfr(read_cdf):
+@mock.patch('radiospectra.spectrogram2.spectrogram.parse_path')
+def test_psp_rfs_lfr(parse_path_moc):
     start_time = Time('2019-04-09 00:01:16.197889')
     end_time = Time('2019-04-10 00:01:04.997573')
     meta = {
@@ -45,7 +45,7 @@ def test_psp_rfs_lfr(read_cdf):
                   1687500.] * u.Hz
     }
     array = np.zeros((64, 12359))
-    read_cdf.return_value = (meta, array)
+    parse_path_moc.return_value = [(array, meta)]
     file = Path('fake.cdf')
     spec = Spectrogram(file)
     assert isinstance(spec, RFSSpectrogram)
@@ -61,8 +61,8 @@ def test_psp_rfs_lfr(read_cdf):
     assert spec.version == 1
 
 
-@mock.patch('radiospectra.spectrogram2.spectrogram.SpectrogramFactory._read_cdf')
-def test_psp_rfs_hfr(read_cdf):
+@mock.patch('radiospectra.spectrogram2.spectrogram.parse_path')
+def test_psp_rfs_hfr(parse_path_moc):
     start_time = Time('2019-04-09 00:01:13.904188')
     end_time = Time('2019-04-10 00:01:02.758315')
     meta = {
@@ -94,7 +94,7 @@ def test_psp_rfs_hfr(read_cdf):
                   18375000., 19171876.] * u.Hz
     }
     array = np.zeros((64, 12359))
-    read_cdf.return_value = (meta, array)
+    parse_path_moc.return_value = [(array, meta)]
     file = Path('fake.cdf')
     spec = Spectrogram(file)
     assert isinstance(spec, RFSSpectrogram)

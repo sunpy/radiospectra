@@ -122,10 +122,10 @@ def eovsa_data():
     return meta, array
 
 
-@mock.patch('radiospectra.spectrogram2.spectrogram.SpectrogramFactory._read_fits')
-def test_eovsa_xpall(read_fits, eovsa_data):
+@mock.patch('radiospectra.spectrogram2.spectrogram.parse_path')
+def test_eovsa_xpall(parse_path_moc, eovsa_data):
     meta, array = eovsa_data
-    read_fits.return_value = (meta, array)
+    parse_path_moc.return_value = [(array, meta)]
     file = Path('fake.fts')
     spec = Spectrogram(file)
     assert isinstance(spec, EOVSASpectrogram)
@@ -139,11 +139,11 @@ def test_eovsa_xpall(read_fits, eovsa_data):
     assert spec.polarisation == 'I'
 
 
-@mock.patch('radiospectra.spectrogram2.spectrogram.SpectrogramFactory._read_fits')
-def test_eovsa_tpall(read_fits, eovsa_data):
+@mock.patch('radiospectra.spectrogram2.spectrogram.parse_path')
+def test_eovsa_tpall(parse_path_moc, eovsa_data):
     meta, array = eovsa_data
     meta['fits_meta']['POLARIZA'] = 'I'
-    read_fits.return_value = (meta, array)
+    parse_path_moc.return_value = [(array, meta)]
     file = Path('fake.fts')
     spec = Spectrogram(file)
     assert isinstance(spec, EOVSASpectrogram)

@@ -12,8 +12,8 @@ from radiospectra.spectrogram2 import Spectrogram
 from radiospectra.spectrogram2.sources import SWAVESSpectrogram
 
 
-@mock.patch('radiospectra.spectrogram2.spectrogram.SpectrogramFactory._read_dat')
-def test_swaves_lfr(read_dat):
+@mock.patch('radiospectra.spectrogram2.spectrogram.parse_path')
+def test_swaves_lfr(parse_path_moc):
     meta = {
         'instrument': 'swaves',
         'observatory': 'STEREO A',
@@ -29,7 +29,7 @@ def test_swaves_lfr(read_dat):
         'times': np.arange(1440) * u.min
     }
     array = np.zeros((48, 1440))
-    read_dat.return_value = (meta, array)
+    parse_path_moc.return_value = [(array, meta)]
     file = Path('fake.dat')
     spec = Spectrogram(file)
     assert isinstance(spec, SWAVESSpectrogram)
@@ -42,8 +42,8 @@ def test_swaves_lfr(read_dat):
     assert spec.wavelength.max == 153.4 * u.kHz
 
 
-@mock.patch('radiospectra.spectrogram2.spectrogram.SpectrogramFactory._read_dat')
-def test_swaves_hfr(read_dat):
+@mock.patch('radiospectra.spectrogram2.spectrogram.parse_path')
+def test_swaves_hfr(parse_path_moc):
     meta = {
         'instrument': 'swaves',
         'observatory': 'STEREO A',
@@ -56,7 +56,7 @@ def test_swaves_hfr(read_dat):
         'times': np.arange(1440) * u.min,
     }
     array = np.zeros((319, 1440))
-    read_dat.return_value = (meta, array)
+    parse_path_moc.return_value = [(array, meta)]
     file = Path('fake.dat')
     spec = Spectrogram(file)
     assert isinstance(spec, SWAVESSpectrogram)

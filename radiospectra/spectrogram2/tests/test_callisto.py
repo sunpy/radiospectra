@@ -12,8 +12,8 @@ from radiospectra.spectrogram2 import Spectrogram
 from radiospectra.spectrogram2.sources import CALISTOSpectrogram
 
 
-@mock.patch('radiospectra.spectrogram2.spectrogram.SpectrogramFactory._read_fits')
-def test_callisto(read_fits):
+@mock.patch('radiospectra.spectrogram2.spectrogram.parse_path')
+def test_callisto(parse_path_moc):
     start_time = Time('2011-06-07 06:24:00.213')
     meta = {
         'fits_meta': {
@@ -68,7 +68,7 @@ def test_callisto(read_fits):
                   20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0] * u.MHz
     }
     array = np.zeros((200, 3600))
-    read_fits.return_value = (meta, array)
+    parse_path_moc.return_value = [(array, meta)]
     file = Path('fake.fit.gz')
     spec = Spectrogram(file)
     assert isinstance(spec, CALISTOSpectrogram)

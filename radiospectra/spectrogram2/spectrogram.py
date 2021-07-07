@@ -5,7 +5,6 @@ import struct
 import pathlib
 import warnings
 from pathlib import Path
-from datetime import datetime
 from collections import OrderedDict
 from urllib.request import Request, urlopen
 
@@ -15,6 +14,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.image import NonUniformImage
+from scipy.io.idl import readsav
 
 import astropy.units as u
 from astropy.io.fits import Header
@@ -115,7 +115,7 @@ def parse_path(path, f, **kwargs):
         raise ValueError('path must be a pathlib.Path object')
     path = path.expanduser()
     if is_file(path):
-        return f(path, **kwargs)
+        return [f(path, **kwargs)]
     elif is_dir(path):
         read_files = []
         for afile in sorted(path.glob('*')):
@@ -280,14 +280,15 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
         err_message = []
         for i, ax in enumerate(['times', 'freqs']):
             if self.meta.get(ax) is None:
-                err_message.append(msg.format(i, i))
+                err_message.append(msg.format(ax))
 
         if err_message:
             raise SpectraMetaValidationError('\n'.join(err_message))
 
     def __repr__(self):
         return (f'<{self.__class__.__name__} {self.observatory}, {self.instrument}, {self.detector}'
-                f' {self.wavelength}, {self.start_time} - {self.end_time}>')
+                f' {self.wavelength.min} - {self.wavelength.max},'
+                f' {self.start_time.isot} to {self.end_time.isot}>')
 
 
 class SpectrogramFactory(BasicRegistrationFactory):
@@ -353,15 +354,16 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 args.insert(i, (data, header))
                 nargs -= 1
             elif isinstance(arg, str) and is_url(arg):
-                # Repalce URL string with a Request object to dispatch on later
+                # Replace URL string with a Request object to dispatch on later
                 args[i] = Request(arg)
             elif possibly_a_path(arg):
-                # Repalce path strings with Path objects
+                # Replace path strings with Path objects
                 args[i] = pathlib.Path(arg)
             i += 1
 
         # Parse the arguments
-        # Note that this list can also contain GenericMaps if they are directly given to the factory
+        # Note that this list can also contain GenericSpectrogram if they are directly given to
+        # the factory
         data_header_pairs = []
         for arg in args:
             try:
@@ -498,17 +500,15 @@ class SpectrogramFactory(BasicRegistrationFactory):
         extensions = file.suffixes
         first_extension = extensions[0].lower()
         if first_extension == '.dat':
-            meta, data = self._read_dat(file)
-            return meta, data
+            return self._read_dat(file)
+        elif first_extension in ('.r1', '.r2'):
+            return self._read_idl_sav(file, instrument='waves')
         elif first_extension == '.cdf':
-            meta, data = self._read_cdf(file)
-            return meta, data
+            return self._read_cdf(file)
         elif first_extension == '.srs':
-            meta, data = self._read_srs(file)
-            return meta, data
+            return self._read_srs(file)
         elif first_extension in ('.fits', '.fit', '.fts', 'fit.gz'):
-            meta, data = self._read_fits(file)
-            return meta, data
+            return self._read_fits(file)
         else:
             raise ValueError(f'Extension {extensions[0]} not supported.')
 
@@ -523,16 +523,16 @@ class SpectrogramFactory(BasicRegistrationFactory):
             # data
             data = np.genfromtxt(file, skip_header=2)
             times = data[:, 0] * u.min
-            data = data[:, 1:].T + bg.reshape(-1, 1)
+            data = data[:, 1:].T
 
             meta = {'instrument': name, 'observatory': f'STEREO {spacecraft.upper()}',
-                    'product': prod, 'start_time': Time(datetime.strptime('20201128', '%Y%m%d')),
+                    'product': prod, 'start_time': Time.strptime(date, '%Y%m%d'),
                     'wavelength': a.Wavelength(freqs[0], freqs[-1]), 'detector': receiver,
-                    'freqs': freqs}
+                    'freqs': freqs, 'background': bg}
 
             meta['times'] = meta['start_time'] + times
             meta['end_time'] = meta['start_time'] + times[-1]
-            return meta, data
+            return data, meta
 
     @staticmethod
     def _read_srs(file):
@@ -599,7 +599,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 'start_time': times[0], 'end_time': times[-1], 'detector': 'RSTN',
                 'wavelength': a.Wavelength(freqs[0], freqs[-1]), 'freqs': freqs, 'times': times}
 
-        return meta, data
+        return data, meta
 
     @staticmethod
     def _read_cdf(file):
@@ -631,7 +631,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 'times': times,
                 'freqs': freqs
             }
-            return meta, data
+            return data, meta
 
     @staticmethod
     def _read_fits(file):
@@ -657,7 +657,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 'times': times,
                 'freqs': freqs
             }
-            return meta, data
+            return data, meta
         elif hd_pairs[0].header.get('TELESCOP', '') == 'EOVSA':
             times = Time(hd_pairs[2].data['mjd'] + hd_pairs[2].data['time'] / 1000.0 / 86400.,
                          format='mjd')
@@ -677,7 +677,34 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 'times': times,
                 'freqs': freqs
             }
-            return meta, data
+            return data, meta
+
+    @staticmethod
+    def _read_idl_sav(file, instrument=None):
+        data = readsav(file)
+        if instrument == 'waves':
+            # See https://solar-radio.gsfc.nasa.gov/wind/one_minute_doc.html
+            data_array = data['arrayb']
+            # frequency range
+            if file.suffix == '.R1':
+                freqs = np.linspace(20, 1040, 256) * u.kHz
+                receiver = 'RAD1'
+            elif file.suffix == '.R2':
+                freqs = np.linspace(1.075, 13.825, 256) * u.MHz
+                receiver = 'RAD2'
+            # bg which is already subtracted from data ?
+            bg = data_array[:, -1]
+            data = data_array[:, :-1]
+
+            start_time = Time.strptime(file.stem, '%Y%m%d')
+            end_time = start_time + 86399*u.s
+            times = start_time + (np.arange(1440) * 60 + 30)*u.s
+
+            meta = {'instrument': 'WAVES', 'observatory': 'WIND', 'start_time': start_time,
+                    'end_time': end_time, 'wavelength': a.Wavelength(freqs[0], freqs[-1]),
+                    'detector': receiver, 'freqs': freqs, 'times': times, 'background': bg}
+
+            return data, meta
 
 
 Spectrogram = SpectrogramFactory(registry=GenericSpectrogram._registry,
