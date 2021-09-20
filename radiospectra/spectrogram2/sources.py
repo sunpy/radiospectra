@@ -5,7 +5,7 @@ from astropy.coordinates.earth import EarthLocation
 from radiospectra.spectrogram2.spectrogram import GenericSpectrogram
 
 __all__ = ['SWAVESSpectrogram', 'RFSSpectrogram', 'CALISTOSpectrogram', 'EOVSASpectrogram',
-           'RSTNSpectrogram', 'ILOFARSpectrogram']
+           'RSTNSpectrogram', 'ILOFARMode357Spectrogram']
 
 
 class SWAVESSpectrogram(GenericSpectrogram):
@@ -202,9 +202,9 @@ class RSTNSpectrogram(GenericSpectrogram):
         return meta['instrument'] == 'RSTN'
 
 
-class ILOFARSpectrogram(GenericSpectrogram):
+class ILOFARMode357Spectrogram(GenericSpectrogram):
     """
-    Irish LOFAR Station
+    Irish LOFAR Station mode 357 Spectrogram
     """
     @property
     def mode(self):

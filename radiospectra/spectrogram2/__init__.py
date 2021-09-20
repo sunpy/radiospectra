@@ -6,7 +6,7 @@ that of `~sunpy.map.Map` and `~sunpy.timeseries.TimeSeries`.
 from radiospectra.spectrogram2.sources import (
     CALISTOSpectrogram,
     EOVSASpectrogram,
-    ILOFARSpectrogram,
+    ILOFARMode357Spectrogram,
     RFSSpectrogram,
     SWAVESSpectrogram,
 )
