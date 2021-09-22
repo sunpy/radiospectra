@@ -1,0 +1,1 @@
+Add `sunpy.net.Fido` client `~radiospectra.net.sources.wind.Waves` and spectrogram class `~radiospectra.spectrogram2.sources.WAVESSpectrogram` for WIND/WAVES.

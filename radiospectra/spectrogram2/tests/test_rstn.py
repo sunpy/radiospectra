@@ -12,8 +12,8 @@ from radiospectra.spectrogram2 import Spectrogram
 from radiospectra.spectrogram2.sources import RSTNSpectrogram
 
 
-@mock.patch('radiospectra.spectrogram2.spectrogram.SpectrogramFactory._read_srs')
-def test_rstn(read_srs):
+@mock.patch('radiospectra.spectrogram2.spectrogram.parse_path')
+def test_rstn(parse_path_moc):
     start_time = Time('2020-01-01T06:17:38.000')
     end_time = Time('2020-01-01T15:27:43.000')
     meta = {
@@ -27,7 +27,7 @@ def test_rstn(read_srs):
         'times': start_time + np.linspace(0, (end_time-start_time).to_value('s'), 11003)*u.s
     }
     array = np.zeros((802, 11003))
-    read_srs.return_value = (meta, array)
+    parse_path_moc.return_value = [(array, meta)]
     file = Path('fakes.srs')
     spec = Spectrogram(file)
     assert isinstance(spec, RSTNSpectrogram)
