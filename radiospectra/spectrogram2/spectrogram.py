@@ -144,6 +144,7 @@ class PcolormeshPlotMixin:
             The axes where the plot will be added.
         kwargs :
             Arguments pass to the plot call `pcolormesh`.
+
         Returns
         -------
         """
@@ -329,6 +330,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
         * glob, from which all files will be read
         * url, which will be downloaded and read
         * lists containing any of the above.
+
         Example
         -------
         self._parse_args(data, header,
@@ -423,6 +425,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
         silence_errors : `bool`, optional
             If set, ignore data-header pairs which cause an exception.
             Default is ``False``.
+
         Notes
         -----
         Extra keyword arguments are passed through to `sunpy.io.read_file` such
@@ -458,14 +461,6 @@ class SpectrogramFactory(BasicRegistrationFactory):
 
         return new_maps
 
-    # def __call__(self, *args, **kwargs):
-    #     if len(args) == 1 and not kwargs:
-    #         arg = args[0]
-    #         if isinstance(arg, (str, Path)):
-    #             file = Path(arg)
-    #             meta, data = self._read_file(file)
-    #
-    #     return self._check_registered_widget(meta=meta, data=data, **kwargs)
 
     def _check_registered_widgets(self, data, meta, **kwargs):
 
