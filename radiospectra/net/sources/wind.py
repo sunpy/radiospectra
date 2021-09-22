@@ -87,19 +87,19 @@ class WAVESClient(GenericClient):
 
     def search(self, *args, **kwargs):
         """
-         Query this client for a list of results.
+        Query this client for a list of results.
 
-         Parameters
-         ----------
-         *args: `tuple`
-             `sunpy.net.attrs` objects representing the query.
-         **kwargs: `dict`
-              Any extra keywords to refine the search.
+        Parameters
+        ----------
+        *args: `tuple`
+            `sunpy.net.attrs` objects representing the query.
+        **kwargs: `dict`
+            Any extra keywords to refine the search.
 
-         Returns
-         -------
-         A `QueryResponse` instance containing the query result.
-         """
+        Returns
+        -------
+        A `QueryResponse` instance containing the query result.
+        """
         matchdict = self._get_match_dict(*args, **kwargs)
         req_wave = matchdict.get('Wavelength', None)
         receivers = RECEIVER_FREQUENCIES.keys()

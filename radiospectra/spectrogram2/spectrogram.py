@@ -461,7 +461,6 @@ class SpectrogramFactory(BasicRegistrationFactory):
 
         return new_maps
 
-
     def _check_registered_widgets(self, data, meta, **kwargs):
 
         candidate_widget_types = list()
