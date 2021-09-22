@@ -5,7 +5,7 @@ from astropy.coordinates.earth import EarthLocation
 from radiospectra.spectrogram2.spectrogram import GenericSpectrogram
 
 __all__ = ['SWAVESSpectrogram', 'RFSSpectrogram', 'CALISTOSpectrogram', 'EOVSASpectrogram',
-           'RSTNSpectrogram', 'ILOFARMode357Spectrogram']
+           'RSTNSpectrogram', 'ILOFARMode357Spectrogram', 'WAVESSpectrogram']
 
 
 class SWAVESSpectrogram(GenericSpectrogram):

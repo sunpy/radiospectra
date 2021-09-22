@@ -24,20 +24,26 @@ class ILOFARMode357Client(GenericClient):
     --------
     >>> import radiospectra.net
     >>> from sunpy.net import Fido, attrs as a
-    >>> results = Fido.search(a.Time("2010/10/01", "2010/10/02"),
+    >>> results = Fido.search(a.Time("2021/09/01", "2021/09/21"),
     ...                       a.Instrument('ILOFAR'))  # doctest: +REMOTE_DATA
     >>> results #doctest: +REMOTE_DATA
-    <sunpy.net.fido_factory.UnifiedResponse object at...>
+    <sunpy.net.fido_factory.UnifiedResponse object ...
     Results from 1 Provider:
     <BLANKLINE>
-    4 Results from the WAVESClient:
-           Start Time               End Time        ... Provider   Wavelength [2]
-                                                    ...                 kHz
-    ----------------------- ----------------------- ... -------- -----------------
-    2010-10-01 00:00:00.000 2010-10-01 23:59:59.999 ...     NASA    20.0 .. 1040.0
-    2010-10-02 00:00:00.000 2010-10-02 23:59:59.999 ...     NASA    20.0 .. 1040.0
-    2010-10-01 00:00:00.000 2010-10-01 23:59:59.999 ...     NASA 1075.0 .. 13825.0
-    2010-10-02 00:00:00.000 2010-10-02 23:59:59.999 ...     NASA 1075.0 .. 13825.0
+    10 Results from the ILOFARMode357Client:
+           Start Time               End Time        Instrument ... num Polarisation
+    ----------------------- ----------------------- ---------- ... --- ------------
+    2021-09-14 07:39:13.000 2021-09-14 07:39:13.999     ILOFAR ...   0            X
+    2021-09-14 07:39:13.000 2021-09-14 07:39:13.999     ILOFAR ...   0            Y
+    2021-09-01 08:07:29.000 2021-09-01 08:07:29.999     ILOFAR ...   0            X
+    2021-09-01 08:07:29.000 2021-09-01 08:07:29.999     ILOFAR ...   0            Y
+    2021-09-07 08:07:52.000 2021-09-07 08:07:52.999     ILOFAR ...   0            X
+    2021-09-07 08:07:52.000 2021-09-07 08:07:52.999     ILOFAR ...   0            Y
+    2021-09-08 08:04:07.000 2021-09-08 08:04:07.999     ILOFAR ...   0            X
+    2021-09-08 08:04:07.000 2021-09-08 08:04:07.999     ILOFAR ...   0            Y
+    2021-09-08 10:34:31.000 2021-09-08 10:34:31.999     ILOFAR ...   0            X
+    2021-09-08 10:34:31.000 2021-09-08 10:34:31.999     ILOFAR ...   0            Y
+    <BLANKLINE>
     <BLANKLINE>
     """
 

@@ -115,7 +115,10 @@ def parse_path(path, f, **kwargs):
         raise ValueError('path must be a pathlib.Path object')
     path = path.expanduser()
     if is_file(path):
-        return list(f(path, **kwargs))
+        read_file = f(path, **kwargs)
+        if isinstance(read_file, tuple):
+            read_file = [read_file]
+        return read_file
     elif is_dir(path):
         read_files = []
         for afile in sorted(path.glob('*')):
