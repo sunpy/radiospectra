@@ -12,6 +12,8 @@ from radiospectra.net.attrs import PolType
 
 RECEIVER_FREQUENCIES = a.Wavelength(10.546875*u.MHz, 244.53125*u.MHz)
 
+DATASET_NAMES = ['rcu357_1beam', 'rcu357_1beam_datastream']
+
 
 class ILOFARMode357Client(GenericClient):
     """
@@ -39,8 +41,8 @@ class ILOFARMode357Client(GenericClient):
     <BLANKLINE>
     """
 
-    baseurl = (r'https://data.lofar.ie/%Y/%m/%d/bst/kbt/rcu357_1beam/'
-               r'%Y%m%d_\d{6}_bst_\d{2}\S{1}.dat')
+    baseurl = (r'https://data.lofar.ie/%Y/%m/%d/bst/kbt/{dataset}/'
+               r'%Y%m%d_\d{{6}}_bst_\d{{2}}\S{{1}}.dat')
 
     pattern = r'{}/{year:4d}{month:2d}{day:2d}_{hour:2d}{minute:2d}{second:2d}' \
               r'_bst_{num:2d}{Polarisation}.dat'
@@ -85,11 +87,14 @@ class ILOFARMode357Client(GenericClient):
             return QueryResponse(metalist, client=self)
 
         tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
-        scraper = Scraper(self.baseurl, regex=True)
-        filesmeta = scraper._extract_files_meta(tr, extractor=self.pattern)
-        for i in filesmeta:
-            rowdict = self.post_search_hook(i, matchdict)
-            metalist.append(rowdict)
+
+        for dataset in DATASET_NAMES:
+            url = self.baseurl.format(dataset=dataset)
+            scraper = Scraper(url, regex=True)
+            filesmeta = scraper._extract_files_meta(tr, extractor=self.pattern)
+            for i in filesmeta:
+                rowdict = self.post_search_hook(i, matchdict)
+                metalist.append(rowdict)
 
         query_response = QueryResponse(metalist, client=self)
         mask = np.full(len(query_response), True)

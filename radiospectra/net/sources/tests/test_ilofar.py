@@ -30,13 +30,15 @@ def html_responses():
 @mock.patch('sunpy.util.scraper.urlopen')
 def test_ilofar_client(mock_urlopen, client, html_responses):
     mock_urlopen.return_value.read = mock.MagicMock()
-    mock_urlopen.return_value.read.side_effect = html_responses
+    mock_urlopen.return_value.read.side_effect = html_responses * 2
     mock_urlopen.close = mock.MagicMock(return_value=None)
     atr = a.Time('2018/06/01', '2018/06/02')
     query = client.search(atr)
 
     called_urls = ['https://data.lofar.ie/2018/06/01/bst/kbt/rcu357_1beam/',
-                   'https://data.lofar.ie/2018/06/02/bst/kbt/rcu357_1beam/']
+                   'https://data.lofar.ie/2018/06/02/bst/kbt/rcu357_1beam/',
+                   'https://data.lofar.ie/2018/06/01/bst/kbt/rcu357_1beam_datastream/',
+                   'https://data.lofar.ie/2018/06/02/bst/kbt/rcu357_1beam_datastream/']
     assert called_urls == [call[0][0] for call in mock_urlopen.call_args_list]
     assert len(query) == 8
     assert query[0]['Source'] == 'ILOFAR'
@@ -65,7 +67,7 @@ def test_ilofar_client_polarisation(mock_urlopen, client, html_responses):
 @mock.patch('sunpy.util.scraper.urlopen')
 def test_ilofar_client_polarisation(mock_urlopen, client, html_responses):
     mock_urlopen.return_value.read = mock.MagicMock()
-    mock_urlopen.return_value.read.side_effect = html_responses * 3
+    mock_urlopen.return_value.read.side_effect = html_responses * 6
     mock_urlopen.close = mock.MagicMock(return_value=None)
     atr = a.Time('2018/06/01', '2018/06/02')
     query_both_low = client.search(atr, a.Wavelength(1*u.MHz, 5*u.MHz))
@@ -94,3 +96,13 @@ def test_fido():
     assert query[0]['Provider'] == 'ILOFAR'
     assert query[0]['Start Time'].iso == '2018-06-01 10:00:41.000'
     assert query[0]['Polarisation'] == 'X'
+
+
+@pytest.mark.remote_data
+def test_fido_other_dataset():
+    atr = a.Time('2021/08/01', '2021/10/01')
+    query = Fido.search(atr, a.Instrument('ILOFAR'))
+
+    assert isinstance(query[0].client, ILOFARMode357Client)
+    query = query[0]
+    assert len(query) == 34
