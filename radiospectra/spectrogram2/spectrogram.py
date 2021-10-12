@@ -20,6 +20,7 @@ import astropy.units as u
 from astropy.io.fits import Header
 from astropy.time import Time
 from astropy.visualization import quantity_support
+from sunpy import log
 from sunpy.data import cache
 from sunpy.io import fits
 from sunpy.net import attrs as a
@@ -567,6 +568,11 @@ class SpectrogramFactory(BasicRegistrationFactory):
             polarisation = file.stem[-1]
 
             num_times = data.shape[0] / num_subbands
+            if not num_times.is_integer():
+                log.warning('BST file seems incomplete dropping incomplete frequencies')
+                num_times = np.floor(num_times).astype(int)
+                truncate = num_times * num_subbands
+                data = data[:truncate]
             data = data.reshape(-1, num_subbands).T  # (Freq x Time).T = (Time x Freq)
             dt = np.arange(num_times) * 1 * u.s
             start_time = Time.strptime(file.name.split('_bst')[0], "%Y%m%d_%H%M%S")

@@ -30,28 +30,27 @@ class ILOFARMode357Client(GenericClient):
     <sunpy.net.fido_factory.UnifiedResponse object ...
     Results from 1 Provider:
     <BLANKLINE>
-    10 Results from the ILOFARMode357Client:
-           Start Time               End Time        Instrument ... num Polarisation
-    ----------------------- ----------------------- ---------- ... --- ------------
-    2021-09-14 07:39:13.000 2021-09-14 07:39:13.999     ILOFAR ...   0            X
-    2021-09-14 07:39:13.000 2021-09-14 07:39:13.999     ILOFAR ...   0            Y
-    2021-09-01 08:07:29.000 2021-09-01 08:07:29.999     ILOFAR ...   0            X
-    2021-09-01 08:07:29.000 2021-09-01 08:07:29.999     ILOFAR ...   0            Y
-    2021-09-07 08:07:52.000 2021-09-07 08:07:52.999     ILOFAR ...   0            X
-    2021-09-07 08:07:52.000 2021-09-07 08:07:52.999     ILOFAR ...   0            Y
-    2021-09-08 08:04:07.000 2021-09-08 08:04:07.999     ILOFAR ...   0            X
-    2021-09-08 08:04:07.000 2021-09-08 08:04:07.999     ILOFAR ...   0            Y
-    2021-09-08 10:34:31.000 2021-09-08 10:34:31.999     ILOFAR ...   0            X
-    2021-09-08 10:34:31.000 2021-09-08 10:34:31.999     ILOFAR ...   0            Y
+           Start Time               End Time        ... PolType Polarisation
+    ----------------------- ----------------------- ... ------- ------------
+    2021-09-14 07:39:13.000 2021-09-14 07:39:13.999 ...       X            X
+    2021-09-14 07:39:13.000 2021-09-14 07:39:13.999 ...       X            Y
+    2021-09-01 08:07:29.000 2021-09-01 08:07:29.999 ...       X            X
+    2021-09-01 08:07:29.000 2021-09-01 08:07:29.999 ...       X            Y
+    2021-09-07 08:07:52.000 2021-09-07 08:07:52.999 ...       X            X
+    2021-09-07 08:07:52.000 2021-09-07 08:07:52.999 ...       X            Y
+    2021-09-08 08:04:07.000 2021-09-08 08:04:07.999 ...       X            X
+    2021-09-08 08:04:07.000 2021-09-08 08:04:07.999 ...       X            Y
+    2021-09-08 10:34:31.000 2021-09-08 10:34:31.999 ...       X            X
+    2021-09-08 10:34:31.000 2021-09-08 10:34:31.999 ...       X            Y
     <BLANKLINE>
     <BLANKLINE>
     """
 
     baseurl = (r'https://data.lofar.ie/%Y/%m/%d/bst/kbt/{dataset}/'
-               r'%Y%m%d_\d{{6}}_bst_\d{{2}}\S{{1}}.dat')
+               r'%Y%m%d_\d{{6}}_bst_00\S{{1}}.dat')
 
     pattern = r'{}/{year:4d}{month:2d}{day:2d}_{hour:2d}{minute:2d}{second:2d}' \
-              r'_bst_{num:2d}{Polarisation}.dat'
+              r'_bst_00{Polarisation}.dat'
 
     @classmethod
     def _check_wavelengths(cls, wavelength):
@@ -108,6 +107,9 @@ class ILOFARMode357Client(GenericClient):
         if len(pol) == 1:
             pol = pol.upper()
             mask = mask & query_response['Polarisation'] == pol
+
+        if query_response:
+            query_response.remove_column('PolType')
 
         return query_response[mask]
 

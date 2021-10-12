@@ -105,4 +105,4 @@ def test_fido_other_dataset():
 
     assert isinstance(query[0].client, ILOFARMode357Client)
     query = query[0]
-    assert len(query) == 34
+    assert len(query) == 38
