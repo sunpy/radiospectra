@@ -6,11 +6,14 @@ import numpy as np
 import pytest
 
 import astropy.units as u
+import sunpy
 from astropy.time import Time
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 from radiospectra.net.sources.psp import RFSClient
+
+MOCK_PATH = "sunpy.net.scraper.urlopen" if sunpy.__version__ >= "3.1.0" else "sunpy.util.scraper.urlopen"
 
 
 @pytest.fixture
@@ -60,7 +63,7 @@ def http_responces():
     return response_htmls
 
 
-@mock.patch('sunpy.util.scraper.urlopen')
+@mock.patch(MOCK_PATH)
 def test_search_with_wavelength(mock_urlopen, client, http_responces):
     mock_urlopen.return_value.read = mock.MagicMock()
     mock_urlopen.return_value.read.side_effect = http_responces

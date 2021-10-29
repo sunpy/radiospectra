@@ -5,10 +5,13 @@ import numpy as np
 import pytest
 
 import astropy.units as u
+import sunpy
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 from radiospectra.net.sources.wind import WAVESClient
+
+MOCK_PATH = "sunpy.net.scraper.urlopen" if sunpy.__version__ >= "3.1.0" else "sunpy.util.scraper.urlopen"
 
 
 @pytest.fixture
@@ -69,7 +72,7 @@ def html_responses():
     return [http_cont_rad1, http_cont_rad2]
 
 
-@mock.patch('sunpy.util.scraper.urlopen')
+@mock.patch(MOCK_PATH)
 def test_waves_client(mock_urlopen, client, html_responses):
     mock_urlopen.return_value.read = mock.MagicMock()
     mock_urlopen.return_value.read.side_effect = html_responses
