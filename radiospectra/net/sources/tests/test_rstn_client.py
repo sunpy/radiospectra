@@ -3,11 +3,14 @@ from unittest import mock
 
 import pytest
 
+import sunpy
 from sunpy.net import attrs as a
 from sunpy.net.fido_factory import Fido
 
 from radiospectra.net.attrs import Observatory
 from radiospectra.net.sources.rstn import RSTNClient
+
+MOCK_PATH = "sunpy.net.scraper.urlopen" if sunpy.__version__ >= "3.1.0" else "sunpy.util.scraper.urlopen"
 
 
 @pytest.fixture
@@ -31,7 +34,7 @@ def http_responses():
     return response_htmls
 
 
-@mock.patch('sunpy.util.scraper.urlopen')
+@mock.patch(MOCK_PATH)
 def test_client(urlopen, client, http_responses):
     urlopen.return_value.read = mock.MagicMock()
     urlopen.return_value.read.side_effect = http_responses
@@ -45,7 +48,7 @@ def test_client(urlopen, client, http_responses):
     assert len(query) == 3
 
 
-@mock.patch('sunpy.util.scraper.urlopen')
+@mock.patch(MOCK_PATH)
 def test_client_observatory(urlopen, client, http_responses):
     urlopen.return_value.read = mock.MagicMock()
     urlopen.return_value.read.side_effect = http_responses[-1:]

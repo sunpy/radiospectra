@@ -5,11 +5,14 @@ import numpy as np
 import pytest
 
 import astropy.units as u
+import sunpy
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 from radiospectra.net.attrs import Spacecraft
 from radiospectra.net.sources.stereo import SWAVESClient
+
+MOCK_PATH = "sunpy.net.scraper.urlopen" if sunpy.__version__ >= "3.1.0" else "sunpy.util.scraper.urlopen"
 
 
 @pytest.fixture
@@ -86,7 +89,7 @@ swaves_average_20100104_b_lfr.dat</a> 13-Jul-2010 20:52  548K
 </body>"""
 
 
-@mock.patch('sunpy.util.scraper.urlopen')
+@mock.patch(MOCK_PATH)
 def test_swaves_client(mock_urlopen, client):
     mock_urlopen.return_value.read = mock.MagicMock(return_value=http_cont)
     mock_urlopen.close = mock.MagicMock(return_value=None)
