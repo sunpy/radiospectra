@@ -7,14 +7,14 @@ import pytest
 from sunpy.net import attrs as a
 from sunpy.net.fido_factory import Fido
 
-from radiospectra.net.sources.callisto import CALLISTOClient, Observatory
+from radiospectra.net.sources.ecallisto import Observatory, eCALLISTOClient
 
 MOCK_PATH = "sunpy.net.scraper.urlopen"
 
 
 @pytest.fixture
 def client():
-    return CALLISTOClient()
+    return eCALLISTOClient()
 
 
 @pytest.fixture
@@ -25,6 +25,14 @@ def http_responses():
         with gzip.open(p) as f:
             response_htmls.append(f.read())
     return response_htmls
+
+
+@pytest.fixture
+def http_response_alt():
+    path = Path(__file__).parent / 'data' / 'ecallisto_resp_alt_format.html'
+    with path.open('r') as file:
+        response_html = file.read()
+        return response_html
 
 
 @mock.patch(MOCK_PATH)
@@ -40,7 +48,17 @@ def test_client(urlopen, client, http_responses):
 
 
 @mock.patch(MOCK_PATH)
-def test_client_with_observeratory(urlopen, client, http_responses):
+def test_client_alt_format(urlopen, client, http_response_alt):
+    urlopen.return_value.read = mock.MagicMock()
+    urlopen.return_value.read.return_value = http_response_alt
+    urlopen.close = mock.MagicMock(return_value=None)
+    query = client.search(a.Time('2010/03/27 00:00', '2010/03/27 23:59'),
+                          a.Instrument('eCALLISTO'), Observatory('PHOENIX3-B1'))
+    assert len(query) == 24
+
+
+@mock.patch(MOCK_PATH)
+def test_client_with_observatory(urlopen, client, http_responses):
     urlopen.return_value.read = mock.MagicMock()
     urlopen.return_value.read.side_effect = http_responses
     urlopen.close = mock.MagicMock(return_value=None)
