@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-__all__ = ['Spectrum']
+__all__ = ["Spectrum"]
 
 
 class Spectrum(np.ndarray):
@@ -27,12 +27,13 @@ class Spectrum(np.ndarray):
     >>> spec = Spectrum(data, freq_axis)
     >>> spec.peek()   # doctest: +SKIP
     """
+
     def __new__(cls, data, *args, **kwargs):
         return np.asarray(data).view(cls)
 
     def __init__(self, data, freq_axis):
         if np.shape(data)[0] != np.shape(freq_axis)[0]:
-            raise ValueError('Dimensions of data and frequency axis do not match')
+            raise ValueError("Dimensions of data and frequency axis do not match")
         self.freq_axis = freq_axis
 
     def plot(self, axes=None, **matplot_args):

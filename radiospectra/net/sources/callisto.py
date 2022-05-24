@@ -8,9 +8,10 @@ from radiospectra.net.attrs import Observatory
 
 class CALLISTOClient(GenericClient):
     """
-    Provides access to eCallisto radio spectrometer network
-    `archive <http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/>`__ at
-    `FHNW,  <https://spdf.gsfc.nasa.gov>`__.
+    Provides access to eCallisto radio spectrometer network `archive.
+
+    <http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/>`__
+    at `FHNW,  <https://spdf.gsfc.nasa.gov>`__.
 
     For further information `see <http://www.e-callisto.org>`--
 
@@ -38,18 +39,23 @@ class CALLISTOClient(GenericClient):
     <BLANKLINE>
     <BLANKLINE>
     """
-    baseurl = r'http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/' \
-              r'%Y/%m/%d/{obs}_%Y%m%d_%H%M%S_(\d){{2}}.fit.gz'
-    pattern = r'{}/2002-20yy_Callisto/{year:4d}/{month:2d}/{day:2d}/' \
-              r'{Observatory}_{year:4d}{month:2d}{day:2d}' \
-              r'_{hour:2d}{minute:2d}{second:2d}_{ID:2d}.fit.gz'
+
+    baseurl = (
+        r"http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/"
+        r"%Y/%m/%d/{obs}_%Y%m%d_%H%M%S_(\d){{2}}.fit.gz"
+    )
+    pattern = (
+        r"{}/2002-20yy_Callisto/{year:4d}/{month:2d}/{day:2d}/"
+        r"{Observatory}_{year:4d}{month:2d}{day:2d}"
+        r"_{hour:2d}{minute:2d}{second:2d}_{ID:2d}.fit.gz"
+    )
 
     @classmethod
     def pre_search_hook(cls, *args, **kwargs):
         baseurl, pattern, matchdict = super().pre_search_hook(*args, **kwargs)
-        obs = matchdict.pop('Observatory')
-        if obs[0] == '*':
-            baseurl = baseurl.format(obs=r'.*')
+        obs = matchdict.pop("Observatory")
+        if obs[0] == "*":
+            baseurl = baseurl.format(obs=r".*")
         else:
             # Need case sensitive so have to override
             obs_attr = [a for a in args if isinstance(a, Observatory)][0]
@@ -59,24 +65,23 @@ class CALLISTOClient(GenericClient):
     def post_search_hook(self, exdict, matchdict):
         original = super().post_search_hook(exdict, matchdict)
         # Files are 15 minute duration
-        original['End Time'] = original['Start Time'] + (15 * u.min - 1 * u.ms)
+        original["End Time"] = original["Start Time"] + (15 * u.min - 1 * u.ms)
         return original
 
     @classmethod
     def register_values(cls):
         adict = {
-            a.Provider: [('eCALLISTO', 'International Network of Solar Radio Spectrometers.')],
-            a.Instrument: [('eCALLISTO',
-                            'e-Callisto - International Network of Solar Radio Spectrometers.')],
-            Observatory: [('*', 'Observatory Location')]}
+            a.Provider: [("eCALLISTO", "International Network of Solar Radio Spectrometers.")],
+            a.Instrument: [("eCALLISTO", "e-Callisto - International Network of Solar Radio Spectrometers.")],
+            Observatory: [("*", "Observatory Location")],
+        }
         return adict
 
     @classmethod
     def _can_handle_query(cls, *query):
         """
-        Method the
-        `sunpy.net.fido_factory.UnifiedDownloaderFactory`
-        class uses to dispatch queries to this Client.
+        Method the `sunpy.net.fido_factory.UnifiedDownloaderFactory` class uses
+        to dispatch queries to this Client.
         """
         regattrs_dict = cls.register_values()
         optional = {k for k in regattrs_dict.keys()} - cls.required
@@ -85,7 +90,11 @@ class CALLISTOClient(GenericClient):
         for key in regattrs_dict:
             all_vals = [i[0].lower() for i in regattrs_dict[key]]
             for x in query:
-                if (isinstance(x, key) and issubclass(key, SimpleAttr)
-                        and x.type_name != 'observatory' and str(x.value).lower() not in all_vals):
+                if (
+                    isinstance(x, key)
+                    and issubclass(key, SimpleAttr)
+                    and x.type_name != "observatory"
+                    and str(x.value).lower() not in all_vals
+                ):
                     return False
         return True

@@ -6,8 +6,9 @@ from radiospectra.net.attrs import PolType
 
 class EOVSAClient(GenericClient):
     """
-    Client provides access to `Extended Owens Valley Solar Array <http://www.ovsa.njit.edu>`__
-    (EOVSA) data.
+    Client provides access to `Extended Owens Valley Solar Array.
+
+    <http://www.ovsa.njit.edu>`__ (EOVSA) data.
 
     Examples
     --------
@@ -27,36 +28,29 @@ class EOVSAClient(GenericClient):
     <BLANKLINE>
     <BLANKLINE>
     """
-    baseurl = r'http://ovsa.njit.edu/fits/synoptic/%Y/%m/%d/' \
-              r'EOVSA_.*_%Y%m%d.fts'
-    pattern = r'{}/synoptic/{year:4d}/{month:2d}/{day:2d}/' \
-              r'EOVSA_{PolType:5l}_{year:4d}{month:2d}{day:2d}.fts'
 
-    pol_map = {
-        'Total': 'TPall',
-        'Cross': 'XPall',
-        'TPall': 'Total',
-        'XPall': 'Cross'
-    }
+    baseurl = r"http://ovsa.njit.edu/fits/synoptic/%Y/%m/%d/" r"EOVSA_.*_%Y%m%d.fts"
+    pattern = r"{}/synoptic/{year:4d}/{month:2d}/{day:2d}/" r"EOVSA_{PolType:5l}_{year:4d}{month:2d}{day:2d}.fts"
+
+    pol_map = {"Total": "TPall", "Cross": "XPall", "TPall": "Total", "XPall": "Cross"}
 
     @classmethod
     def pre_search_hook(cls, *args, **kwargs):
         baseurl, pattern, matchdict = super().pre_search_hook(*args, **kwargs)
-        pol_values = [cls.pol_map[p.capitalize()] for p in matchdict['PolType']]
-        matchdict['PolType'] = pol_values
+        pol_values = [cls.pol_map[p.capitalize()] for p in matchdict["PolType"]]
+        matchdict["PolType"] = pol_values
         return baseurl, pattern, matchdict
 
     def post_search_hook(self, exdict, matchdict):
         original = super().post_search_hook(exdict, matchdict)
-        original['PolType'] = self.pol_map[original['PolType']]
+        original["PolType"] = self.pol_map[original["PolType"]]
         return original
 
     @classmethod
     def register_values(cls):
         adict = {
-            a.Provider: [('EOVSA', 'EOVSA')],
-            a.Instrument: [('EOVSA',
-                            'ExtendedOwens Valley Solar Array.')],
-            PolType: [('Total', 'Total polarisation'),
-                      ('Cross', 'Cross polarisation')]}
+            a.Provider: [("EOVSA", "EOVSA")],
+            a.Instrument: [("EOVSA", "ExtendedOwens Valley Solar Array.")],
+            PolType: [("Total", "Total polarisation"), ("Cross", "Cross polarisation")],
+        }
         return adict

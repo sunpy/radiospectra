@@ -15,13 +15,13 @@ from ..sources.callisto import CallistoSpectrogram, download, query
 
 @pytest.fixture
 def CALLISTO_IMAGE():
-    path = Path(__file__).parent / 'data' / 'BIR_20110607_062400_10.fit'
+    path = Path(__file__).parent / "data" / "BIR_20110607_062400_10.fit"
     return str(path)
 
 
 @pytest.fixture
 def CALLISTO_IMAGE_GLOB_KEY():
-    return 'BIR_*'
+    return "BIR_*"
 
 
 @pytest.fixture
@@ -37,19 +37,15 @@ def test_read(CALLISTO_IMAGE):
     assert ca.shape == (200, 3600)
     assert ca.t_delt == 0.25
     # Test linearity of time axis.
-    assert np.array_equal(
-        ca.time_axis, np.linspace(0, 0.25 * (ca.shape[1] - 1), ca.shape[1])
-    )
+    assert np.array_equal(ca.time_axis, np.linspace(0, 0.25 * (ca.shape[1] - 1), ca.shape[1]))
     assert ca.dtype == np.uint8
 
 
 @pytest.mark.remote_data
 def test_query():
-    URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/'
+    URL = "http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/"
 
-    result = list(query(
-        datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), {"BIR"}
-    ))
+    result = list(query(datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), {"BIR"}))
     RESULTS = [
         "BIR_20110922_050000_01.fit.gz",
         "BIR_20110922_051500_01.fit.gz",
@@ -70,9 +66,7 @@ def test_query():
 @pytest.mark.xfail
 def test_query_number():
 
-    result = list(query(
-        datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), {("BIR", 1)}
-    ))
+    result = list(query(datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), {("BIR", 1)}))
     RESULTS = [
         "BIR_20110922_050000_01.fit.gz",
         "BIR_20110922_051500_01.fit.gz",
@@ -91,9 +85,7 @@ def test_query_number():
 def test_download():
     directory = mkdtemp()
     try:
-        result = query(
-            datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), {("BIR", 1)}
-        )
+        result = query(datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), {("BIR", 1)})
         RESULTS = [
             "BIR_20110922_050000_01.fit.gz",
             "BIR_20110922_051500_01.fit.gz",
@@ -118,20 +110,14 @@ def test_create_file_kw(CALLISTO_IMAGE):
 
 @pytest.mark.remote_data
 def test_create_url():
-    URL = (
-        "http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/"
-        "BIR_20110922_050000_01.fit.gz"
-    )
+    URL = "http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/" "BIR_20110922_050000_01.fit.gz"
     ca = CallistoSpectrogram.create(URL)
     assert np.array_equal(ca.data, CallistoSpectrogram.read(URL).data)
 
 
 @pytest.mark.remote_data
 def test_create_url_kw():
-    URL = (
-        "http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/"
-        "BIR_20110922_050000_01.fit.gz"
-    )
+    URL = "http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/" "BIR_20110922_050000_01.fit.gz"
     ca = CallistoSpectrogram.create(url=URL)
     assert np.array_equal(ca.data, CallistoSpectrogram.read(URL).data)
 
@@ -148,20 +134,15 @@ def test_create_single_glob(CALLISTO_IMAGE, CALLISTO_IMAGE_GLOB_INDEX, CALLISTO_
 #     ca = CallistoSpectrogram.create(singlepattern=PATTERN)
 #     assert np.array_equal(ca[0].data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
 
+
 def test_create_glob_kw(CALLISTO_IMAGE, CALLISTO_IMAGE_GLOB_INDEX, CALLISTO_IMAGE_GLOB_KEY):
-    PATTERN = os.path.join(
-        os.path.dirname(CALLISTO_IMAGE),
-        CALLISTO_IMAGE_GLOB_KEY
-    )
+    PATTERN = os.path.join(os.path.dirname(CALLISTO_IMAGE), CALLISTO_IMAGE_GLOB_KEY)
     ca = CallistoSpectrogram.create(pattern=PATTERN)[CALLISTO_IMAGE_GLOB_INDEX]
     assert_allclose(ca.data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
 
 
 def test_create_glob(CALLISTO_IMAGE_GLOB_KEY, CALLISTO_IMAGE):
-    PATTERN = os.path.join(
-        str(Path(CALLISTO_IMAGE).parent),
-        CALLISTO_IMAGE_GLOB_KEY
-    )
+    PATTERN = os.path.join(str(Path(CALLISTO_IMAGE).parent), CALLISTO_IMAGE_GLOB_KEY)
     ca = CallistoSpectrogram.create(PATTERN)
     assert len([ca]) == 1
 
@@ -174,31 +155,19 @@ def test_minimum_pairs_commotative():
 
 
 def test_minimum_pairs_end():
-    assert (
-        list(minimal_pairs([0, 1, 2, 4], [1, 2, 3, 4])) ==
-        [(1, 0, 0), (2, 1, 0), (3, 3, 0)]
-    )
+    assert list(minimal_pairs([0, 1, 2, 4], [1, 2, 3, 4])) == [(1, 0, 0), (2, 1, 0), (3, 3, 0)]
 
 
 def test_minimum_pairs_end_more():
-    assert (
-        list(minimal_pairs([0, 1, 2, 4, 8], [1, 2, 3, 4])) ==
-        [(1, 0, 0), (2, 1, 0), (3, 3, 0)]
-    )
+    assert list(minimal_pairs([0, 1, 2, 4, 8], [1, 2, 3, 4])) == [(1, 0, 0), (2, 1, 0), (3, 3, 0)]
 
 
 def test_minimum_pairs_end_diff():
-    assert (
-        list(minimal_pairs([0, 1, 2, 8], [1, 2, 3, 4])) ==
-        [(1, 0, 0), (2, 1, 0), (3, 3, 4)]
-    )
+    assert list(minimal_pairs([0, 1, 2, 8], [1, 2, 3, 4])) == [(1, 0, 0), (2, 1, 0), (3, 3, 4)]
 
 
 def test_closest():
-    assert (
-        list(minimal_pairs([50, 60], [0, 10, 20, 30, 40, 51, 52])) ==
-        [(0, 5, 1), (1, 6, 8)]
-    )
+    assert list(minimal_pairs([50, 60], [0, 10, 20, 30, 40, 51, 52])) == [(0, 5, 1), (1, 6, 8)]
 
 
 def test_homogenize_factor():
@@ -212,13 +181,13 @@ def test_homogenize_factor():
         datetime(2011, 1, 1, 1),
         0,
         1,
-        'Time',
-        'Frequency',
-        'Test',
+        "Time",
+        "Frequency",
+        "Test",
         None,
         None,
         None,
-        False
+        False,
     )
     b = 2 * a
     c2 = CallistoSpectrogram(
@@ -229,18 +198,16 @@ def test_homogenize_factor():
         datetime(2011, 1, 1, 1),
         0,
         1,
-        'Time',
-        'Frequency',
-        'Test',
+        "Time",
+        "Frequency",
+        "Test",
         None,
         None,
         None,
-        False
+        False,
     )
 
-    pairs_indices, factors, constants = c1._homogenize_params(
-        c2, 0
-    )
+    pairs_indices, factors, constants = c1._homogenize_params(c2, 0)
 
     assert pairs_indices == [(0, 0)]
     assert_array_almost_equal(factors, [0.5], 2)
@@ -259,13 +226,13 @@ def test_homogenize_constant():
         datetime(2011, 1, 1, 1),
         0,
         1,
-        'Time',
-        'Frequency',
-        'Test',
+        "Time",
+        "Frequency",
+        "Test",
         None,
         None,
         None,
-        False
+        False,
     )
     b = a + 10
     c2 = CallistoSpectrogram(
@@ -276,18 +243,16 @@ def test_homogenize_constant():
         datetime(2011, 1, 1, 1),
         0,
         1,
-        'Time',
-        'Frequency',
-        'Test',
+        "Time",
+        "Frequency",
+        "Test",
         None,
         None,
         None,
-        False
+        False,
     )
 
-    pairs_indices, factors, constants = c1._homogenize_params(
-        c2, 0
-    )
+    pairs_indices, factors, constants = c1._homogenize_params(c2, 0)
 
     assert pairs_indices == [(0, 0)]
     assert_array_almost_equal(factors, [1], 2)
@@ -306,13 +271,13 @@ def test_homogenize_both():
         datetime(2011, 1, 1, 1),
         0,
         1,
-        'Time',
-        'Frequency',
-        'Test',
+        "Time",
+        "Frequency",
+        "Test",
         None,
         None,
         None,
-        False
+        False,
     )
     b = 2 * a + 1
     c2 = CallistoSpectrogram(
@@ -323,18 +288,16 @@ def test_homogenize_both():
         datetime(2011, 1, 1, 1),
         0,
         1,
-        'Time',
-        'Frequency',
-        'Test',
+        "Time",
+        "Frequency",
+        "Test",
         None,
         None,
         None,
-        False
+        False,
     )
 
-    pairs_indices, factors, constants = c1._homogenize_params(
-        c2, 0
-    )
+    pairs_indices, factors, constants = c1._homogenize_params(c2, 0)
 
     assert pairs_indices == [(0, 0)]
     assert_array_almost_equal(factors, [0.5], 2)
@@ -353,37 +316,32 @@ def test_homogenize_rightfq():
         datetime(2011, 1, 1, 1),
         0,
         1,
-        'Time',
-        'Frequency',
-        'Test',
+        "Time",
+        "Frequency",
+        "Test",
         None,
         None,
         None,
-        False
+        False,
     )
     b = 2 * a + 1
     c2 = CallistoSpectrogram(
-        np.concatenate([
-            np.arange(3600)[np.newaxis, :], b,
-            np.arange(3600)[np.newaxis, :]
-        ], 0),
+        np.concatenate([np.arange(3600)[np.newaxis, :], b, np.arange(3600)[np.newaxis, :]], 0),
         np.arange(3600),
         np.array([0, 1, 2]),
         datetime(2011, 1, 1),
         datetime(2011, 1, 1, 1),
         0,
         1,
-        'Time',
-        'Frequency',
-        'Test',
+        "Time",
+        "Frequency",
+        "Test",
         None,
         None,
         None,
-        False
+        False,
     )
-    pairs_indices, factors, constants = c1._homogenize_params(
-        c2, 0
-    )
+    pairs_indices, factors, constants = c1._homogenize_params(c2, 0)
     assert pairs_indices == [(0, 1)]
     assert_array_almost_equal(factors, [0.5], 2)
     assert_array_almost_equal(constants, [-0.5], 2)

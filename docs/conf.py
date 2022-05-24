@@ -1,5 +1,6 @@
 """
 Configuration file for the Sphinx documentation builder.
+
 isort:skip_file
 """
 # flake8: NOQA: E402
@@ -30,32 +31,34 @@ if missing_requirements:
 # -- Read the Docs Specific Configuration --------------------------------------
 
 # This needs to be done before sunpy is imported
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 if on_rtd:
-    os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
-    os.environ['HOME'] = '/home/docs/'
-    os.environ['LANG'] = 'C'
-    os.environ['LC_ALL'] = 'C'
-    os.environ['HIDE_PARFIVE_PROGESS'] = 'True'
+    os.environ["SUNPY_CONFIGDIR"] = "/home/docs/"
+    os.environ["HOME"] = "/home/docs/"
+    os.environ["LANG"] = "C"
+    os.environ["LC_ALL"] = "C"
+    os.environ["HIDE_PARFIVE_PROGESS"] = "True"
 
 # -- Non stdlib imports --------------------------------------------------------
 from radiospectra import __version__  # NOQA
 
 # -- Project information -------------------------------------------------------
-project = 'radiospectra'
-author = 'The SunPy Community'
-copyright = '{}, {}'.format(datetime.datetime.now().year, author)
+project = "radiospectra"
+author = "The SunPy Community"
+copyright = "{}, {}".format(datetime.datetime.now().year, author)
 
 # The full version, including alpha/beta/rc tags
 release = __version__
 radiospectra_version = Version(__version__)
-is_release = not(radiospectra_version.is_prerelease or radiospectra_version.is_devrelease)
+is_release = not (radiospectra_version.is_prerelease or radiospectra_version.is_devrelease)
 
 # For the linkcheck
-linkcheck_ignore = [r"https://doi.org/\d+",
-                    r"https://element.io/\d+",
-                    r"https://github.com/\d+",
-                    r"https://docs.sunpy.org/\d+"]
+linkcheck_ignore = [
+    r"https://doi.org/\d+",
+    r"https://element.io/\d+",
+    r"https://github.com/\d+",
+    r"https://docs.sunpy.org/\d+",
+]
 linkcheck_anchors = False
 
 # This is added to the end of RST files - a good place to put substitutions to
@@ -71,25 +74,27 @@ rst_epilog = """
 
 # Suppress warnings about overriding directives as we overload some of the
 # doctest extensions.
-suppress_warnings = ['app.add_directive', ]
+suppress_warnings = [
+    "app.add_directive",
+]
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'matplotlib.sphinxext.plot_directive',
-    'sphinx_automodapi.automodapi',
-    'sphinx_automodapi.smart_resolver',
-    'sphinx_changelog',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.coverage',
-    'sphinx.ext.doctest',
-    'sphinx.ext.inheritance_diagram',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.todo',
-    'sphinx.ext.viewcode',
+    "matplotlib.sphinxext.plot_directive",
+    "sphinx_automodapi.automodapi",
+    "sphinx_automodapi.smart_resolver",
+    "sphinx_changelog",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.coverage",
+    "sphinx.ext.doctest",
+    "sphinx.ext.inheritance_diagram",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.todo",
+    "sphinx.ext.viewcode",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -102,20 +107,20 @@ extensions = [
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
 # directly to the root of the documentation.
-html_extra_path = ['robots.txt']
+html_extra_path = ["robots.txt"]
 
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-source_suffix = '.rst'
+source_suffix = ".rst"
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents. Set to the "smart" one.
-default_role = 'obj'
+default_role = "obj"
 
 # Disable having a separate return type row
 napoleon_use_rtype = False
@@ -173,10 +178,10 @@ from sunpy_sphinx_theme.conf import *  # NOQA
 graphviz_output_format = "svg"
 
 graphviz_dot_args = [
-    '-Nfontsize=10',
-    '-Nfontname=Helvetica Neue, Helvetica, Arial, sans-serif',
-    '-Efontsize=10',
-    '-Efontname=Helvetica Neue, Helvetica, Arial, sans-serif',
-    '-Gfontsize=10',
-    '-Gfontname=Helvetica Neue, Helvetica, Arial, sans-serif'
+    "-Nfontsize=10",
+    "-Nfontname=Helvetica Neue, Helvetica, Arial, sans-serif",
+    "-Efontsize=10",
+    "-Efontname=Helvetica Neue, Helvetica, Arial, sans-serif",
+    "-Gfontsize=10",
+    "-Gfontname=Helvetica Neue, Helvetica, Arial, sans-serif",
 ]

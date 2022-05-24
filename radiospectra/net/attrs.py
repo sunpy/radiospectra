@@ -1,6 +1,6 @@
 from sunpy.net.attr import SimpleAttr
 
-__all__ = ['Spacecraft', 'Observatory', 'PolType']
+__all__ = ["Spacecraft", "Observatory", "PolType"]
 
 
 class Spacecraft(SimpleAttr):
@@ -11,11 +11,11 @@ class Spacecraft(SimpleAttr):
 
 class Observatory(SimpleAttr):
     """
-    Observatory
+    Observatory.
     """
 
 
 class PolType(SimpleAttr):
     """
-    Polarisation Type
+    Polarisation Type.
     """
