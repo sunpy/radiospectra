@@ -10,7 +10,7 @@ from sunpy.net.fido_factory import Fido
 from radiospectra.net.attrs import Observatory
 from radiospectra.net.sources.rstn import RSTNClient
 
-MOCK_PATH = "sunpy.net.scraper.urlopen" if sunpy.__version__ >= "3.1.0" else "sunpy.util.scraper.urlopen"
+MOCK_PATH = "sunpy.net.scraper.urlopen"
 
 
 @pytest.fixture

@@ -2,7 +2,7 @@ import astropy.units as u
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import GenericClient, QueryResponse
 from sunpy.time.timerange import TimeRange
-from sunpy.util.scraper import Scraper
+from sunpy.net.scraper import Scraper
 
 __all__ = ["RFSClient"]
 

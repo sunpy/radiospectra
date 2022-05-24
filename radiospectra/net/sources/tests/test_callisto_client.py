@@ -10,8 +10,7 @@ from sunpy.net.fido_factory import Fido
 
 from radiospectra.net.sources.callisto import CALLISTOClient, Observatory
 
-MOCK_PATH = "sunpy.net.scraper.urlopen" if sunpy.__version__ >= "3.1.0" else "sunpy.util.scraper.urlopen"
-
+MOCK_PATH = "sunpy.net.scraper.urlopen"
 
 @pytest.fixture
 def client():

@@ -11,7 +11,7 @@ from sunpy.net import attrs as a
 
 from radiospectra.net.sources.wind import WAVESClient
 
-MOCK_PATH = "sunpy.net.scraper.urlopen" if sunpy.__version__ >= "3.1.0" else "sunpy.util.scraper.urlopen"
+MOCK_PATH = "sunpy.net.scraper.urlopen"
 
 
 @pytest.fixture
