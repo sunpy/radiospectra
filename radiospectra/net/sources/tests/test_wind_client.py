@@ -5,13 +5,12 @@ import numpy as np
 import pytest
 
 import astropy.units as u
-import sunpy
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 from radiospectra.net.sources.wind import WAVESClient
 
-MOCK_PATH = "sunpy.net.scraper.urlopen" if sunpy.__version__ >= "3.1.0" else "sunpy.util.scraper.urlopen"
+MOCK_PATH = "sunpy.net.scraper.urlopen"
 
 
 @pytest.fixture
@@ -21,8 +20,8 @@ def client():
 
 @pytest.mark.remote_data
 def test_fido():
-    atr = a.Time('2010/10/01', '2010/10/02')
-    res = Fido.search(atr, a.Instrument('waves'))
+    atr = a.Time("2010/10/01", "2010/10/02")
+    res = Fido.search(atr, a.Instrument("waves"))
 
     assert isinstance(res[0].client, WAVESClient)
     assert len(res[0]) == 4
@@ -77,35 +76,40 @@ def test_waves_client(mock_urlopen, client, html_responses):
     mock_urlopen.return_value.read = mock.MagicMock()
     mock_urlopen.return_value.read.side_effect = html_responses
     mock_urlopen.close = mock.MagicMock(return_value=None)
-    atr = a.Time('2010/01/02', '2010/01/03')
+    atr = a.Time("2010/01/02", "2010/01/03")
     query = client.search(atr)
 
-    called_urls = ['https://solar-radio.gsfc.nasa.gov/data/wind/rad1/2010/rad1/',
-                   'https://solar-radio.gsfc.nasa.gov/data/wind/rad2/2010/rad2/']
+    called_urls = [
+        "https://solar-radio.gsfc.nasa.gov/data/wind/rad1/2010/rad1/",
+        "https://solar-radio.gsfc.nasa.gov/data/wind/rad2/2010/rad2/",
+    ]
     assert called_urls == [call[0][0] for call in mock_urlopen.call_args_list]
     assert len(query) == 4
-    assert query[0]['Source'] == 'WIND'
+    assert query[0]["Source"] == "WIND"
 
     wave = [20, 1040] * u.kHz
-    assert np.array_equal(query[0]['Wavelength'], wave)
-    assert query[0]['Start Time'].datetime == datetime(2010, 1, 2)
-    assert query[0]['End Time'].datetime == datetime(2010, 1, 2, 23, 59, 59, 999000)
+    assert np.array_equal(query[0]["Wavelength"], wave)
+    assert query[0]["Start Time"].datetime == datetime(2010, 1, 2)
+    assert query[0]["End Time"].datetime == datetime(2010, 1, 2, 23, 59, 59, 999000)
 
     wave = [1075, 13825] * u.kHz
-    assert np.array_equal(query[3]['Wavelength'], wave)
-    assert query[3]['Start Time'].datetime == datetime(2010, 1, 3)
-    assert query[3]['End Time'].datetime == datetime(2010, 1, 3, 23, 59, 59, 999000)
+    assert np.array_equal(query[3]["Wavelength"], wave)
+    assert query[3]["Start Time"].datetime == datetime(2010, 1, 3)
+    assert query[3]["End Time"].datetime == datetime(2010, 1, 3, 23, 59, 59, 999000)
 
 
-@pytest.mark.parametrize("query_wave, receivers", [(a.Wavelength(1*u.GHz, 2*u.GHz), []),
-                                                   (a.Wavelength(1*u.Hz, 2*u.Hz), []),
-                                                   (a.Wavelength(20*u.kHz, 150*u.kHz), ['rad1']),
-                                                   (a.Wavelength(1.5*u.MHz, 15*u.MHz), ['rad2']),
-                                                   (a.Wavelength(5*u.MHz, 10*u.MHz), ['rad2']),
-                                                   (a.Wavelength(100*u.Hz, 100*u.kHz), ['rad1']),
-                                                   (a.Wavelength(20*u.kHz, 15*u.MHz),
-                                                    ['rad1', 'rad2']),
-                                                   (a.Wavelength(5*u.kHz, 20*u.MHz),
-                                                    ['rad1', 'rad2'])])
+@pytest.mark.parametrize(
+    "query_wave, receivers",
+    [
+        (a.Wavelength(1 * u.GHz, 2 * u.GHz), []),
+        (a.Wavelength(1 * u.Hz, 2 * u.Hz), []),
+        (a.Wavelength(20 * u.kHz, 150 * u.kHz), ["rad1"]),
+        (a.Wavelength(1.5 * u.MHz, 15 * u.MHz), ["rad2"]),
+        (a.Wavelength(5 * u.MHz, 10 * u.MHz), ["rad2"]),
+        (a.Wavelength(100 * u.Hz, 100 * u.kHz), ["rad1"]),
+        (a.Wavelength(20 * u.kHz, 15 * u.MHz), ["rad1", "rad2"]),
+        (a.Wavelength(5 * u.kHz, 20 * u.MHz), ["rad1", "rad2"]),
+    ],
+)
 def test_check_wavelength(query_wave, receivers, client):
     assert set(client._check_wavelengths(query_wave)) == set(receivers)

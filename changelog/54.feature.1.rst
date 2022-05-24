@@ -1,1 +1,0 @@
-Improve `~radiospectra.spectrogram2.spectrogram.SpectrogramFactory` input handling more inputs formats data header pairs, files, urls.

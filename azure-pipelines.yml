@@ -44,18 +44,15 @@ stages:
         coverage: codecov
         toxdeps: tox-pypi-filter
         posargs: -n=4
-
         libraries:
           apt:
             - libopenjp2-7
-
         envs:
           - linux: codestyle
             name: style_check
             pytest: false
             libraries: {}
-
-          - linux: py38
+          - linux: py310
 
   - stage: SecondPhaseTests
     displayName: Stage 2 Tests
@@ -68,30 +65,20 @@ stages:
         coverage: codecov
         toxdeps: tox-pypi-filter
         posargs: -n=4
-
         libraries:
           apt:
             - libopenjp2-7
             - graphviz
           brew:
             - openjpeg
-
         envs:
-          - macos: py37
-
+          - macos: py38
           - windows: py39
-
           - linux: build_docs
             posargs: " "
             pytest: false
-
-          - linux: py38-online
-
-          - linux: py37-oldestdeps
-
-          - linux: py38-conda
-            libraries: {}
-
+          - linux: py39-online
+          - linux: py38-oldestdeps
 
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
     - stage: CronTests
@@ -105,13 +92,13 @@ stages:
           coverage: codecov
           toxdeps: tox-pypi-filter
           posargs: -n=4
-
           libraries:
             apt:
               - libopenjp2-7
-
           envs:
-            - linux: py38-devdeps
+            - linux: py310-devdeps
+            - linux: py39-conda
+              libraries: {}
 
   # On branches which aren't main, and not Pull Requests, build the wheels but only upload them on tags
   - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), or(ne(variables['Build.SourceBranchName'], 'main'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual'))) }}:

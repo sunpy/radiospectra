@@ -1,8 +1,9 @@
 """
-Offer a callable object that dispatches based on arbitrary conditions and
-function signature. That means, whenever it is called, it finds the registered
-methods that match the input's signature and then checks for user-defined
-conditions and types.
+Offer a callable object that dispatches based on arbitrary conditions and function signature.
+
+That
+means, whenever it is called, it finds the registered methods that match the input's signature and
+then checks for user-defined conditions and types.
 
 First, we need to create a new ConditionalDispatch
 
@@ -38,7 +39,6 @@ Traceback (most recent call last):
   File "/home/florian/Projects/sunpy/sunpy/util/cond_dispatch.py", line 128, in __call__
     "There are no functions matching your input parameter "
 TypeError: There are no functions matching your input parameter signature.
-
 
 We can then add a branch for floats, giving the condition None that means
 that this branch is always executed for floats.
@@ -82,15 +82,28 @@ import numpy as np
 from sunpy.util.config import get_and_create_download_dir
 from sunpy.util.net import download_file
 
-__all__ = ['run_cls', 'matches_types', 'arginize', 'correct_argspec',
-           'matches_signature', 'ConditionalDispatch', 'fmt_argspec_types',
-           'minimal_pairs', 'get_day', 'to_signed', 'common_base', 'merge', 'Parent']
+__all__ = [
+    "run_cls",
+    "matches_types",
+    "arginize",
+    "correct_argspec",
+    "matches_signature",
+    "ConditionalDispatch",
+    "fmt_argspec_types",
+    "minimal_pairs",
+    "get_day",
+    "to_signed",
+    "common_base",
+    "merge",
+    "Parent",
+]
 
 
 def merge(items, key=(lambda x: x)):
     """
-    Given sorted lists of iterables, return new iterable that returns
-    elements of all iterables sorted with respect to key.
+    Given sorted lists of iterables, return new iterable that returns elements of all iterables.
+
+    sorted with respect to key.
     """
     state = {}
     for item in map(iter, items):
@@ -104,8 +117,7 @@ def merge(items, key=(lambda x: x)):
     while state:
         for item, (value, tk) in list(state.items()):
             # Value is biggest.
-            if all(tk >= k for it, (v, k) in list(state.items())
-                   if it is not item):
+            if all(tk >= k for it, (v, k) in list(state.items()) if it is not item):
                 yield value
                 break
         try:
@@ -128,7 +140,9 @@ def common_base(objs):
 def to_signed(dtype):
     """
     Return dtype that can hold data of passed dtype but is signed.
-    Raise ValueError if no such dtype exists.
+
+    Raise ValueError if no such dtype
+    exists.
 
     Parameters
     ----------
@@ -147,13 +161,18 @@ def to_signed(dtype):
 
 
 def get_day(dt):
-    """ Return datetime for the beginning of the day of given datetime. """
+    """
+    Return datetime for the beginning of the day of given datetime.
+    """
     return datetime(dt.year, dt.month, dt.day)
 
 
 def minimal_pairs(one, other):
-    """ Find pairs of values in one and other with minimal distance.
-    Assumes one and other are sorted in the same sort sequence.
+    """
+    Find pairs of values in one and other with minimal distance.
+
+    Assumes one and other are sorted in
+    the same sort sequence.
 
     Parameters
     ----------
@@ -193,7 +212,7 @@ def minimal_pairs(one, other):
 
 def run_cls(name):
     """
-    run_cls("foo")(cls, \\*args, \\**kwargs) -> cls.foo(\\*args, \\**kwargs)
+    Run_cls("foo")(cls, \\*args, \\**kwargs) -> cls.foo(\\*args, \\**kwargs).
     """
     fun = lambda cls, *args, **kwargs: getattr(cls, name)(*args, **kwargs)  # NOQA
     fun.__name__ = str(name)
@@ -208,11 +227,7 @@ def matches_types(fun, types, args, kwargs):
     types are given in the order they are defined in the function.
     kwargs are automatically converted into that order.
     """
-    return all(
-        isinstance(obj, cls) for obj, cls in list(zip(
-            arginize(fun, args, kwargs), types
-        ))
-    )
+    return all(isinstance(obj, cls) for obj, cls in list(zip(arginize(fun, args, kwargs), types)))
 
 
 def arginize(fun, a, kw):
@@ -223,9 +238,9 @@ def arginize(fun, a, kw):
 
     if varargs is not None:
         raise ValueError
-    names = args[len(a):]
+    names = args[len(a) :]
     if defaults:
-        defs = dict(list(zip(args[-len(defaults):], defaults)))
+        defs = dict(list(zip(args[-len(defaults) :], defaults)))
     else:
         defs = {}
     return list(a) + [kw.get(name, defs.get(name, None)) for name in names]
@@ -251,13 +266,13 @@ def matches_signature(fun, a, kw):
     if varargs is None and len(a) > len(args):
         return False
     skw = set(kw)
-    sargs = set(args[len(a):])
+    sargs = set(args[len(a) :])
 
     # There mayn't be unexpected parameters unless there is a **kwargs
     # in fun's signature.
     if keywords is None and skw - sargs != set():
         return False
-    rest = set(args[len(a):]) - set(kw)
+    rest = set(args[len(a) :]) - set(kw)
 
     # If there are any arguments that weren't passed but do not have
     # defaults, the signature does not match.
@@ -283,12 +298,12 @@ class ConditionalDispatch(object):
         def _dec(fun):
             self.add(fun, condition)
             return fun
+
         return _dec
 
     def add(self, fun, condition=None, types=None, check=True):
         """
-        Add fun to ConditionalDispatch under the condition that the arguments
-        must match.
+        Add fun to ConditionalDispatch under the condition that the arguments must match.
 
         If condition is left out, the function is executed for every
         input that matches the signature. Functions are considered in
@@ -303,50 +318,45 @@ class ConditionalDispatch(object):
         if condition is None:
             self.nones.append((fun, types))
         elif check and correct_argspec(fun) != correct_argspec(condition):
-            raise ValueError(
-                "Signature of condition must match signature of fun."
-            )
+            raise ValueError("Signature of condition must match signature of fun.")
         else:
             self.funcs.append((fun, condition, types))
 
     def __call__(self, *args, **kwargs):
         matched = False
         for fun, condition, types in self.funcs:
-            if (matches_signature(condition, args, kwargs) and
-                    (types is None or matches_types(condition, types, args, kwargs))):
+            if matches_signature(condition, args, kwargs) and (
+                types is None or matches_types(condition, types, args, kwargs)
+            ):
                 matched = True
                 if condition(*args, **kwargs):
                     return fun(*args, **kwargs)
         for fun, types in self.nones:
-            if (matches_signature(fun, args, kwargs) and
-                    (types is None or matches_types(fun, types, args, kwargs))):
+            if matches_signature(fun, args, kwargs) and (types is None or matches_types(fun, types, args, kwargs)):
                 return fun(*args, **kwargs)
 
         if matched:
-            raise TypeError(
-                "Your input did not fulfill the condition for any function."
-            )
+            raise TypeError("Your input did not fulfill the condition for any function.")
         else:
-            raise TypeError(
-                "There are no functions matching your input parameter "
-                "signature."
-            )
+            raise TypeError("There are no functions matching your input parameter " "signature.")
 
     def wrapper(self):
         return lambda *args, **kwargs: self(*args, **kwargs)
 
     def get_signatures(self, prefix="", start=0):
         """
-        Return an iterator containing all possible function signatures. If
-        prefix is given, use it as function name in signatures, else leave it
-        out. If start is given, leave out first n elements.
+        Return an iterator containing all possible function signatures.
+
+        If prefix is given, use it
+        as function name in signatures, else leave it out. If start is given, leave out first n
+        elements.
 
         If start is -1, leave out first element if the function was
         created by run_cls.
         """
         for fun, condition, types in self.funcs:
             if start == -1:
-                st = getattr(fun, 'run_cls', 0)
+                st = getattr(fun, "run_cls", 0)
             else:
                 st = start
 
@@ -356,8 +366,8 @@ class ConditionalDispatch(object):
                 args, varargs, keywords, defaults = correct_argspec(condition)
                 args = args[st:]
                 sig_str = str(inspect.signature(fun))
-                if sig_str == '(cls, *args, **kwargs)':
-                    sig_str = '(cls, \\*args, \\**kwargs)'
+                if sig_str == "(cls, *args, **kwargs)":
+                    sig_str = "(cls, \\*args, \\**kwargs)"
                 yield prefix + sig_str
 
         for fun, types in self.nones:
@@ -366,18 +376,19 @@ class ConditionalDispatch(object):
             else:
                 args, varargs, keywords = correct_argspec(condition)
                 args = args[st:]
-                if sig_str == '(cls, *args, **kwargs)':
-                    sig_str = '(cls, \\*args, \\**kwargs)'
+                if sig_str == "(cls, *args, **kwargs)":
+                    sig_str = "(cls, \\*args, \\**kwargs)"
                 yield prefix + sig_str
 
     def generate_docs(self):
         fns = (item[0] for item in chain(self.funcs, self.nones))
-        return '\n\n    '.join("{} -> :meth:`{}`".format(sig, fun.__name__)
-                               for sig, fun in
-                               # The 1 prevents the cls from incorrectly being shown in the
-                               # documentation.
-                               list(zip(self.get_signatures("create", -1), fns))
-                               )
+        return "\n\n    ".join(
+            "{} -> :meth:`{}`".format(sig, fun.__name__)
+            for sig, fun in
+            # The 1 prevents the cls from incorrectly being shown in the
+            # documentation.
+            list(zip(self.get_signatures("create", -1), fns))
+        )
 
 
 def fmt_argspec_types(fun, types, start=0):
@@ -402,10 +413,10 @@ def fmt_argspec_types(fun, types, start=0):
         else:
             spec.append("{}: {} = {}".format(key, type_.__name__, value))
     if varargs is not None:
-        spec.append('*{!s}'.format(varargs))
+        spec.append("*{!s}".format(varargs))
     if keywords is not None:
-        spec.append('**{!s}'.format(keywords))
-    return '(' + ', '.join(spec) + ')'
+        spec.append("**{!s}".format(keywords))
+    return "(" + ", ".join(spec) + ")"
 
 
 class Parent(object):
@@ -421,14 +432,18 @@ class Parent(object):
 
     @classmethod
     def from_glob(cls, pattern):
-        """ Read out files using glob (e.g., ~/BIR_2011*) pattern. Returns
-        list of objects made from all matched files.
+        """
+        Read out files using glob (e.g., ~/BIR_2011*) pattern.
+
+        Returns list of objects made from all matched files.
         """
         return cls.read_many(glob.glob(pattern))
 
     @classmethod
     def from_single_glob(cls, singlepattern):
-        """ Read out a single file using glob (e.g., ~/BIR_2011*) pattern.
+        """
+        Read out a single file using glob (e.g., ~/BIR_2011*) pattern.
+
         If more than one file matches the pattern, raise ValueError.
         """
         matches = glob.glob(os.path.expanduser(singlepattern))
@@ -438,28 +453,32 @@ class Parent(object):
 
     @classmethod
     def from_files(cls, filenames):
-        """ Return list of object read from given list of
-        filenames. """
+        """
+        Return list of object read from given list of filenames.
+        """
         filenames = list(map(os.path.expanduser, filenames))
         return cls.read_many(filenames)
 
     @classmethod
     def from_file(cls, filename):
-        """ Return object from file. """
+        """
+        Return object from file.
+        """
         filename = os.path.expanduser(filename)
         return cls.read(filename)
 
     @classmethod
     def from_dir(cls, directory):
-        """ Return list that contains all files in the directory read in. """
+        """
+        Return list that contains all files in the directory read in.
+        """
         directory = os.path.expanduser(directory)
-        return cls.read_many(
-            os.path.join(directory, elem) for elem in os.listdir(directory)
-        )
+        return cls.read_many(os.path.join(directory, elem) for elem in os.listdir(directory))
 
     @classmethod
     def from_url(cls, url):
-        """ Return object read from URL.
+        """
+        Return object read from URL.
 
         Parameters
         ----------
@@ -471,43 +490,32 @@ class Parent(object):
 
 
 Parent._create.add(
-    run_cls('from_file'),
-    lambda cls, filename: os.path.isfile(os.path.expanduser(filename)),
-    [type, str], check=False
+    run_cls("from_file"), lambda cls, filename: os.path.isfile(os.path.expanduser(filename)), [type, str], check=False
 )
 Parent._create.add(
     # pylint: disable=W0108
     # The lambda is necessary because introspection is performed on the
     # argspec of the function.
-    run_cls('from_dir'),
+    run_cls("from_dir"),
     lambda cls, directory: os.path.isdir(os.path.expanduser(directory)),
-    [type, str], check=False
+    [type, str],
+    check=False,
 )
 # If it is not a kwarg and only one matches, do not return a list.
 Parent._create.add(
-    run_cls('from_single_glob'),
-    lambda cls, singlepattern: ('*' in singlepattern and
-                                len(glob.glob(
-                                    os.path.expanduser(singlepattern))) == 1),
-    [type, str], check=False
+    run_cls("from_single_glob"),
+    lambda cls, singlepattern: ("*" in singlepattern and len(glob.glob(os.path.expanduser(singlepattern))) == 1),
+    [type, str],
+    check=False,
 )
 # This case only gets executed under the condition that the previous one wasn't.
 # This is either because more than one file matched, or because the user
 # explicitly used pattern=, in both cases we want a list.
 Parent._create.add(
-    run_cls('from_glob'),
-    lambda cls, pattern: '*' in pattern and glob.glob(
-        os.path.expanduser(pattern)
-    ),
-    [type, str], check=False
+    run_cls("from_glob"),
+    lambda cls, pattern: "*" in pattern and glob.glob(os.path.expanduser(pattern)),
+    [type, str],
+    check=False,
 )
-Parent._create.add(
-    run_cls('from_files'),
-    lambda cls, filenames: True,
-    types=[type, list], check=False
-)
-Parent._create.add(
-    run_cls('from_url'),
-    lambda cls, url: True,
-    types=[type, str], check=False
-)
+Parent._create.add(run_cls("from_files"), lambda cls, filenames: True, types=[type, list], check=False)
+Parent._create.add(run_cls("from_url"), lambda cls, url: True, types=[type, str], check=False)

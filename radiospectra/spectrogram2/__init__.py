@@ -1,5 +1,6 @@
 """
-The spectrogram2 module aims to provide a more sunpy-like interface to radiospectra data similar to
+The spectrogram2 module aims to provide a more sunpy-like interface to radiospectra data similar to.
+
 that of `~sunpy.map.Map` and `~sunpy.timeseries.TimeSeries`.
 """
 
