@@ -10,8 +10,8 @@ __all__ = ["RSTNClient"]
 
 class RSTNClient(GenericClient):
     """
-    Radio Spectrometer Telescope Network (RSTN) hosted at NOAA `National
-    Geophysical Data <https://www.ngdc.noaa.gov>`__ (NGDC) archive.
+    Radio Spectrometer Telescope Network (RSTN) hosted at NOAA
+    `National Geophysical Data <https://www.ngdc.noaa.gov>`__ (NGDC) archive.
 
     Examples
     --------

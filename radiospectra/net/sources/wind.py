@@ -20,10 +20,8 @@ RECEIVER_EXT = {
 
 class WAVESClient(GenericClient):
     """
-    Provides access to `WIND WAVES`_ radio `data archive`_.
-
-    .. _`WIND WAVES`: https://solar-radio.gsfc.nasa.gov/wind/instrument.html
-    .. _`data archive`: https://solar-radio.gsfc.nasa.gov/data/wind
+    Provides access to `WIND WAVES <https://solar- radio.gsfc.nasa.gov/wind/instrument.html>`__ radio
+    `data archive <https://solar-radio.gsfc.nasa.gov/data/wind>`__.
 
     Examples
     --------
@@ -55,8 +53,9 @@ class WAVESClient(GenericClient):
     @classmethod
     def _check_wavelengths(cls, wavelength):
         """
-        Check for overlap between given wavelength and receiver frequency
-        coverage defined in `RECEIVER_FREQUENCIES`.
+        Check for overlap between given wavelength and receiver frequency coverage defined in.
+
+        `RECEIVER_FREQUENCIES`.
 
         Parameters
         ----------
@@ -122,9 +121,9 @@ class WAVESClient(GenericClient):
 
     def post_search_hook(self, exdict, matchdict):
         """
-        This method converts 'rad1' and 'rad1' in the url's metadata to the
-        frequency ranges of for low and high frequency receivers and removes
-        the ext.
+        This method converts 'rad1' and 'rad1' in the url's metadata to the frequency ranges of for.
+
+        low and high frequency receivers and removes the ext.
         """
         rowdict = super().post_search_hook(exdict, matchdict)
         rowdict.pop("ext", None)

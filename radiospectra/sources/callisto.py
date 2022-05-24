@@ -208,8 +208,10 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     @classmethod
     def read(cls, filename, **kwargs):
         """
-        Reads in FITS file and return a new CallistoSpectrogram. Any unknown
-        (i.e. any except filename) keyword arguments get passed to fits.open.
+        Reads in FITS file and return a new CallistoSpectrogram.
+
+        Any unknown (i.e. any except
+        filename) keyword arguments get passed to fits.open.
 
         Parameters
         ----------
@@ -365,8 +367,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     @classmethod
     def from_range(cls, instrument, start, end, **kwargs):
         """
-        Automatically download data from instrument between start and end and
-        join it together.
+        Automatically download data from instrument between start and end and join it together.
 
         Parameters
         ----------
@@ -422,8 +423,9 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     def _homogenize_params(self, other, maxdiff=1):
         """
-        Return triple with a tuple of indices (in self and other,
-        respectively), factors and constants at these frequencies.
+        Return triple with a tuple of indices (in self and other, respectively), factors and.
+
+        constants at these frequencies.
 
         Parameters
         ----------
@@ -453,10 +455,11 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     def homogenize(self, other, maxdiff=1):
         """
         Return overlapping part of self and other as (self, other) tuple.
-        Homogenize intensities so that the images can be used with
-        combine_frequencies. Note that this works best when most of the picture
-        is signal, so use :meth:`in_interval` to select the subset of your
-        image before applying this method.
+
+        Homogenize intensities so
+        that the images can be used with combine_frequencies. Note that this works best when most of
+        the picture is signal, so use :meth:`in_interval` to select the subset of your image before
+        applying this method.
 
         Parameters
         ----------

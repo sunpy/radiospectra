@@ -8,17 +8,14 @@ from radiospectra.net.attrs import Observatory
 
 class CALLISTOClient(GenericClient):
     """
-    Provides access to `eCallisto radio spectrometer`_ `data archive`_.
+    Provides access to `eCallisto radio spectrometer <http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/>`__
+    `data archive <https://spdf.gsfc.nasa.gov>`__.
 
-    .. _`eCallisto radio spectrometer`_: http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/
-    .. _`data archive`: https://spdf.gsfc.nasa.gov
-
-    `For further information <http://www.e-callisto.org>`__.
+    `Further information <http://www.e-callisto.org>`__.
 
     Notes
     -----
-    For specific information on the meaning of the filename in particular the ID field please
-    `see <http://soleil.i4ds.ch/solarradio/data/readme.txt>`__
+    `Specific information on the meaning of the filename. <http://soleil.i4ds.ch/solarradio/data/readme.txt>`__
 
     Examples
     --------
@@ -80,8 +77,9 @@ class CALLISTOClient(GenericClient):
     @classmethod
     def _can_handle_query(cls, *query):
         """
-        Method the `sunpy.net.fido_factory.UnifiedDownloaderFactory` class uses
-        to dispatch queries to this Client.
+        Method the `sunpy.net.fido_factory.UnifiedDownloaderFactory` class uses to dispatch queries.
+
+        to this Client.
         """
         regattrs_dict = cls.register_values()
         optional = {k for k in regattrs_dict.keys()} - cls.required

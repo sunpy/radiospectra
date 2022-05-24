@@ -1,8 +1,9 @@
 """
-Offer a callable object that dispatches based on arbitrary conditions and
-function signature. That means, whenever it is called, it finds the registered
-methods that match the input's signature and then checks for user-defined
-conditions and types.
+Offer a callable object that dispatches based on arbitrary conditions and function signature.
+
+That
+means, whenever it is called, it finds the registered methods that match the input's signature and
+then checks for user-defined conditions and types.
 
 First, we need to create a new ConditionalDispatch
 
@@ -38,7 +39,6 @@ Traceback (most recent call last):
   File "/home/florian/Projects/sunpy/sunpy/util/cond_dispatch.py", line 128, in __call__
     "There are no functions matching your input parameter "
 TypeError: There are no functions matching your input parameter signature.
-
 
 We can then add a branch for floats, giving the condition None that means
 that this branch is always executed for floats.
@@ -101,8 +101,9 @@ __all__ = [
 
 def merge(items, key=(lambda x: x)):
     """
-    Given sorted lists of iterables, return new iterable that returns elements
-    of all iterables sorted with respect to key.
+    Given sorted lists of iterables, return new iterable that returns elements of all iterables.
+
+    sorted with respect to key.
     """
     state = {}
     for item in map(iter, items):
@@ -138,8 +139,10 @@ def common_base(objs):
 
 def to_signed(dtype):
     """
-    Return dtype that can hold data of passed dtype but is signed. Raise
-    ValueError if no such dtype exists.
+    Return dtype that can hold data of passed dtype but is signed.
+
+    Raise ValueError if no such dtype
+    exists.
 
     Parameters
     ----------
@@ -166,8 +169,10 @@ def get_day(dt):
 
 def minimal_pairs(one, other):
     """
-    Find pairs of values in one and other with minimal distance. Assumes one
-    and other are sorted in the same sort sequence.
+    Find pairs of values in one and other with minimal distance.
+
+    Assumes one and other are sorted in
+    the same sort sequence.
 
     Parameters
     ----------
@@ -207,7 +212,7 @@ def minimal_pairs(one, other):
 
 def run_cls(name):
     """
-    run_cls("foo")(cls, \\*args, \\**kwargs) -> cls.foo(\\*args, \\**kwargs)
+    Run_cls("foo")(cls, \\*args, \\**kwargs) -> cls.foo(\\*args, \\**kwargs).
     """
     fun = lambda cls, *args, **kwargs: getattr(cls, name)(*args, **kwargs)  # NOQA
     fun.__name__ = str(name)
@@ -298,8 +303,7 @@ class ConditionalDispatch(object):
 
     def add(self, fun, condition=None, types=None, check=True):
         """
-        Add fun to ConditionalDispatch under the condition that the arguments
-        must match.
+        Add fun to ConditionalDispatch under the condition that the arguments must match.
 
         If condition is left out, the function is executed for every
         input that matches the signature. Functions are considered in
@@ -341,9 +345,11 @@ class ConditionalDispatch(object):
 
     def get_signatures(self, prefix="", start=0):
         """
-        Return an iterator containing all possible function signatures. If
-        prefix is given, use it as function name in signatures, else leave it
-        out. If start is given, leave out first n elements.
+        Return an iterator containing all possible function signatures.
+
+        If prefix is given, use it
+        as function name in signatures, else leave it out. If start is given, leave out first n
+        elements.
 
         If start is -1, leave out first element if the function was
         created by run_cls.

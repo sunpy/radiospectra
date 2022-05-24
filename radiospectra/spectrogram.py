@@ -43,8 +43,9 @@ DEEPCOPY = 2
 
 def figure(*args, **kwargs):
     """
-    Returns a new SpectroFigure, a figure extended with features useful for
-    analysis of spectrograms.
+    Returns a new SpectroFigure, a figure extended with features useful for analysis of.
+
+    spectrograms.
 
     Compare pyplot.figure.
     """
@@ -64,8 +65,9 @@ def _min_delt(arr):
 
 def _list_formatter(lst, fun=None):
     """
-    Returns a function that takes x, pos and returns fun(lst[x]) if fun is not
-    None, else lst[x] or "" if x is out of range.
+    Returns a function that takes x, pos and returns fun(lst[x]) if fun is not None, else lst[x] or.
+
+    "" if x is out of range.
     """
 
     def _fun(x, pos):
@@ -399,8 +401,7 @@ class Spectrogram(Parent):
 
     def time_formatter(self, x, pos):
         """
-        This returns the label for the tick of value x at a specified pos on
-        the time axis.
+        This returns the label for the tick of value x at a specified pos on the time axis.
         """
         # Callback, cannot avoid unused arguments.
         # pylint: disable=W0613
@@ -613,8 +614,7 @@ class Spectrogram(Parent):
 
     def clip_freq(self, vmin=None, vmax=None):
         """
-        Return a new spectrogram only consisting of frequencies in the
-        interval.
+        Return a new spectrogram only consisting of frequencies in the interval.
 
         [vmin, vmax].
 
@@ -640,9 +640,10 @@ class Spectrogram(Parent):
 
     def auto_find_background(self, amount=0.05):
         """
-        Automatically find the background. This is done by first subtracting
-        the average value in each channel and then finding those times which
-        have the lowest standard deviation.
+        Automatically find the background.
+
+        This is done by first subtracting the average value in
+        each channel and then finding those times which have the lowest standard deviation.
 
         Parameters
         ----------
@@ -680,8 +681,9 @@ class Spectrogram(Parent):
 
     def randomized_auto_const_bg(self, amount):
         """
-        Automatically determine background. Only consider a randomly chosen
-        subset of the image.
+        Automatically determine background.
+
+        Only consider a randomly chosen subset of the image.
 
         Parameters
         ----------
@@ -713,8 +715,10 @@ class Spectrogram(Parent):
 
     def randomized_subtract_bg(self, amount):
         """
-        Perform randomized constant background subtraction. Does not produce
-        the same result every time it is run.
+        Perform randomized constant background subtraction.
+
+        Does not produce the same result every
+        time it is run.
 
         Parameters
         ----------
@@ -750,8 +754,10 @@ class Spectrogram(Parent):
 
     def rescale(self, vmin=0, vmax=1, dtype=np.dtype("float32")):
         """
-        Rescale intensities to [vmin, vmax]. Note that vmin ≠ vmax and
-        spectrogram.min() ≠ spectrogram.max().
+        Rescale intensities to [vmin, vmax].
+
+        Note that vmin ≠ vmax and spectrogram.min() ≠
+        spectrogram.max().
 
         Parameters
         ----------
@@ -776,8 +782,9 @@ class Spectrogram(Parent):
 
     def interpolate(self, frequency):
         """
-        Linearly interpolate intensity at unknown frequency using linear
-        interpolation of its two neighbours.
+        Linearly interpolate intensity at unknown frequency using linear interpolation of its two.
+
+        neighbours.
 
         Parameters
         ----------
@@ -835,8 +842,9 @@ class Spectrogram(Parent):
 
     def freq_overlap(self, other):
         """
-        Get frequency range present in both spectrograms. Returns (min, max)
-        tuple.
+        Get frequency range present in both spectrograms.
+
+        Returns (min, max) tuple.
 
         Parameters
         ----------
@@ -851,8 +859,9 @@ class Spectrogram(Parent):
 
     def time_to_x(self, time):
         """
-        Return x-coordinate in spectrogram that corresponds to the passed
-        `~datetime.datetime` value.
+        Return x-coordinate in spectrogram that corresponds to the passed `~datetime.datetime`.
+
+        value.
 
         Parameters
         ----------
@@ -942,8 +951,7 @@ class LinearTimeSpectrogram(Spectrogram):
     @staticmethod
     def memmap(filename):
         """
-        Return function that takes shape and dtype and returns a memory mapped
-        array.
+        Return function that takes shape and dtype and returns a memory mapped array.
 
         Parameters
         ----------
@@ -954,8 +962,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
     def resample_time(self, new_delt):
         """
-        Rescale image so that the difference in time between pixels is new_delt
-        seconds.
+        Rescale image so that the difference in time between pixels is new_delt seconds.
 
         Parameters
         ----------
@@ -986,8 +993,7 @@ class LinearTimeSpectrogram(Spectrogram):
     @classmethod
     def join_many(cls, specs, mk_arr=None, nonlinear=False, maxgap=0, fill=JOIN_REPEAT):
         """
-        Produce new Spectrogram that contains spectrograms joined together in
-        time.
+        Produce new Spectrogram that contains spectrograms joined together in time.
 
         Parameters
         ----------
@@ -1116,8 +1122,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
     def time_to_x(self, time):
         """
-        Return x-coordinate in spectrogram that corresponds to the passed
-        datetime value.
+        Return x-coordinate in spectrogram that corresponds to the passed datetime value.
 
         Parameters
         ----------
@@ -1161,8 +1166,10 @@ class LinearTimeSpectrogram(Spectrogram):
     @classmethod
     def combine_frequencies(cls, specs):
         """
-        Return new spectrogram that contains frequencies from all the
-        spectrograms in spec. Only returns time intersection of all of them.
+        Return new spectrogram that contains frequencies from all the spectrograms in spec.
+
+        Only
+        returns time intersection of all of them.
 
         Parameters
         ----------
@@ -1204,8 +1211,10 @@ class LinearTimeSpectrogram(Spectrogram):
 
     def check_linearity(self, err=None, err_factor=None):
         """
-        Check linearity of time axis. If err is given, tolerate absolute
-        derivation from average delta up to err. If err_factor is given,
+        Check linearity of time axis.
+
+        If err is given, tolerate absolute derivation from average
+        delta up to err. If err_factor is given,
 
         tolerate up to err_factor * average_delta. If both are given,
         TypeError is raised. Default to err=0.

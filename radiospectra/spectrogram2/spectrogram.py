@@ -178,7 +178,7 @@ class PcolormeshPlotMixin:
 
 class NonUniformImagePlotMixin:
     """
-    Class provides plotting functions using `NonUniformImage`
+    Class provides plotting functions using `NonUniformImage`.
     """
 
     def plotim(self, fig=None, axes=None, **kwargs):
@@ -325,8 +325,10 @@ class SpectrogramFactory(BasicRegistrationFactory):
 
     def _parse_args(self, *args, silence_errors=False, **kwargs):
         """
-        Parses an args list into data-header pairs. args can contain any
-        mixture of the following entries:
+        Parses an args list into data-header pairs.
+
+        args can contain any mixture of the following
+        entries:
 
         * tuples of data,header
         * data, header not in a tuple
@@ -420,12 +422,13 @@ class SpectrogramFactory(BasicRegistrationFactory):
 
     def __call__(self, *args, silence_errors=False, **kwargs):
         """
-        Method for running the factory. Takes arbitrary arguments and keyword
-        arguments and passes them to a sequence of pre-registered types to
-        determine which is the correct spectrogram-type to build. Arguments
-        args and kwargs are passed through to the validation function and to
-        the constructor for the final type. For spectrogram types, validation
-        function must take a data-header pair as an argument.
+        Method for running the factory.
+
+        Takes arbitrary arguments and keyword arguments and passes
+        them to a sequence of pre-registered types to determine which is the correct spectrogram-
+        type to build. Arguments args and kwargs are passed through to the validation function and
+        to the constructor for the final type. For spectrogram types, validation function must take
+        a data-header pair as an argument.
 
         Parameters
         ----------

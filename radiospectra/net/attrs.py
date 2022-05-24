@@ -5,7 +5,7 @@ __all__ = ["Spacecraft", "Observatory", "PolType"]
 
 class Spacecraft(SimpleAttr):
     """
-    The STEREO Spacecraft A (Ahead) or B (Behind)
+    The STEREO Spacecraft A (Ahead) or B (Behind).
     """
 
 

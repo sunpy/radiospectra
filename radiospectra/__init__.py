@@ -1,5 +1,5 @@
 """
-radiospectra
+Radiospectra
 ============
 
 An open-source Python library for radio spectra in solar physics.

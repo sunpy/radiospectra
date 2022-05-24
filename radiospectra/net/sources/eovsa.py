@@ -6,9 +6,7 @@ from radiospectra.net.attrs import PolType
 
 class EOVSAClient(GenericClient):
     """
-    Provides access to `Extended Owens Valley Solar Array`_ (EOVSA) data.
-
-    .. _`Extended Owens Valley Solar Array`: http://www.ovsa.njit.edu
+    Provides access to `Extended Owens Valley Solar Array <http://www.ovsa.njit.edu>`__ (EOVSA) data.
 
     Examples
     --------

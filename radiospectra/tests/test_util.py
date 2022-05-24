@@ -67,8 +67,9 @@ def test_types():
 
 def test_minimal_pairs():
     """
-    This should return the pairs of elements from list1 and list2 with minimal
-    difference between their values.
+    This should return the pairs of elements from list1 and list2 with minimal difference between.
+
+    their values.
     """
     list1 = [0, 5, 10, 15, 20, 25]
     list2 = [3, 12, 19, 21, 26, 29]
@@ -116,8 +117,7 @@ def test_common_base():
 
 def test_merge():
     """
-    This should return a sorted (from greatest to least) merged list from list1
-    and list2.
+    This should return a sorted (from greatest to least) merged list from list1 and list2.
     """
     list1 = [13, 11, 9, 7, 5, 3, 1]
     list2 = [14, 12, 10, 8, 6, 4, 2]
@@ -129,9 +129,9 @@ def test_merge():
 
 def test_to_signed():
     """
-    This should return a signed type that can hold uint32 and ensure that an
-    exception is raised when attempting to convert an unsigned 64 bit integer
-    to an integer.
+    This should return a signed type that can hold uint32 and ensure that an exception is raised.
+
+    when attempting to convert an unsigned 64 bit integer to an integer.
     """
     assert to_signed(np.dtype("uint32")) == np.dtype("int64")
 

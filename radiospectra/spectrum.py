@@ -17,7 +17,6 @@ class Spectrum(np.ndarray):
         One-dimensional array which the intensity at a particular frequency at
         every data-point.
 
-
     Examples
     --------
     >>> from radiospectra.spectrum import Spectrum
@@ -69,7 +68,9 @@ class Spectrum(np.ndarray):
 
     def peek(self, **matplot_args):
         """
-        Plot spectrum onto a new figure. An example is shown below.
+        Plot spectrum onto a new figure.
+
+        An example is shown below.
 
         .. plot::
 

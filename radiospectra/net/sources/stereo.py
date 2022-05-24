@@ -19,10 +19,9 @@ RECEIVER_FREQUENCIES = {
 
 class SWAVESClient(GenericClient):
     """
-    Provides access to `STEREO S-WAVES`_ radio `data archive`_.
+    Provides access to `STEREO S-WAVES <https://swaves.gsfc.nasa.gov/swaves_instr.html>`__ radio.
 
-    .. _`STEREO S-WAVES`: https://swaves.gsfc.nasa.gov/swaves_instr.html
-    .. _`data archive`: https://solar-radio.gsfc.nasa.gov/data/stereo
+    `data archive <https://solar-radio.gsfc.nasa.gov/data/stereo>`__.
 
     Examples
     --------
@@ -55,8 +54,9 @@ class SWAVESClient(GenericClient):
     @classmethod
     def _check_wavelengths(cls, wavelength):
         """
-        Check for overlap between given wavelength and receiver frequency
-        coverage defined in `RECEIVER_FREQUENCIES`.
+        Check for overlap between given wavelength and receiver frequency coverage defined in.
+
+        `RECEIVER_FREQUENCIES`.
 
         Parameters
         ----------
@@ -124,8 +124,9 @@ class SWAVESClient(GenericClient):
 
     def post_search_hook(self, exdict, matchdict):
         """
-        This method converts 'rfs_hfr' and 'rfs_lfr' in the url's metadata to
-        the frequency ranges of for low and high frequency receivers.
+        This method converts 'rfs_hfr' and 'rfs_lfr' in the url's metadata to the frequency ranges.
+
+        of for low and high frequency receivers.
         """
         rowdict = super().post_search_hook(exdict, matchdict)
         if rowdict["Wavelength"] == "hfr":
