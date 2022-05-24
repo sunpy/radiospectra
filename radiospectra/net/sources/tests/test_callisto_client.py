@@ -4,13 +4,13 @@ from unittest import mock
 
 import pytest
 
-import sunpy
 from sunpy.net import attrs as a
 from sunpy.net.fido_factory import Fido
 
 from radiospectra.net.sources.callisto import CALLISTOClient, Observatory
 
 MOCK_PATH = "sunpy.net.scraper.urlopen"
+
 
 @pytest.fixture
 def client():

@@ -5,7 +5,6 @@ import numpy as np
 import pytest
 
 import astropy.units as u
-import sunpy
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 

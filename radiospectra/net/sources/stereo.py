@@ -3,8 +3,8 @@ from itertools import product
 import astropy.units as u
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import GenericClient, QueryResponse
-from sunpy.time import TimeRange
 from sunpy.net.scraper import Scraper
+from sunpy.time import TimeRange
 
 from radiospectra.net import attrs as ra
 

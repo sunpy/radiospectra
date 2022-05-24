@@ -17,11 +17,11 @@ from matplotlib.image import NonUniformImage
 from scipy.io import readsav
 
 import astropy.units as u
+from astropy.io import fits
 from astropy.io.fits import Header
 from astropy.time import Time
 from astropy.visualization import quantity_support
 from sunpy.data import cache
-from astropy.io import fits
 from sunpy.net import attrs as a
 from sunpy.time import parse_time
 from sunpy.util.datatype_factory_base import (

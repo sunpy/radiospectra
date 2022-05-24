@@ -3,7 +3,6 @@ from unittest import mock
 
 import pytest
 
-import sunpy
 from sunpy.net import attrs as a
 from sunpy.net.fido_factory import Fido
 
