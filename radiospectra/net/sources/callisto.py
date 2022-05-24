@@ -8,17 +8,17 @@ from radiospectra.net.attrs import Observatory
 
 class CALLISTOClient(GenericClient):
     """
-    Provides access to eCallisto radio spectrometer network `archive.
+    Provides access to `eCallisto radio spectrometer`_ `data archive`_.
 
-    <http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/>`__
-    at `FHNW,  <https://spdf.gsfc.nasa.gov>`__.
+    .. _`eCallisto radio spectrometer`_: http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/
+    .. _`data archive`: https://spdf.gsfc.nasa.gov
 
-    For further information `see <http://www.e-callisto.org>`--
+    `For further information <http://www.e-callisto.org>`__.
 
     Notes
     -----
     For specific information on the meaning of the filename in particular the ID field please
-    `see <http://soleil.i4ds.ch/solarradio/data/readme.txt>`
+    `see <http://soleil.i4ds.ch/solarradio/data/readme.txt>`__
 
     Examples
     --------

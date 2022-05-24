@@ -29,7 +29,8 @@ class RFSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     8 Results from the RFSClient:
-           Start Time               End Time        ... Provider   Wavelength [2]
+    <BLANKLINE>
+           Start Time               End Time        ... Provider     Wavelength
                                                     ...                 kHz
     ----------------------- ----------------------- ... -------- -----------------
     2019-10-02 00:00:00.000 2019-10-02 23:59:59.999 ...     SPDF    10.0 .. 1700.0

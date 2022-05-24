@@ -19,10 +19,10 @@ RECEIVER_FREQUENCIES = {
 
 class SWAVESClient(GenericClient):
     """
-    Provides access to STEREO `S-WAVES.
+    Provides access to `STEREO S-WAVES`_ radio `data archive`_.
 
-    <https://swaves.gsfc.nasa.gov/swaves_instr.html>`__ radio data `archive
-    <https://solar-radio.gsfc.nasa.gov/data/stereo/>`__
+    .. _`STEREO S-WAVES`: https://swaves.gsfc.nasa.gov/swaves_instr.html
+    .. _`data archive`: https://solar-radio.gsfc.nasa.gov/data/stereo
 
     Examples
     --------
@@ -31,8 +31,8 @@ class SWAVESClient(GenericClient):
     >>> results = Fido.search(a.Time("2010/10/01", "2010/10/02"),
     ...                       a.Instrument('SWAVES'))  # doctest: +REMOTE_DATA
     >>> results[1] #doctest: +REMOTE_DATA
-    <sunpy.net.dataretriever.client.QueryResponse object at ...
-           Start Time               End Time        ... Provider  Wavelength [2]
+    <sunpy.net.dataretriever.client.QueryResponse object at ...>
+           Start Time               End Time        ... Provider    Wavelength
                                                     ...                kHz
     ----------------------- ----------------------- ... -------- ----------------
     2010-10-01 00:00:00.000 2010-10-01 23:59:59.999 ...     NASA    10.0 .. 160.0
@@ -43,7 +43,6 @@ class SWAVESClient(GenericClient):
     2010-10-02 00:00:00.000 2010-10-02 23:59:59.999 ...     NASA    10.0 .. 160.0
     2010-10-01 00:00:00.000 2010-10-01 23:59:59.999 ...     NASA 125.0 .. 16000.0
     2010-10-02 00:00:00.000 2010-10-02 23:59:59.999 ...     NASA 125.0 .. 16000.0
-    <BLANKLINE>
     """
 
     baseurl = (

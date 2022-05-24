@@ -671,7 +671,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
 
     @staticmethod
     def _read_fits(file):
-        hd_pairs = fits.read(file)
+        hd_pairs = fits.open(file)
 
         if "e-CALLISTO" in hd_pairs[0].header.get("CONTENT", ""):
             data = hd_pairs[0].data

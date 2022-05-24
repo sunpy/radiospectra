@@ -20,10 +20,10 @@ RECEIVER_EXT = {
 
 class WAVESClient(GenericClient):
     """
-    Provides access to WIND `WAVES <https://solar-
-    radio.gsfc.nasa.gov/wind/instrument.html>`__ radio data `archive.
+    Provides access to `WIND WAVES`_ radio `data archive`_.
 
-    <https://solar-radio.gsfc.nasa.gov/data/wind/>`__
+    .. _`WIND WAVES`: https://solar-radio.gsfc.nasa.gov/wind/instrument.html
+    .. _`data archive`: https://solar-radio.gsfc.nasa.gov/data/wind
 
     Examples
     --------
@@ -32,17 +32,19 @@ class WAVESClient(GenericClient):
     >>> results = Fido.search(a.Time("2010/10/01", "2010/10/02"),
     ...                       a.Instrument('WAVES'))  # doctest: +REMOTE_DATA
     >>> results #doctest: +REMOTE_DATA
-    <sunpy.net.fido_factory.UnifiedResponse object at...>
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
     4 Results from the WAVESClient:
-           Start Time               End Time        ... Provider   Wavelength [2]
+    <BLANKLINE>
+           Start Time               End Time        ... Provider     Wavelength
                                                     ...                 kHz
     ----------------------- ----------------------- ... -------- -----------------
     2010-10-01 00:00:00.000 2010-10-01 23:59:59.999 ...     NASA    20.0 .. 1040.0
     2010-10-02 00:00:00.000 2010-10-02 23:59:59.999 ...     NASA    20.0 .. 1040.0
     2010-10-01 00:00:00.000 2010-10-01 23:59:59.999 ...     NASA 1075.0 .. 13825.0
     2010-10-02 00:00:00.000 2010-10-02 23:59:59.999 ...     NASA 1075.0 .. 13825.0
+    <BLANKLINE>
     <BLANKLINE>
     """
 
