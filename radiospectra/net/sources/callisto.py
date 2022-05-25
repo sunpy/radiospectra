@@ -77,9 +77,8 @@ class CALLISTOClient(GenericClient):
     @classmethod
     def _can_handle_query(cls, *query):
         """
-        Method the `sunpy.net.fido_factory.UnifiedDownloaderFactory` class uses to dispatch queries.
-
-        to this Client.
+        Method the `sunpy.net.fido_factory.UnifiedDownloaderFactory` class uses
+        to dispatch queries to this Client.
         """
         regattrs_dict = cls.register_values()
         optional = {k for k in regattrs_dict.keys()} - cls.required

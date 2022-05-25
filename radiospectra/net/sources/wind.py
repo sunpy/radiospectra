@@ -53,9 +53,8 @@ class WAVESClient(GenericClient):
     @classmethod
     def _check_wavelengths(cls, wavelength):
         """
-        Check for overlap between given wavelength and receiver frequency coverage defined in.
-
-        `RECEIVER_FREQUENCIES`.
+        Check for overlap between given wavelength and receiver frequency
+        coverage defined in ``RECEIVER_FREQUENCIES``.
 
         Parameters
         ----------

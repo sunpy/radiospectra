@@ -54,9 +54,8 @@ class RFSClient(GenericClient):
     @classmethod
     def _check_wavelengths(cls, wavelength):
         """
-        Check for overlap between given wavelength and receiver frequency coverage defined in.
-
-        `RECEIVER_FREQUENCIES`.
+        Check for overlap between given wavelength and receiver frequency coverage
+        defined in ``RECEIVER_FREQUENCIES``.
 
         Parameters
         ----------
@@ -122,9 +121,8 @@ class RFSClient(GenericClient):
 
     def post_search_hook(self, exdict, matchdict):
         """
-        This method converts 'rfs_hfr' and 'rfs_lfr' in the url's metadata to the frequency ranges.
-
-        of for low and high frequency receivers.
+        This method converts 'rfs_hfr' and 'rfs_lfr' in the url's metadata to the
+        frequency ranges for low and high frequency receivers.
         """
         rowdict = super().post_search_hook(exdict, matchdict)
         if rowdict["Wavelength"] == "rfs_hfr":
