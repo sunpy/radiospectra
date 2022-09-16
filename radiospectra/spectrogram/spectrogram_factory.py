@@ -357,12 +357,16 @@ class SpectrogramFactory(BasicRegistrationFactory):
     @staticmethod
     def _read_cdf(file):
         cdf = cdflib.CDF(file)
+
         cdf_globals = cdf.globalattsget()
 
-        if (cdf_globals.get('Project', '') == 'PSP'
-                and cdf_globals.get('Source_name') == 'PSP_FLD>Parker Solar Probe FIELDS'
-                and 'Radio Frequency Spectrometer' in cdf_globals.get('Descriptor')):
-            short, _long = cdf_globals['Descriptor'].split('>')
+        if (
+            cdf_globals.get("Project", "") == "PSP"
+            and cdf_globals.get("Source_name") == "PSP_FLD>Parker Solar Probe FIELDS"
+            and "Radio Frequency Spectrometer" in cdf_globals.get("Descriptor")
+        ):
+            short, _long = cdf_globals["Descriptor"].split(">")
+
             detector = short[4:].lower()
             times, data, freqs = [
                 cdf.varget(name)
@@ -376,110 +380,90 @@ class SpectrogramFactory(BasicRegistrationFactory):
             freqs = freqs[0, :] << u.Hz
             data = data.T << u.Unit("Volt**2/Hz")
             meta = {
-                'cdf_globals': cdf_globals,
-                'detector': detector,
-                'instrument': 'FIELDS/RFS',
-                'observatory': 'PSP',
-                'start_time': times[0],
-                'end_time': times[-1],
-                'wavelength': a.Wavelength(freqs.min(), freqs.max()),
-                'times': times,
-                'freqs': freqs
+                "cdf_globals": cdf_globals,
+                "detector": detector,
+                "instrument": "FIELDS/RFS",
+                "observatory": "PSP",
+                "start_time": times[0],
+                "end_time": times[-1],
+                "wavelength": a.Wavelength(freqs.min(), freqs.max()),
+                "times": times,
+                "freqs": freqs,
             }
             return data, meta
-        elif 'SOLO' in cdf_globals.get('Project', ''):
-            if 'RPW-HFR-SURV' not in cdf_globals.get('Descriptor', ''):
-                raise ValueError(f'Currently radiospectra supports Level 2 HFR survey data the file'
-                                 f'{file.name} is {cdf_globals.get("Descriptor", "")}')
+        elif "SOLO" in cdf_globals.get("Project", ""):
+            if "RPW-HFR-SURV" not in cdf_globals.get("Descriptor", ""):
+                raise ValueError(
+                    f"Currently radiospectra supports Level 2 HFR survey data the file"
+                    f'{file.name} is {cdf_globals.get("Descriptor", "")}'
+                )
 
             # Extract variables
-            all_times = cdf.varget('EPOCH')
-            all_freqs = cdf.varget('FREQUENCY')
-            sensor = cdf.varget('SENSOR_CONFIG')
-            freq_uniq = np.unique(cdf.varget('FREQUENCY'))
-            cdf.varget('SAMPLE_TIME')
+            all_times = cdf.varget("EPOCH")
+            all_freqs = cdf.varget("FREQUENCY")
+            sensor = cdf.varget("SENSOR_CONFIG")
+            freq_uniq = np.unique(cdf.varget("FREQUENCY"))
 
-            acg1 = cdf.varget('AGC1')
-            acg2 = cdf.varget('AGC2')
-
-            cdf.varget('FLUX_DENSITY1')
-            cdf.varget('FLUX_DENSITY2')
+            acg1 = cdf.varget("AGC1")
+            acg2 = cdf.varget("AGC2")
 
             def extract_data(acg, freq_uniq, sensors, sensor_num, sensor_value):
                 slices = []
                 times = []
                 freqs = []
                 for cfreq in freq_uniq:
-                    search = np.argwhere((all_freqs == cfreq) & (sensors[:, sensor_num] == sensor_value)
-                                         & (acg != 0))
+                    search = np.argwhere((all_freqs == cfreq) & (sensors[:, sensor_num] == sensor_value) & (acg != 0))
                     if search.size > 0:
                         slices.append(acg[search])
                         times.append(all_times[search])
                         freqs.append(cfreq)
                 return slices, times, freqs
 
-            # For CH1 extract times, freqs and data points
-            slices1, times1, freq1 = extract_data(acg1, freq_uniq, sensor, 0, 9)
-            # slices1 = []
-            # times1 = []
-            # freq1 = []
-            # for cfreq in freq_uniq:
-            #     search = np.argwhere((freqs == cfreq) & (sensor[:, 0] == 9) & (acg1 != 0))
-            #     if search.size > 0:
-            #         slices1.append(acg1[search])
-            #         times1.append(times[search])
-            #         freq1.append(cfreq)
+            sensor_unique = np.unique(sensor)
 
             # For CH1 extract times, freqs and data points
-            slices2, times2, freq2 = extract_data(acg2, freq_uniq, sensor, 1, 9)
-            # slices2 = []
-            # times2 = []
-            # freq2 = []
-            # for cfreq in freq_uniq:
-            #     search = np.argwhere((freqs == cfreq) & (sensor[:, 1] == 9) & (acg2 != 0))
-            #     if search.size > 0:
-            #         slices2.append(acg2[search])
-            #         times2.append(times[search])
-            #         freq2.append(cfreq)
+            slices1, times1, freq1 = extract_data(acg1, freq_uniq, sensor, 0, sensor_unique[0])
 
-            # Kinda arb but pick a time near middle of freq sweep
-            t1 = np.hstack(times1)[:, 160]
-            t2 = np.hstack(times2)[:, 50]
+            # For CH1 extract times, freqs and data points
+            slices2, times2, freq2 = extract_data(acg2, freq_uniq, sensor, 1, sensor_unique[1])
 
-            # Convert to utc
-            t1_utc = (Time('J2000.0') + t1 * u.ns).utc
-            t2_utc = (Time('J2000.0') + t2 * u.ns).utc
+            res = []
+            if times1:
+                t1 = np.hstack(times1)[:, int(len(times1) / 2)]
+                t1_utc = (Time("J2000.0") + t1 * u.ns).utc
+                spec1 = np.hstack(slices1)
+                freq1 = freq1 * u.kHz
 
-            spec1 = np.hstack(slices1)
-            spec2 = np.hstack(slices2)
-
-            freq1 = freq1 * u.kHz
-            freq2 = freq2 * u.kHz
-
-            meta1 = {
-                'cdf_globals': cdf_globals,
-                'detector': 'RPW',
-                'instrument': 'RPW',
-                'observatory': 'SOLO',
-                'start_time': t1_utc[0],
-                'end_time': t1_utc[-1],
-                'wavelength': a.Wavelength(freq1.min(), freq1.max()),
-                'times': t1_utc,
-                'freqs': freq1
-            }
-
-            meta2 = {
-                'cdf_globals': cdf_globals,
-                'detector': 'RPW',
-                'instrument': 'RPW',
-                'observatory': 'SOLO',
-                'start_time': t2_utc[0],
-                'end_time': t2_utc[-1],
-                'wavelength': a.Wavelength(freq2.min(), freq2.max()),
-                'times': t2_utc,
-                'freqs': freq2
-            }
-            return [(spec1.T, meta1), (spec2.T, meta2)]
+                meta1 = {
+                    "cdf_globals": cdf_globals,
+                    "detector": "RPW",
+                    "instrument": "RPW",
+                    "observatory": "SOLO",
+                    "start_time": t1_utc[0],
+                    "end_time": t1_utc[-1],
+                    "wavelength": a.Wavelength(freq1.min(), freq1.max()),
+                    "times": t1_utc,
+                    "freqs": freq1,
+                }
+                res.append((spec1.T, meta1))
+            if times2:
+                t2 = np.hstack(times2)[:, int(len(times2) / 2)]
+                t2_utc = (Time("J2000.0") + t2 * u.ns).utc
+                spec2 = np.hstack(slices2)
+                freq2 = freq2 * u.kHz
+                meta2 = {
+                    "cdf_globals": cdf_globals,
+                    "detector": "RPW",
+                    "instrument": "RPW",
+                    "observatory": "SOLO",
+                    "start_time": t2_utc[0],
+                    "end_time": t2_utc[-1],
+                    "wavelength": a.Wavelength(freq2.min(), freq2.max()),
+                    "times": t2_utc,
+                    "freqs": freq2,
+                }
+                res.append((spec2.T, meta2))
+            return res
 
     @staticmethod
     def _read_fits(file):
