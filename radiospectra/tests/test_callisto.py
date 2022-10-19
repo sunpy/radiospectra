@@ -63,24 +63,20 @@ def test_query():
         assert URL + item in result
 
 
-@pytest.mark.xfail
+@pytest.mark.remote_data
 def test_query_number():
-
     result = list(query(datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), {("BIR", 1)}))
     RESULTS = [
         "BIR_20110922_050000_01.fit.gz",
         "BIR_20110922_051500_01.fit.gz",
         "BIR_20110922_053000_01.fit.gz",
     ]
-
     RESULTS.sort()
     # Should be sorted anyway, but better to assume as little as possible.
     result.sort()
-
     assert len(result) == len(RESULTS)
 
 
-@pytest.mark.xfail
 @pytest.mark.remote_data
 def test_download():
     directory = mkdtemp()
@@ -349,7 +345,7 @@ def test_homogenize_rightfq():
 
 
 @pytest.mark.remote_data
-@pytest.mark.skip(reason="Looks like data changed")
+@pytest.mark.xfail
 def test_extend(CALLISTO_IMAGE):
     im = CallistoSpectrogram.create(CALLISTO_IMAGE)
     im2 = im.extend()
