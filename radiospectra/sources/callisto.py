@@ -1,7 +1,6 @@
 import urllib
 import datetime
 from collections import defaultdict
-from distutils.version import LooseVersion
 
 import numpy as np
 from bs4 import BeautifulSoup
@@ -9,7 +8,6 @@ from scipy.ndimage import gaussian_filter1d
 from scipy.optimize import leastsq
 
 from astropy.io import fits
-from sunpy import __version__
 from sunpy.time import parse_time
 from sunpy.util.net import download_file
 
@@ -19,7 +17,6 @@ from radiospectra.util import ConditionalDispatch, minimal_pairs, run_cls
 __all__ = ["CallistoSpectrogram"]
 
 
-SUNPY_LT_1 = LooseVersion(__version__) < LooseVersion("1.0")
 TIME_STR = "%Y%m%d%H%M%S"
 DEFAULT_URL = "http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/"
 _DAY = datetime.timedelta(days=1)
@@ -107,12 +104,7 @@ def _parse_header_time(date, time):
     """
     if time is not None:
         date = date + "T" + time
-
-    if SUNPY_LT_1:
-        time = parse_time(date)
-    else:
-        time = parse_time(date).datetime
-
+    time = parse_time(date).datetime
     return time
 
 
@@ -384,12 +376,8 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         }
 
         kw.update(kwargs)
-        if SUNPY_LT_1:
-            start = parse_time(start)
-            end = parse_time(end)
-        else:
-            start = parse_time(start).datetime
-            end = parse_time(end).datetime
+        start = parse_time(start).datetime
+        end = parse_time(end).datetime
         urls = query(start, end, [instrument])
         data = list(map(cls.from_url, urls))
         freq_buckets = defaultdict(list)
