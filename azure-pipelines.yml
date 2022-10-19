@@ -44,14 +44,7 @@ stages:
         coverage: codecov
         toxdeps: tox-pypi-filter
         posargs: -n=4
-        libraries:
-          apt:
-            - libopenjp2-7
         envs:
-          - linux: codestyle
-            name: style_check
-            pytest: false
-            libraries: {}
           - linux: py310
 
   - stage: SecondPhaseTests
@@ -67,10 +60,7 @@ stages:
         posargs: -n=4
         libraries:
           apt:
-            - libopenjp2-7
             - graphviz
-          brew:
-            - openjpeg
         envs:
           - macos: py38
           - windows: py39
@@ -92,9 +82,6 @@ stages:
           coverage: codecov
           toxdeps: tox-pypi-filter
           posargs: -n=4
-          libraries:
-            apt:
-              - libopenjp2-7
           envs:
             - linux: py310-devdeps
             - linux: py39-conda
