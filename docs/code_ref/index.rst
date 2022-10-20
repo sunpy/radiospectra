@@ -8,6 +8,6 @@ API
    :maxdepth: 2
 
    radiospectra
-   sources
    net
-   spectrogram2
+   spectrogram
+   spectrum

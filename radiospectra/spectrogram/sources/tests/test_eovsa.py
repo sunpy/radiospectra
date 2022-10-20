@@ -9,8 +9,8 @@ import astropy.units as u
 from astropy.time import Time
 from sunpy.net import attrs as a
 
-from radiospectra.spectrogram2 import Spectrogram
-from radiospectra.spectrogram2.sources import EOVSASpectrogram
+from radiospectra.spectrogram import Spectrogram
+from radiospectra.spectrogram.sources import EOVSASpectrogram
 
 
 @pytest.fixture
@@ -485,7 +485,7 @@ def eovsa_data():
     return meta, array
 
 
-@mock.patch("radiospectra.spectrogram2.spectrogram.parse_path")
+@mock.patch("radiospectra.spectrogram.spectrogram_factory.parse_path")
 def test_eovsa_xpall(parse_path_moc, eovsa_data):
     meta, array = eovsa_data
     parse_path_moc.return_value = [(array, meta)]
@@ -502,7 +502,7 @@ def test_eovsa_xpall(parse_path_moc, eovsa_data):
     assert spec.polarisation == "I"
 
 
-@mock.patch("radiospectra.spectrogram2.spectrogram.parse_path")
+@mock.patch("radiospectra.spectrogram.spectrogram_factory.parse_path")
 def test_eovsa_tpall(parse_path_moc, eovsa_data):
     meta, array = eovsa_data
     meta["fits_meta"]["POLARIZA"] = "I"
