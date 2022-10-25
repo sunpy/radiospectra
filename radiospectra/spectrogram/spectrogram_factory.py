@@ -466,7 +466,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
             }
             return data, meta
         else:
-            raise ValueError(f"Unrecognised IDL .sav file: {file}")
+            raise ValueError(f"Unrecognized IDL .sav file: {file}")
 
 
 Spectrogram = SpectrogramFactory(registry=GenericSpectrogram._registry, default_widget_type=GenericSpectrogram)
