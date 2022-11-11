@@ -83,7 +83,7 @@ stages:
           toxdeps: tox-pypi-filter
           posargs: -n=4
           envs:
-            - linux: py310-devdeps
+            - linux: py311-devdeps
             - linux: py39-conda
               libraries: {}
 
