@@ -6,13 +6,12 @@ from sunpy.net.dataretriever.client import GenericClient, QueryResponse
 from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
 
-__all__ = ['ILOFARMode357Client']
-
 from radiospectra.net.attrs import PolType
 
-RECEIVER_FREQUENCIES = a.Wavelength(10.546875*u.MHz, 244.53125*u.MHz)
+__all__ = ["ILOFARMode357Client"]
 
-DATASET_NAMES = ['rcu357_1beam', 'rcu357_1beam_datastream']
+RECEIVER_FREQUENCIES = a.Wavelength(10.546875 * u.MHz, 244.53125 * u.MHz)
+DATASET_NAMES = ["rcu357_1beam", "rcu357_1beam_datastream"]
 
 
 class ILOFARMode357Client(GenericClient):
@@ -46,11 +45,9 @@ class ILOFARMode357Client(GenericClient):
     <BLANKLINE>
     """
 
-    baseurl = (r'https://data.lofar.ie/%Y/%m/%d/bst/kbt/{dataset}/'
-               r'%Y%m%d_\d{{6}}_bst_00\S{{1}}.dat')
+    baseurl = r"https://data.lofar.ie/%Y/%m/%d/bst/kbt/{dataset}/" r"%Y%m%d_\d{{6}}_bst_00\S{{1}}.dat"
 
-    pattern = r'{}/{year:4d}{month:2d}{day:2d}_{hour:2d}{minute:2d}{second:2d}' \
-              r'_bst_00{Polarisation}.dat'
+    pattern = r"{}/{year:4d}{month:2d}{day:2d}_{hour:2d}{minute:2d}{second:2d}" r"_bst_00{Polarisation}.dat"
 
     @classmethod
     def _check_wavelengths(cls, wavelength):
@@ -87,11 +84,11 @@ class ILOFARMode357Client(GenericClient):
         matchdict = self._get_match_dict(*args, **kwargs)
         metalist = []
 
-        wavelentgh = matchdict.get('Wavelength', False)
+        wavelentgh = matchdict.get("Wavelength", False)
         if wavelentgh and not self._check_wavelengths(wavelentgh):
             return QueryResponse(metalist, client=self)
 
-        tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
+        tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
 
         for dataset in DATASET_NAMES:
             url = self.baseurl.format(dataset=dataset)
@@ -103,21 +100,23 @@ class ILOFARMode357Client(GenericClient):
 
         query_response = QueryResponse(metalist, client=self)
         mask = np.full(len(query_response), True)
-        pol = matchdict.get('PolType')
+        pol = matchdict.get("PolType")
         if len(pol) == 1:
             pol = pol.upper()
-            mask = mask & query_response['Polarisation'] == pol
+            mask = mask & query_response["Polarisation"] == pol
 
         if query_response:
-            query_response.remove_column('PolType')
+            query_response.remove_column("PolType")
 
         return query_response[mask]
 
     @classmethod
     def register_values(cls):
-        adict = {a.Instrument: [('ILOFAR', 'Irish LOFAR STATION (IE63)')],
-                 a.Source: [('ILOFAR', 'Irish LOFAR Data Archive')],
-                 a.Provider: [('ILOFAR', 'Irish LOFAR Data Archive')],
-                 a.Wavelength: [('*')],
-                 PolType: [('X', 'X'), ('X Linear Polarisation', 'Y Linear Polarisation')]}
+        adict = {
+            a.Instrument: [("ILOFAR", "Irish LOFAR STATION (IE63)")],
+            a.Source: [("ILOFAR", "Irish LOFAR Data Archive")],
+            a.Provider: [("ILOFAR", "Irish LOFAR Data Archive")],
+            a.Wavelength: [("*")],
+            PolType: [("X", "X"), ("X Linear Polarisation", "Y Linear Polarisation")],
+        }
         return adict

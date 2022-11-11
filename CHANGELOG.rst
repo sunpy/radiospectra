@@ -8,6 +8,10 @@ Breaking Changes
 - The new ``Spectrogram2`` class has been renamed to ``Spectrogram``. (`#76 <https://github.com/sunpy/radiospectra/pull/76>`__)
 - Adding colorbar functionality to ``plot`` (`#80 <https://github.com/sunpy/radiospectra/pull/80>`__)
 
+Features
+--------
+- Add `sunpy.net.Fido` client `~radiospectra.net.sources.ilofar.ILOFARMode357` and spectrogram class `~radiospectra.spectrogram2.sources.ILOFARMode357` for ILOFAR mode 357 observations. (`#57 <https://github.com/sunpy/radiospectra/pull/57>`__)
+
 0.4.0 (2022-05-24)
 ==================
 
