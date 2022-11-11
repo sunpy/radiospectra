@@ -18,6 +18,7 @@ class RSTNSpectrogram(GenericSpectrogram):
     >>> spec  #doctest: +REMOTE_DATA
     <RSTNSpectrogram LEARMONTH, RSTN, RSTN 25000.0 kHz - 180000.0 kHz, 2017-09-06T22:31:51.000 to 2017-09-07T10:06:36.000>
     >>> spec.plot()  #doctest: +REMOTE_DATA
+    <matplotlib.collections.QuadMesh object at ...>
     """
 
     @classmethod

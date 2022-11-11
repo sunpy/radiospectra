@@ -18,6 +18,7 @@ class EOVSASpectrogram(GenericSpectrogram):
     >>> spec  #doctest: +REMOTE_DATA
     <EOVSASpectrogram OWENS VALLEY, EOVSA, EOVSA 1105371.117591858 kHz - 17979686.737060547 kHz, 2021-05-07T13:48:20.999 to 2021-05-08T01:50:59.999>
     >>> spec.plot()  #doctest: +REMOTE_DATA
+    <matplotlib.collections.QuadMesh object at ...>
     """
 
     def __init__(self, data, meta, **kwargs):
