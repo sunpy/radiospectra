@@ -8,11 +8,11 @@ import astropy.units as u
 from astropy.time import Time
 from sunpy.net import attrs as a
 
-from radiospectra.spectrogram2 import Spectrogram
-from radiospectra.spectrogram2.sources import RSTNSpectrogram
+from radiospectra.spectrogram import Spectrogram
+from radiospectra.spectrogram.sources import RSTNSpectrogram
 
 
-@mock.patch("radiospectra.spectrogram2.spectrogram.parse_path")
+@mock.patch("radiospectra.spectrogram.spectrogram_factory.parse_path")
 def test_rstn(parse_path_moc):
     start_time = Time("2020-01-01T06:17:38.000")
     end_time = Time("2020-01-01T15:27:43.000")

@@ -8,11 +8,11 @@ import astropy.units as u
 from astropy.time import Time
 from sunpy.net import attrs as a
 
-from radiospectra.spectrogram2 import Spectrogram
-from radiospectra.spectrogram2.sources import CALISTOSpectrogram
+from radiospectra.spectrogram import Spectrogram
+from radiospectra.spectrogram.sources import CALISTOSpectrogram
 
 
-@mock.patch("radiospectra.spectrogram2.spectrogram.parse_path")
+@mock.patch("radiospectra.spectrogram.spectrogram_factory.parse_path")
 def test_callisto(parse_path_moc):
     start_time = Time("2011-06-07 06:24:00.213")
     meta = {

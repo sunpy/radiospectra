@@ -8,11 +8,11 @@ import astropy.units as u
 from astropy.time import Time
 from sunpy.net import attrs as a
 
-from radiospectra.spectrogram2 import Spectrogram
-from radiospectra.spectrogram2.sources import WAVESSpectrogram
+from radiospectra.spectrogram import Spectrogram
+from radiospectra.spectrogram.sources import WAVESSpectrogram
 
 
-@mock.patch("radiospectra.spectrogram2.spectrogram.parse_path")
+@mock.patch("radiospectra.spectrogram.spectrogram_factory.parse_path")
 def test_waves_rad1(parse_path_moc):
     meta = {
         "instrument": "WAVES",
@@ -38,7 +38,7 @@ def test_waves_rad1(parse_path_moc):
     assert spec.wavelength.max == 1040.0 * u.kHz
 
 
-@mock.patch("radiospectra.spectrogram2.spectrogram.parse_path")
+@mock.patch("radiospectra.spectrogram.spectrogram_factory.parse_path")
 def test_waves_rad2(parse_path_moc):
     meta = {
         "instrument": "WAVES",

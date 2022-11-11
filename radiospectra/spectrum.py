@@ -1,5 +1,4 @@
 import numpy as np
-from matplotlib import pyplot as plt
 
 __all__ = ["Spectrum"]
 
@@ -11,11 +10,9 @@ class Spectrum(np.ndarray):
     Attributes
     ----------
     freq_axis : `~numpy.ndarray`
-        one-dimensional array with the frequency values.
-
-    "data\\" : `~numpy.ndarray`
-        One-dimensional array which the intensity at a particular frequency at
-        every data-point.
+        One-dimensional array with the frequency values.
+    data : `~numpy.ndarray`
+        One-dimensional array which the intensity at a particular frequency at every data-point.
 
     Examples
     --------
@@ -41,58 +38,51 @@ class Spectrum(np.ndarray):
 
         Parameters
         ----------
-        axes : `~matplotlib.axes.Axes` or None
+        axes : `~matplotlib.axes.Axes` or `None`
             If provided the spectrum will be plotted on the given axes.
-            Else the current matplotlib axes will be used.
-
+            Else the current `matplotlib` axes will be used.
         **matplot_args : dict
             Any additional plot arguments that should be used
             when plotting.
 
         Returns
         -------
-        newaxes : `~matplotlib.axes.Axes`
+         `~matplotlib.axes.Axes`
             The plot axes.
         """
+        from matplotlib import pyplot as plt
 
         # Get current axes
         if not axes:
             axes = plt.gca()
-
         params = {}
         params.update(matplot_args)
-
         lines = axes.plot(self.freq_axis, self, **params)
-
         return lines
 
     def peek(self, **matplot_args):
         """
         Plot spectrum onto a new figure.
-
-        An example is shown below.
-
-        .. plot::
-
-            from radiospectra.spectrum import Spectrum
-            import numpy as np
-            spec = Spectrum(np.linspace(1, 100, 100), np.linspace(0, 10, 100))
-            spec.peek()
-
         Parameters
         ----------
         **matplot_args : dict
-            Any additional plot arguments that should be used
-            when plotting.
+            Any additional plot arguments that should be used when plotting.
 
         Returns
         -------
-        fig : `~matplotlib.Figure`
+        `~matplotlib.Figure`
             A plot figure.
+
+        Examples
+        --------
+        >>> from radiospectra.spectrum import Spectrum
+        >>> import numpy as np
+        >>> spec = Spectrum(np.linspace(1, 100, 100), np.linspace(0, 10, 100))
+        >>> spec.peek()  # doctest: +SKIP
         """
+        from matplotlib import pyplot as plt
 
         figure = plt.figure()
         self.plot(**matplot_args)
         figure.show()
-
         return figure

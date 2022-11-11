@@ -8,11 +8,11 @@ import astropy.units as u
 from astropy.time import Time
 from sunpy.net import attrs as a
 
-from radiospectra.spectrogram2 import Spectrogram
-from radiospectra.spectrogram2.sources import RFSSpectrogram
+from radiospectra.spectrogram import Spectrogram
+from radiospectra.spectrogram.sources import RFSSpectrogram
 
 
-@mock.patch("radiospectra.spectrogram2.spectrogram.parse_path")
+@mock.patch("radiospectra.spectrogram.spectrogram_factory.parse_path")
 def test_psp_rfs_lfr(parse_path_moc):
     start_time = Time("2019-04-09 00:01:16.197889")
     end_time = Time("2019-04-10 00:01:04.997573")
@@ -120,7 +120,7 @@ def test_psp_rfs_lfr(parse_path_moc):
     assert spec.version == 1
 
 
-@mock.patch("radiospectra.spectrogram2.spectrogram.parse_path")
+@mock.patch("radiospectra.spectrogram.spectrogram_factory.parse_path")
 def test_psp_rfs_hfr(parse_path_moc):
     start_time = Time("2019-04-09 00:01:13.904188")
     end_time = Time("2019-04-10 00:01:02.758315")
