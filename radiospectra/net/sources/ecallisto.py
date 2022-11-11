@@ -35,11 +35,16 @@ class eCALLISTOClient(GenericClient):
     <BLANKLINE>
     <BLANKLINE>
     """
-    baseurl = r'http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/' \
-              r'%Y/%m/%d/{obs}_%Y%m%d_%H%M%S.*.fit.gz'
-    pattern = r'{}/2002-20yy_Callisto/{year:4d}/{month:2d}/{day:2d}/' \
-              r'{Observatory}_{year:4d}{month:2d}{day:2d}' \
-              r'_{hour:2d}{minute:2d}{second:2d}{suffix}.fit.gz'
+
+    baseurl = (
+        r"http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/"
+        r"%Y/%m/%d/{obs}_%Y%m%d_%H%M%S.*.fit.gz"
+    )
+    pattern = (
+        r"{}/2002-20yy_Callisto/{year:4d}/{month:2d}/{day:2d}/"
+        r"{Observatory}_{year:4d}{month:2d}{day:2d}"
+        r"_{hour:2d}{minute:2d}{second:2d}{suffix}.fit.gz"
+    )
 
     @classmethod
     def pre_search_hook(cls, *args, **kwargs):
@@ -56,12 +61,12 @@ class eCALLISTOClient(GenericClient):
     def post_search_hook(self, exdict, matchdict):
         original = super().post_search_hook(exdict, matchdict)
         i0 = 0
-        if '_' in original['suffix']:
+        if "_" in original["suffix"]:
             i0 = 1
-        original['ID'] = original['suffix'][i0:]
-        del original['suffix']
+        original["ID"] = original["suffix"][i0:]
+        del original["suffix"]
         # Don't know the end time for all files see https://github.com/sunpy/radiospectra/issues/60
-        del original['End Time']
+        del original["End Time"]
 
         return original
 

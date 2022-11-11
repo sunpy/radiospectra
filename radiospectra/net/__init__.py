@@ -6,5 +6,4 @@ from radiospectra.net.sources.rstn import RSTNClient
 from radiospectra.net.sources.stereo import SWAVESClient
 from radiospectra.net.sources.wind import WAVESClient
 
-__all__ = ['eCALLISTOClient', 'EOVSAClient', 'RFSClient', 'SWAVESClient', 'RSTNClient',
-           'WAVESClient']
+__all__ = ["eCALLISTOClient", "EOVSAClient", "RFSClient", "SWAVESClient", "RSTNClient", "WAVESClient"]

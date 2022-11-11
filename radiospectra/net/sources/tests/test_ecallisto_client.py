@@ -29,8 +29,8 @@ def http_responses():
 
 @pytest.fixture
 def http_response_alt():
-    path = Path(__file__).parent / 'data' / 'ecallisto_resp_alt_format.html'
-    with path.open('r') as file:
+    path = Path(__file__).parent / "data" / "ecallisto_resp_alt_format.html"
+    with path.open("r") as file:
         response_html = file.read()
         return response_html
 
@@ -52,8 +52,9 @@ def test_client_alt_format(urlopen, client, http_response_alt):
     urlopen.return_value.read = mock.MagicMock()
     urlopen.return_value.read.return_value = http_response_alt
     urlopen.close = mock.MagicMock(return_value=None)
-    query = client.search(a.Time('2010/03/27 00:00', '2010/03/27 23:59'),
-                          a.Instrument('eCALLISTO'), Observatory('PHOENIX3-B1'))
+    query = client.search(
+        a.Time("2010/03/27 00:00", "2010/03/27 23:59"), a.Instrument("eCALLISTO"), Observatory("PHOENIX3-B1")
+    )
     assert len(query) == 24
 
 

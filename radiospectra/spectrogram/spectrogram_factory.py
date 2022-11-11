@@ -392,26 +392,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
     @staticmethod
     def _read_fits(file):
         hd_pairs = fits.open(file)
-        if "e-CALLISTO" in hd_pairs[0].header.get("CONTENT", ""):
-            data = hd_pairs[0].data
-            times = hd_pairs[1].data["TIME"].flatten() * u.s
-            freqs = hd_pairs[1].data["FREQUENCY"].flatten() * u.MHz
-            start_time = parse_time(hd_pairs[0].header["DATE-OBS"] + " " + hd_pairs[0].header["TIME-OBS"])
-            end_time = parse_time(hd_pairs[0].header["DATE-END"] + " " + hd_pairs[0].header["TIME-END"])
-            times = start_time + times
-            meta = {
-                "fits_meta": hd_pairs[0].header,
-                "detector": "e-CALLISTO",
-                "instrument": "e-CALLISTO",
-                "observatory": hd_pairs[0].header["INSTRUME"],
-                "start_time": start_time,
-                "end_time": end_time,
-                "wavelength": a.Wavelength(freqs.min(), freqs.max()),
-                "times": times,
-                "freqs": freqs,
-            }
-            return data, meta
-        elif hd_pairs[0].header.get("TELESCOP", "") == "EOVSA":
+        if hd_pairs[0].header.get("TELESCOP", "") == "EOVSA":
             times = Time(hd_pairs[2].data["mjd"] + hd_pairs[2].data["time"] / 1000.0 / 86400.0, format="mjd")
             freqs = hd_pairs[1].data["sfreq"] * u.GHz
             data = hd_pairs[0].data
@@ -429,8 +410,31 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 "freqs": freqs,
             }
             return data, meta
-        else:
-            raise ValueError("Unrecognized FITS file: Only e-CALLISTO and EOVSA supported")
+        # Semi standard - spec in primary and time and freq in 1st extension
+        try:
+            data = hd_pairs[0].data
+            times = hd_pairs[1].data["TIME"].flatten() * u.s
+            freqs = hd_pairs[1].data["FREQUENCY"].flatten() * u.MHz
+            start_time = parse_time(hd_pairs[0].header["DATE-OBS"] + " " + hd_pairs[0].header["TIME-OBS"])
+            end_time = parse_time(hd_pairs[0].header["DATE-END"] + " " + hd_pairs[0].header["TIME-END"])
+            times = start_time + times
+            meta = {
+                "fits_meta": hd_pairs[0].header,
+                "start_time": start_time,
+                "end_time": end_time,
+                "wavelength": a.Wavelength(freqs.min(), freqs.max()),
+                "times": times,
+                "freqs": freqs,
+                "instrument": hd_pairs[0].header.get("INSTRUME", ""),
+                "observatory": hd_pairs[0].header.get("INSTRUME", ""),
+                "detector": hd_pairs[0].header.get("DETECTOR", ""),
+            }
+            if "e-CALLISTO" in hd_pairs[0].header["CONTENT"]:
+                meta["detector"] = "e-CALLISTO"
+                meta["instrument"] = "e-CALLISTO"
+            return data, meta
+        except KeyError:
+            raise ValueError(f"Could not load fits file: {file} into Spectrogram.")
 
     @staticmethod
     def _read_idl_sav(file, instrument=None):
