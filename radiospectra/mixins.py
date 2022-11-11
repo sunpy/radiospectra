@@ -49,7 +49,6 @@ class PcolormeshPlotMixin:
             if axes in plt.figure(i).axes:
                 plt.sca(axes)
                 plt.sci(ret)
-        print(type(ret))
         return ret
 
 
