@@ -19,7 +19,8 @@ class WAVESSpectrogram(GenericSpectrogram):
     >>> spec = Spectrogram(downloaded[0])  #doctest: +REMOTE_DATA
     >>> spec  #doctest: +REMOTE_DATA
     <WAVESSpectrogram WIND, WAVES, RAD1 20.0 kHz - 1040.0 kHz, 2019-10-05T00:00:00.000 to 2019-10-05T23:59:59.000>
-    >>> spec.plot() #doctest: +SKIP
+    >>> spec.plot()  #doctest: +REMOTE_DATA
+    <matplotlib.collections.QuadMesh object at ...>
     """
 
     def __init__(self, data, meta, **kwargs):

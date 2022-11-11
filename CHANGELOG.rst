@@ -8,6 +8,11 @@ Breaking Changes
 - The new ``Spectrogram2`` class has been renamed to ``Spectrogram``. (`#76 <https://github.com/sunpy/radiospectra/pull/76>`__)
 - Adding colorbar functionality to ``plot`` (`#80 <https://github.com/sunpy/radiospectra/pull/80>`__)
 
+Features
+--------
+
+- Add support for SOLO RPW data. (`#62 <https://github.com/sunpy/radiospectra/pull/62>`__)
+
 0.4.0 (2022-05-24)
 ==================
 

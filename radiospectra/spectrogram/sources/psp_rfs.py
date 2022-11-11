@@ -17,7 +17,8 @@ class RFSSpectrogram(GenericSpectrogram):
     >>> spec = Spectrogram(downloaded[0])  #doctest: +REMOTE_DATA
     >>> spec  #doctest: +REMOTE_DATA
     <RFSSpectrogram PSP, FIELDS/RFS, LFR 10.546879882812501 kHz - 1687.5 kHz, 2019-10-05T00:01:32.395 to 2019-10-05T22:16:30.493>
-    >>> spec.plot() #doctest: +SKIP
+    >>> spec.plot()  #doctest: +REMOTE_DATA
+    <matplotlib.collections.QuadMesh object at ...>
     """
 
     def __init__(self, data, meta, **kwargs):

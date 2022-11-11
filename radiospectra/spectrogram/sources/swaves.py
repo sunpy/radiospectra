@@ -19,7 +19,8 @@ class SWAVESSpectrogram(GenericSpectrogram):
     >>> spec = Spectrogram(downloaded[0])  #doctest: +REMOTE_DATA
     >>> spec  #doctest: +REMOTE_DATA
     <SWAVESSpectrogram STEREO A, SWAVES, LFR 2.6 kHz - 153.4 kHz, 2019-10-05T00:00:00.000 to 2019-10-05T23:59:00.000>
-    >>> spec.plot() #doctest: +SKIP
+    >>> spec.plot()  #doctest: +REMOTE_DATA
+    <matplotlib.collections.QuadMesh object at ...>
     """
 
     def __init__(self, data, meta, **kwargs):
