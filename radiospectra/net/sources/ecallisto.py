@@ -16,6 +16,9 @@ class eCALLISTOClient(GenericClient):
     -----
     `Specific information on the meaning of the filename. <http://soleil.i4ds.ch/solarradio/data/readme.txt>`__
 
+    From the filename alone there's no way to tell about either the frequency or duration.
+    Therefore we only return a start time.
+
     Examples
     --------
     >>> from radiospectra import net
@@ -60,14 +63,11 @@ class eCALLISTOClient(GenericClient):
 
     def post_search_hook(self, exdict, matchdict):
         original = super().post_search_hook(exdict, matchdict)
-        i0 = 0
-        if "_" in original["suffix"]:
-            i0 = 1
-        original["ID"] = original["suffix"][i0:]
+        original["ID"] = original["suffix"].replace("_", "")
         del original["suffix"]
-        # Don't know the end time for all files see https://github.com/sunpy/radiospectra/issues/60
+        # We don't know the end time for all files
+        # https://github.com/sunpy/radiospectra/issues/60
         del original["End Time"]
-
         return original
 
     @classmethod

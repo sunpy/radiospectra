@@ -433,8 +433,8 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 meta["detector"] = "e-CALLISTO"
                 meta["instrument"] = "e-CALLISTO"
             return data, meta
-        except KeyError:
-            raise ValueError(f"Could not load fits file: {file} into Spectrogram.")
+        except Exception as e:
+            raise ValueError(f"Could not load fits file: {file} into Spectrogram.") from e
 
     @staticmethod
     def _read_idl_sav(file, instrument=None):
