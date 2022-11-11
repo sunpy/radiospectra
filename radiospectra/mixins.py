@@ -16,6 +16,7 @@ class PcolormeshPlotMixin:
 
         Returns
         -------
+        `matplotlib.collections.QuadMesh`
         """
         import matplotlib.dates as mdates
         from matplotlib import pyplot as plt
@@ -36,13 +37,19 @@ class PcolormeshPlotMixin:
 
         axes.set_title(title)
         axes.plot(self.times.datetime[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
-        axes.pcolormesh(self.times.datetime, self.frequencies.value, data[:-1, :-1], shading="auto", **kwargs)
+        ret = axes.pcolormesh(self.times.datetime, self.frequencies.value, data[:-1, :-1], shading="auto", **kwargs)
         axes.set_xlim(self.times.datetime[0], self.times.datetime[-1])
         locator = mdates.AutoDateLocator(minticks=4, maxticks=8)
         formatter = mdates.ConciseDateFormatter(locator)
         axes.xaxis.set_major_locator(locator)
         axes.xaxis.set_major_formatter(formatter)
         fig.autofmt_xdate()
+        # Set current axes/image if pyplot is being used (makes colorbar work)
+        for i in plt.get_fignums():
+            if axes in plt.figure(i).axes:
+                plt.sca(axes)
+                plt.sci(ret)
+        return ret
 
 
 class NonUniformImagePlotMixin:
