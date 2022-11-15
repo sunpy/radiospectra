@@ -397,7 +397,16 @@ class SpectrogramFactory(BasicRegistrationFactory):
             times = hd_pairs[1].data["TIME"].flatten() * u.s
             freqs = hd_pairs[1].data["FREQUENCY"].flatten() * u.MHz
             start_time = parse_time(hd_pairs[0].header["DATE-OBS"] + " " + hd_pairs[0].header["TIME-OBS"])
-            end_time = parse_time(hd_pairs[0].header["DATE-END"] + " " + hd_pairs[0].header["TIME-END"])
+            try:
+                end_time = parse_time(hd_pairs[0].header["DATE-END"] + " " + hd_pairs[0].header["TIME-END"])
+            except ValueError:
+                # See https://github.com/sunpy/radiospectra/issues/74
+                time_comps = hd_pairs[0].header["TIME-END"].split(":")
+                time_comps[0] = "00"
+                fixed_time = ":".join(time_comps)
+                date_offset = parse_time(hd_pairs[0].header["DATE-END"] + " " + fixed_time)
+                end_time = date_offset + 1 * u.day
+
             times = start_time + times
             meta = {
                 "fits_meta": hd_pairs[0].header,
