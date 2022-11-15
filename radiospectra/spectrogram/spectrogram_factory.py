@@ -401,7 +401,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 end_time = parse_time(hd_pairs[0].header["DATE-END"] + " " + hd_pairs[0].header["TIME-END"])
             except ValueError:
                 # See https://github.com/sunpy/radiospectra/issues/74
-                time_comps = hd_pairs[0].header["TIME-OBS"].split(":")
+                time_comps = hd_pairs[0].header["TIME-END"].split(":")
                 time_comps[0] = "00"
                 fixed_time = ":".join(time_comps)
                 date_offset = parse_time(hd_pairs[0].header["DATE-END"] + " " + fixed_time)
