@@ -20,8 +20,8 @@ class RPWSpectrogram(GenericSpectrogram):
     >>> downloaded = Fido.fetch(query[0])  #doctest: +REMOTE_DATA
     >>> spec = Spectrogram(downloaded[0])  #doctest: +REMOTE_DATA
     >>> spec  #doctest: +REMOTE_DATA
-    <RSTNSpectrogram LEARMONTH, RSTN, RSTN 25000.0 kHz - 180000.0 kHz, 2017-09-06T22:31:51.000 to 2017-09-07T10:06:36.000>
-    >>> spec.plot()  #doctest: +REMOTE_DATA
+    [<RPWSpectrogram SOLO, RPW, RPW-AGC1 375.0 kHz - 16375.0 kHz, 2020-07-11T00:00:39.352 to 2020-07-12T00:00:55.715>, <RPWSpectrogram SOLO, RPW, RPW-AGC2 375.0 kHz - 16375.0 kHz, 2020-07-11T00:00:39.352 to 2020-07-12T00:00:55.715>]
+    >>> spec[0] .plot()  #doctest: +REMOTE_DATA
     <matplotlib.collections.QuadMesh object at ...>
     """
 

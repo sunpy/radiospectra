@@ -19,6 +19,7 @@ def client():
     return SWAVESClient()
 
 
+@pytest.mark.skip("Upstream data server removed")
 @pytest.mark.remote_data
 def test_fido():
     atr = a.Time("2010/10/01", "2010/10/02")

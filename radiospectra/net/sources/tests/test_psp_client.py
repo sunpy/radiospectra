@@ -90,8 +90,8 @@ def test_search_with_wavelength(mock_urlopen, client, http_responces):
 
 @pytest.mark.remote_data
 def test_get_url_for_time_range(client):
-    url_start = "https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_lfr/2019/" "psp_fld_l2_rfs_lfr_20191001_v02.cdf"
-    url_end = "https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_hfr/2019/" "psp_fld_l2_rfs_hfr_20191015_v02.cdf"
+    url_start = "https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_lfr/2019/" "psp_fld_l2_rfs_lfr_20191001_v03.cdf"
+    url_end = "https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_hfr/2019/" "psp_fld_l2_rfs_hfr_20191015_v03.cdf"
     tr = a.Time("2019/10/01", "2019/10/15")
     res = client.search(tr)
     urls = [i["url"] for i in res]
