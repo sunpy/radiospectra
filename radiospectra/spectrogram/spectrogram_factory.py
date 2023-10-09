@@ -379,7 +379,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                     f"frequency_{detector}_auto_averages_ch0_V1V2",
                 ]
             ]
-            times = Time('J2000.0', scale='tt') + (times << u.ns)
+            times = Time("J2000.0", scale="tt") + (times << u.ns)
             freqs = freqs[0, :] << u.Hz
             data = data.T << u.Unit("Volt**2/Hz")
             meta = {
@@ -401,9 +401,9 @@ class SpectrogramFactory(BasicRegistrationFactory):
                     f'{file.name} is {cdf_globals.get("Descriptor", "")}'
                 )
 
-            FREQUENCY_BAND_LABELS = ["HF1", "HF2"]
-            SURVEY_MODE_LABELS = ["SURVEY_NORMAL", "SURVEY_BURST"]
-            CHANNEL_LABELS = ["1", "2"]
+            # FREQUENCY_BAND_LABELS = ["HF1", "HF2"]
+            # SURVEY_MODE_LABELS = ["SURVEY_NORMAL", "SURVEY_BURST"]
+            # CHANNEL_LABELS = ["1", "2"]
             SENSOR_MAPPING = {
                 1: "V1",
                 2: "V2",
@@ -418,18 +418,18 @@ class SpectrogramFactory(BasicRegistrationFactory):
             }
 
             # Extract variables
-            all_times = Time("J2000.0") + cdf.varget("EPOCH") * u.Unit(cdf.varattsget('EPOCH')['UNITS'])
-            all_freqs = cdf.varget("FREQUENCY") << u.Unit(cdf.varattsget('FREQUENCY')['UNITS'])
+            all_times = Time("J2000.0") + cdf.varget("EPOCH") * u.Unit(cdf.varattsget("EPOCH")["UNITS"])
+            all_freqs = cdf.varget("FREQUENCY") << u.Unit(cdf.varattsget("FREQUENCY")["UNITS"])
 
             sweep_start_indices = np.asarray(np.diff(cdf.varget("SWEEP_NUM")) != 0).nonzero()
             sweep_start_indices = np.insert((sweep_start_indices[0] + 1), 0, 0)
             times = all_times[sweep_start_indices]
 
             sensor = cdf.varget("SENSOR_CONFIG")
-            freq_uniq = np.unique(cdf.varget("FREQUENCY"))
-            band = cdf.varget('HFR_BAND')
+            np.unique(cdf.varget("FREQUENCY"))
+            band = cdf.varget("HFR_BAND")
 
-            spec_unit = u.Unit(cdf.varattsget('AGC1').get('UNIT', 'V^2/Hz'))
+            u.Unit(cdf.varattsget("AGC1").get("UNIT", "V^2/Hz"))
             agc1 = cdf.varget("AGC1")
             agc2 = cdf.varget("AGC2")
 
@@ -468,12 +468,12 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 i1 = isweep[i + 1]
 
                 ts = all_times[i0]
-                te = all_times[i1-1]
-                tt = (te - ts)*0.5 + ts
+                te = all_times[i1 - 1]
+                tt = (te - ts) * 0.5 + ts
                 tm.append(tt)
 
                 # Get indices of the actual frequency channels in the frequency vector
-                freq_indices = ((all_freqs[i0:i1].value - 375)/50).astype(int)
+                freq_indices = ((all_freqs[i0:i1].value - 375) / 50).astype(int)
 
                 # fill output 2D array
                 specs[0, i, freq_indices] = agc1[i0:i1]
@@ -484,7 +484,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 sensor_config[1, i] = SENSOR_MAPPING[sensor[i0, 1]]
 
             # Define hfr bands
-            hfc = np.array(['HF1', 'HF2'])
+            hfc = np.array(["HF1", "HF2"])
             hfr_bands = hfc[band[:100] - 1]
 
             hfr_frequency = hfr_frequency << u.kHz
