@@ -567,8 +567,31 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 "freqs": freqs,
             }
             return data, meta
-        else:
-            raise ValueError("Unrecognized FITS file: Only e-CALLISTO and EOVSA supported")
+        # Semi standard - spec in primary and time and freq in 1st extension
+        try:
+            data = hd_pairs[0].data
+            times = hd_pairs[1].data["TIME"].flatten() * u.s
+            freqs = hd_pairs[1].data["FREQUENCY"].flatten() * u.MHz
+            start_time = parse_time(hd_pairs[0].header["DATE-OBS"] + " " + hd_pairs[0].header["TIME-OBS"])
+            end_time = parse_time(hd_pairs[0].header["DATE-END"] + " " + hd_pairs[0].header["TIME-END"])
+            times = start_time + times
+            meta = {
+                "fits_meta": hd_pairs[0].header,
+                "start_time": start_time,
+                "end_time": end_time,
+                "wavelength": a.Wavelength(freqs.min(), freqs.max()),
+                "times": times,
+                "freqs": freqs,
+                "instrument": hd_pairs[0].header.get("INSTRUME", ""),
+                "observatory": hd_pairs[0].header.get("INSTRUME", ""),
+                "detector": hd_pairs[0].header.get("DETECTOR", ""),
+            }
+            if "e-CALLISTO" in hd_pairs[0].header["CONTENT"]:
+                meta["detector"] = "e-CALLISTO"
+                meta["instrument"] = "e-CALLISTO"
+            return data, meta
+        except Exception as e:
+            raise ValueError(f"Could not load fits file: {file} into Spectrogram.") from e
 
     @staticmethod
     def _read_idl_sav(file, instrument=None):
