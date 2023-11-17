@@ -1,0 +1,1 @@
+Fix a bug where incorrectly formatted dates were not handled by the `radiospectra.spectrogram.Spectrogram`.
