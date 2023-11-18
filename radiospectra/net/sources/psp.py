@@ -43,6 +43,7 @@ class RFSClient(GenericClient):
     2019-10-05 00:00:00.000 2019-10-05 23:59:59.999 ...     SPDF 1300.0 .. 19200.0
     <BLANKLINE>
     <BLANKLINE>
+
     """
 
     baseurl = (

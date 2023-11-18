@@ -1,5 +1,5 @@
 from radiospectra.net.attrs import *
-from radiospectra.net.sources.callisto import CALLISTOClient
+from radiospectra.net.sources.ecallisto import eCALLISTOClient
 from radiospectra.net.sources.eovsa import EOVSAClient
 from radiospectra.net.sources.ilofar import ILOFARMode357Client
 from radiospectra.net.sources.psp import RFSClient

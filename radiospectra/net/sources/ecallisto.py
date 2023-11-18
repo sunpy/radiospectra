@@ -1,4 +1,3 @@
-import astropy.units as u
 from sunpy.net import attrs as a
 from sunpy.net.attr import SimpleAttr
 from sunpy.net.dataretriever.client import GenericClient
@@ -6,7 +5,7 @@ from sunpy.net.dataretriever.client import GenericClient
 from radiospectra.net.attrs import Observatory
 
 
-class CALLISTOClient(GenericClient):
+class eCALLISTOClient(GenericClient):
     """
     Provides access to `eCallisto radio spectrometer <http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/>`__
     `data archive <https://spdf.gsfc.nasa.gov>`__.
@@ -16,6 +15,9 @@ class CALLISTOClient(GenericClient):
     Notes
     -----
     `Specific information on the meaning of the filename. <http://soleil.i4ds.ch/solarradio/data/readme.txt>`__
+
+    From the filename alone there's no way to tell about either the frequency or duration.
+    Therefore we only return a start time.
 
     Examples
     --------
@@ -27,24 +29,24 @@ class CALLISTOClient(GenericClient):
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
-    3 Results from the CALLISTOClient:
-           Start Time               End Time         Provider ... Observatory  ID
-    ----------------------- ----------------------- --------- ... ----------- ---
-    2019-10-05 23:00:00.000 2019-10-05 23:14:59.999 ECALLISTO ...      ALASKA  59
-    2019-10-05 23:15:00.000 2019-10-05 23:29:59.999 ECALLISTO ...      ALASKA  59
-    2019-10-05 23:30:00.000 2019-10-05 23:44:59.999 ECALLISTO ...      ALASKA  59
+    3 Results from the eCALLISTOClient:
+           Start Time        Provider Instrument Observatory  ID
+    ----------------------- --------- ---------- ----------- ---
+    2019-10-05 23:00:00.000 ECALLISTO  ECALLISTO      ALASKA  59
+    2019-10-05 23:15:00.000 ECALLISTO  ECALLISTO      ALASKA  59
+    2019-10-05 23:30:00.000 ECALLISTO  ECALLISTO      ALASKA  59
     <BLANKLINE>
     <BLANKLINE>
     """
 
     baseurl = (
         r"http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/"
-        r"%Y/%m/%d/{obs}_%Y%m%d_%H%M%S_(\d){{2}}.fit.gz"
+        r"%Y/%m/%d/{obs}_%Y%m%d_%H%M%S.*.fit.gz"
     )
     pattern = (
         r"{}/2002-20yy_Callisto/{year:4d}/{month:2d}/{day:2d}/"
         r"{Observatory}_{year:4d}{month:2d}{day:2d}"
-        r"_{hour:2d}{minute:2d}{second:2d}_{ID:2d}.fit.gz"
+        r"_{hour:2d}{minute:2d}{second:2d}{suffix}.fit.gz"
     )
 
     @classmethod
@@ -61,8 +63,11 @@ class CALLISTOClient(GenericClient):
 
     def post_search_hook(self, exdict, matchdict):
         original = super().post_search_hook(exdict, matchdict)
-        # Files are 15 minute duration
-        original["End Time"] = original["Start Time"] + (15 * u.min - 1 * u.ms)
+        original["ID"] = original["suffix"].replace("_", "")
+        del original["suffix"]
+        # We don't know the end time for all files
+        # https://github.com/sunpy/radiospectra/issues/60
+        del original["End Time"]
         return original
 
     @classmethod

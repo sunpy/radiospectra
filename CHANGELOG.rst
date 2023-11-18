@@ -7,6 +7,17 @@ Breaking Changes
 - The old ``Spectrogram`` class has been removed. (`#76 <https://github.com/sunpy/radiospectra/pull/76>`__)
 - The new ``Spectrogram2`` class has been renamed to ``Spectrogram``. (`#76 <https://github.com/sunpy/radiospectra/pull/76>`__)
 - Adding colorbar functionality to ``plot`` (`#80 <https://github.com/sunpy/radiospectra/pull/80>`__)
+- Renamed ``CALLISTOClient`` to ``eCallistoClient`` (`#61 <https://github.com/sunpy/radiospectra/pull/61>`__)
+- ``eCallistoClient`` now does not return endtimes. (`#61 <https://github.com/sunpy/radiospectra/pull/61>`__)
+
+Features
+--------
+- Added support to second ``eCallisto`` file format. (`#61 <https://github.com/sunpy/radiospectra/pull/61>`__)
+
+Features
+--------
+
+- Add support for SOLO RPW data. (`#62 <https://github.com/sunpy/radiospectra/pull/62>`__)
 
 Features
 --------

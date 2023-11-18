@@ -7,7 +7,7 @@ from radiospectra.spectrogram import Spectrogram
 
 
 @mock.patch("numpy.fromfile")
-@mock.patch("radiospectra.spectrogram2.spectrogram.is_file")
+@mock.patch("sunpy.util.io.is_file")
 def test_ilofar(mock_is_file, mock_fromfile):
     mock_fromfile.return_value = np.ones(10117216)
     mock_is_file.return_value = True

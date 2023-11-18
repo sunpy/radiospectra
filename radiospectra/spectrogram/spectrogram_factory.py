@@ -242,7 +242,10 @@ class SpectrogramFactory(BasicRegistrationFactory):
         elif first_extension in (".r1", ".r2"):
             return [self._read_idl_sav(file, instrument="waves")]
         elif first_extension == ".cdf":
-            return [self._read_cdf(file)]
+            cdf = self._read_cdf(file)
+            if isinstance(cdf, list):
+                return cdf
+            return [cdf]
         elif first_extension == ".srs":
             return [self._read_srs(file)]
         elif first_extension in (".fits", ".fit", ".fts", "fit.gz"):
@@ -403,13 +406,16 @@ class SpectrogramFactory(BasicRegistrationFactory):
     @staticmethod
     def _read_cdf(file):
         cdf = cdflib.CDF(file)
-        cdf_meta = cdf.globalattsget()
+
+        cdf_globals = cdf.globalattsget()
+
         if (
-            cdf_meta.get("Project", "") == "PSP"
-            and cdf_meta.get("Source_name") == "PSP_FLD>Parker Solar Probe FIELDS"
-            and "Radio Frequency Spectrometer" in cdf_meta.get("Descriptor")
+            cdf_globals.get("Project", "")[0] == "PSP"
+            and cdf_globals.get("Source_name")[0] == "PSP_FLD>Parker Solar Probe FIELDS"
+            and "Radio Frequency Spectrometer" in cdf_globals.get("Descriptor")[0]
         ):
-            short, _long = cdf_meta["Descriptor"].split(">")
+            short, _long = cdf_globals["Descriptor"][0].split(">")
+
             detector = short[4:].lower()
             times, data, freqs = [
                 cdf.varget(name)
@@ -419,11 +425,11 @@ class SpectrogramFactory(BasicRegistrationFactory):
                     f"frequency_{detector}_auto_averages_ch0_V1V2",
                 ]
             ]
-            times = Time(times << u.ns, format="cdf_tt2000")
+            times = Time("J2000.0", scale="tt") + (times << u.ns)
             freqs = freqs[0, :] << u.Hz
             data = data.T << u.Unit("Volt**2/Hz")
             meta = {
-                "cdf_meta": cdf_meta,
+                "cdf_globals": cdf_globals,
                 "detector": detector,
                 "instrument": "FIELDS/RFS",
                 "observatory": "PSP",
@@ -434,6 +440,129 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 "freqs": freqs,
             }
             return data, meta
+        elif "SOLO" in cdf_globals.get("Project", "")[0]:
+            if "RPW-HFR-SURV" not in cdf_globals.get("Descriptor", "")[0]:
+                raise ValueError(
+                    f"Currently radiospectra supports Level 2 HFR survey data the file"
+                    f'{file.name} is {cdf_globals.get("Descriptor", "")}'
+                )
+
+            # FREQUENCY_BAND_LABELS = ["HF1", "HF2"]
+            # SURVEY_MODE_LABELS = ["SURVEY_NORMAL", "SURVEY_BURST"]
+            # CHANNEL_LABELS = ["1", "2"]
+            SENSOR_MAPPING = {
+                1: "V1",
+                2: "V2",
+                3: "V3",
+                4: "V1-V2",
+                5: "V2-V3",
+                6: "V3-V1",
+                7: "B_MF",
+                9: "HF_V1-V2",
+                10: "HF_V2-V3",
+                11: "HF_V3-V1",
+            }
+
+            # Extract variables
+            all_times = Time("J2000.0") + cdf.varget("EPOCH") * u.Unit(cdf.varattsget("EPOCH")["UNITS"])
+            all_freqs = cdf.varget("FREQUENCY") << u.Unit(cdf.varattsget("FREQUENCY")["UNITS"])
+
+            sweep_start_indices = np.asarray(np.diff(cdf.varget("SWEEP_NUM")) != 0).nonzero()
+            sweep_start_indices = np.insert((sweep_start_indices[0] + 1), 0, 0)
+            times = all_times[sweep_start_indices]
+
+            sensor = cdf.varget("SENSOR_CONFIG")
+            np.unique(cdf.varget("FREQUENCY"))
+            band = cdf.varget("HFR_BAND")
+
+            u.Unit(cdf.varattsget("AGC1").get("UNIT", "V^2/Hz"))
+            agc1 = cdf.varget("AGC1")
+            agc2 = cdf.varget("AGC2")
+
+            # Define number of records
+            n_rec = band.shape[0]
+            # Get Epoch times of first sample of each sweep in the file
+            sweep_times = times
+            nt = len(sweep_times)
+            # Get complete list of HFR frequency values
+            hfr_frequency = 375 + 50 * np.arange(321)  # This is a guess something between 320 and 324
+            nf = len(hfr_frequency)
+
+            # Initialize output 2D array containing voltage spectral power values in V^2/Hz
+            # Dims = (channels[2], time of the first sweep sample[len(time)], frequency[192])
+            specs = np.empty((2, nt, nf))
+            # Fill 2D array with NaN for HRF frequencies not actually measured in the file
+            specs[:] = np.nan
+
+            # Get list of first index of sweeps
+            isweep = sweep_start_indices[:]
+            # Get number of sweeps
+            n_sweeps = len(isweep)
+            # Insert an element in the end of the isweep list
+            # containing the end of the latest sweep
+            # (required for the loop below, in order to have
+            # a start/end index range for each sweep)
+            isweep = np.insert(isweep, n_sweeps, n_rec)
+
+            # Initialize sensor_config
+            sensor_config = np.zeros((2, nt), dtype=object)
+            tm = []
+            # Perform a loop on each sweep
+            for i in range(n_sweeps):
+                # Get first and last index of the sweep
+                i0 = isweep[i]
+                i1 = isweep[i + 1]
+
+                ts = all_times[i0]
+                te = all_times[i1 - 1]
+                tt = (te - ts) * 0.5 + ts
+                tm.append(tt)
+
+                # Get indices of the actual frequency channels in the frequency vector
+                freq_indices = ((all_freqs[i0:i1].value - 375) / 50).astype(int)
+
+                # fill output 2D array
+                specs[0, i, freq_indices] = agc1[i0:i1]
+                specs[1, i, freq_indices] = agc2[i0:i1]
+
+                # Fill sensor config
+                sensor_config[0, i] = SENSOR_MAPPING[sensor[i0, 0]]
+                sensor_config[1, i] = SENSOR_MAPPING[sensor[i0, 1]]
+
+            # Define hfr bands
+            hfc = np.array(["HF1", "HF2"])
+            hfr_bands = hfc[band[:100] - 1]
+
+            hfr_frequency = hfr_frequency << u.kHz
+
+            res = []
+            if np.any(agc1):
+                meta1 = {
+                    "cdf_globals": cdf_globals,
+                    "detector": "RPW-AGC1",
+                    "instrument": "RPW",
+                    "observatory": "SOLO",
+                    "start_time": times[0],
+                    "end_time": times[-1],
+                    "wavelength": a.Wavelength(hfr_frequency.min(), hfr_frequency.max()),
+                    "times": times,
+                    "freqs": hfr_frequency,
+                }
+                res.append((specs[0].T, meta1))
+            if np.any(agc2):
+                meta2 = {
+                    "cdf_globals": cdf_globals,
+                    "detector": "RPW-AGC2",
+                    "instrument": "RPW",
+                    "observatory": "SOLO",
+                    "start_time": times[0],
+                    "end_time": times[-1],
+                    "wavelength": a.Wavelength(hfr_frequency.min(), hfr_frequency.max()),
+                    "times": times,
+                    "freqs": hfr_frequency,
+                }
+                res.append((specs[1].T, meta2))
+            return res
 
     @staticmethod
     def _read_fits(file):
@@ -443,7 +572,16 @@ class SpectrogramFactory(BasicRegistrationFactory):
             times = hd_pairs[1].data["TIME"].flatten() * u.s
             freqs = hd_pairs[1].data["FREQUENCY"].flatten() * u.MHz
             start_time = parse_time(hd_pairs[0].header["DATE-OBS"] + " " + hd_pairs[0].header["TIME-OBS"])
-            end_time = parse_time(hd_pairs[0].header["DATE-END"] + " " + hd_pairs[0].header["TIME-END"])
+            try:
+                end_time = parse_time(hd_pairs[0].header["DATE-END"] + " " + hd_pairs[0].header["TIME-END"])
+            except ValueError:
+                # See https://github.com/sunpy/radiospectra/issues/74
+                time_comps = hd_pairs[0].header["TIME-END"].split(":")
+                time_comps[0] = "00"
+                fixed_time = ":".join(time_comps)
+                date_offset = parse_time(hd_pairs[0].header["DATE-END"] + " " + fixed_time)
+                end_time = date_offset + 1 * u.day
+
             times = start_time + times
             meta = {
                 "fits_meta": hd_pairs[0].header,
@@ -475,8 +613,31 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 "freqs": freqs,
             }
             return data, meta
-        else:
-            raise ValueError("Unrecognized FITS file: Only e-CALLISTO and EOVSA supported")
+        # Semi standard - spec in primary and time and freq in 1st extension
+        try:
+            data = hd_pairs[0].data
+            times = hd_pairs[1].data["TIME"].flatten() * u.s
+            freqs = hd_pairs[1].data["FREQUENCY"].flatten() * u.MHz
+            start_time = parse_time(hd_pairs[0].header["DATE-OBS"] + " " + hd_pairs[0].header["TIME-OBS"])
+            end_time = parse_time(hd_pairs[0].header["DATE-END"] + " " + hd_pairs[0].header["TIME-END"])
+            times = start_time + times
+            meta = {
+                "fits_meta": hd_pairs[0].header,
+                "start_time": start_time,
+                "end_time": end_time,
+                "wavelength": a.Wavelength(freqs.min(), freqs.max()),
+                "times": times,
+                "freqs": freqs,
+                "instrument": hd_pairs[0].header.get("INSTRUME", ""),
+                "observatory": hd_pairs[0].header.get("INSTRUME", ""),
+                "detector": hd_pairs[0].header.get("DETECTOR", ""),
+            }
+            if "e-CALLISTO" in hd_pairs[0].header["CONTENT"]:
+                meta["detector"] = "e-CALLISTO"
+                meta["instrument"] = "e-CALLISTO"
+            return data, meta
+        except Exception as e:
+            raise ValueError(f"Could not load fits file: {file} into Spectrogram.") from e
 
     @staticmethod
     def _read_idl_sav(file, instrument=None):

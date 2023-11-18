@@ -27,7 +27,7 @@ def html_responses():
     return response_htmls
 
 
-@mock.patch("sunpy.util.scraper.urlopen")
+@mock.patch("sunpy.net.scraper.urlopen")
 def test_ilofar_client(mock_urlopen, client, html_responses):
     mock_urlopen.return_value.read = mock.MagicMock()
     mock_urlopen.return_value.read.side_effect = html_responses * 2
@@ -49,7 +49,7 @@ def test_ilofar_client(mock_urlopen, client, html_responses):
     assert query[0]["Polarisation"] == "X"
 
 
-@mock.patch("sunpy.util.scraper.urlopen")
+@mock.patch("sunpy.net.scraper.urlopen")
 def test_ilofar_client_polarisation(mock_urlopen, client, html_responses):
     mock_urlopen.return_value.read = mock.MagicMock()
     mock_urlopen.return_value.read.side_effect = html_responses * 2
@@ -66,7 +66,7 @@ def test_ilofar_client_polarisation(mock_urlopen, client, html_responses):
         assert query[0]["Polarisation"] == pol
 
 
-@mock.patch("sunpy.util.scraper.urlopen")
+@mock.patch("sunpy.net.scraper.urlopen")
 def test_ilofar_client_polarisation(mock_urlopen, client, html_responses):
     mock_urlopen.return_value.read = mock.MagicMock()
     mock_urlopen.return_value.read.side_effect = html_responses * 6
