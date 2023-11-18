@@ -238,7 +238,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
         extensions = file.suffixes
         first_extension = extensions[0].lower()
         if first_extension == ".dat":
-            return [self._read_dat(file)]
+            return self._read_dat(file)
         elif first_extension in (".r1", ".r2"):
             return [self._read_idl_sav(file, instrument="waves")]
         elif first_extension == ".cdf":
@@ -318,7 +318,6 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 }
 
                 data_header_pairs.append((spec[i], meta))
-
             return data_header_pairs
         else:
             raise ValueError(f"File {file} not supported.")

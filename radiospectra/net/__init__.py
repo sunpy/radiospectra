@@ -8,7 +8,7 @@ from radiospectra.net.sources.stereo import SWAVESClient
 from radiospectra.net.sources.wind import WAVESClient
 
 __all__ = [
-    "CALLISTOClient",
+    "eCALLISTOClient",
     "EOVSAClient",
     "RFSClient",
     "SWAVESClient",
