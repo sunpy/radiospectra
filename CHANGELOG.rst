@@ -19,6 +19,10 @@ Features
 
 - Add support for SOLO RPW data. (`#62 <https://github.com/sunpy/radiospectra/pull/62>`__)
 
+Features
+--------
+- Add `sunpy.net.Fido` client `~radiospectra.net.sources.ilofar.ILOFARMode357` and spectrogram class `~radiospectra.spectrogram2.sources.ILOFARMode357` for ILOFAR mode 357 observations. (`#57 <https://github.com/sunpy/radiospectra/pull/57>`__)
+
 0.4.0 (2022-05-24)
 ==================
 

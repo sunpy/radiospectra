@@ -37,7 +37,10 @@ class PcolormeshPlotMixin:
 
         axes.set_title(title)
         axes.plot(self.times.datetime[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
-        ret = axes.pcolormesh(self.times.datetime, self.frequencies.value, data[:-1, :-1], shading="auto", **kwargs)
+        if self.times.shape[0] == self.data.shape[0] and self.frequencies.shape[0] == self.data.shape[1]:
+            ret = axes.pcolormesh(self.times.datetime, self.frequencies.value, data, shading="auto", **kwargs)
+        else:
+            ret = axes.pcolormesh(self.times.datetime, self.frequencies.value, data[:-1, :-1], shading="auto", **kwargs)
         axes.set_xlim(self.times.datetime[0], self.times.datetime[-1])
         locator = mdates.AutoDateLocator(minticks=4, maxticks=8)
         formatter = mdates.ConciseDateFormatter(locator)
