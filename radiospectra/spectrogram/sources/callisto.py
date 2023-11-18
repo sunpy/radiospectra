@@ -22,7 +22,8 @@ class CALISTOSpectrogram(GenericSpectrogram):
     >>> spec = Spectrogram(downloaded[0])  #doctest: +REMOTE_DATA
     >>> spec  #doctest: +REMOTE_DATA
     <CALISTOSpectrogram ALASKA, E-CALLISTO, E-CALLISTO 215000.0 kHz - 418937.98828125 kHz, 2019-10-05T23:00:00.757 to 2019-10-05T23:15:00.000>
-    >>> spec.plot()  #doctest: +SKIP
+    >>> spec.plot()  #doctest: +REMOTE_DATA
+    <matplotlib.collections.QuadMesh object at ...>
     """
 
     def __init__(self, data, meta, **kwargs):

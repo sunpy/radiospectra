@@ -14,6 +14,11 @@ Features
 --------
 - Added support to second ``eCallisto`` file format. (`#61 <https://github.com/sunpy/radiospectra/pull/61>`__)
 
+Features
+--------
+
+- Add support for SOLO RPW data. (`#62 <https://github.com/sunpy/radiospectra/pull/62>`__)
+
 0.4.0 (2022-05-24)
 ==================
 
