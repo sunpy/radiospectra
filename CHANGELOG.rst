@@ -1,4 +1,4 @@
-0.5.0 (2022-10-15)
+0.5.0 (2024-03-01)
 ==================
 
 Breaking Changes
@@ -9,19 +9,24 @@ Breaking Changes
 - Adding colorbar functionality to ``plot`` (`#80 <https://github.com/sunpy/radiospectra/pull/80>`__)
 - Renamed ``CALLISTOClient`` to ``eCallistoClient`` (`#61 <https://github.com/sunpy/radiospectra/pull/61>`__)
 - ``eCallistoClient`` now does not return endtimes. (`#61 <https://github.com/sunpy/radiospectra/pull/61>`__)
+- Removed the ``SWAVESClient`` and ``WAVESClient`` as the old URLS have gone offline. (`#105 <https://github.com/sunpy/radiospectra/pull/105>`__)
 
 Features
 --------
 - Added support to second ``eCallisto`` file format. (`#61 <https://github.com/sunpy/radiospectra/pull/61>`__)
-
-Features
---------
-
 - Add support for SOLO RPW data. (`#62 <https://github.com/sunpy/radiospectra/pull/62>`__)
 
-Features
---------
 - Add `sunpy.net.Fido` client `~radiospectra.net.sources.ilofar.ILOFARMode357` and spectrogram class `~radiospectra.spectrogram2.sources.ILOFARMode357` for ILOFAR mode 357 observations. (`#57 <https://github.com/sunpy/radiospectra/pull/57>`__)
+
+Bug Fixes
+---------
+
+- Fix a bug where incorrectly formatted dates were not handled by the `radiospectra.spectrogram.Spectrogram`. (`#84 <https://github.com/sunpy/radiospectra/pull/84>`__)
+
+Trivial/Internal Changes
+------------------------
+
+- Moved to Github Actions. (`#105 <https://github.com/sunpy/radiospectra/pull/105>`__)
 
 0.4.0 (2022-05-24)
 ==================
