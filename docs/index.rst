@@ -30,7 +30,7 @@ Getting Help
 ============
 For more information or to ask questions about ``radiospectra`` or any other SunPy library, check out:
 
--  `sunpy documentation <https://docs.sunpy.org/projects/radiospectra/en/latest/index.html>`__
+-  `radiospectra documentation <https://docs.sunpy.org/projects/radiospectra/en/latest/index.html>`__
 -  `SunPy Chat`_
 -  `SunPy mailing list <https://groups.google.com/forum/#!forum/sunpy>`__
 
