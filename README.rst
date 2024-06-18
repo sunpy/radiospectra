@@ -24,6 +24,7 @@ To see the latest changes in ``radiospectra`` see our `changelog <https://docs.s
 
 Installation
 ============
+
 The recommended way to install ``radiospectra`` is with `miniforge <https://github.com/conda-forge/miniforge#miniforge3>`__.
 To install ``radiospectra`` once miniforge is installed run the following command:
 
@@ -35,6 +36,7 @@ For detailed installation instructions, see the `installation guide <https://doc
 
 Getting Help
 ============
+
 For more information or to ask questions about ``radiospectra`` or any other SunPy library, check out:
 
 -  `radiospectra documentation <https://docs.sunpy.org/projects/radiospectra/>`__
@@ -43,11 +45,13 @@ For more information or to ask questions about ``radiospectra`` or any other Sun
 
 Contributing
 ============
+
 If you would like to get involved, start by joining the `SunPy Chat`_ and check out our `Newcomers' guide <https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html>`__.
 This will walk you through getting set up for contributing.
 
 Code of Conduct
 ===============
+
 When you are interacting with the SunPy community you are asked to follow our `Code of Conduct <https://sunpy.org/coc>`__.
 
 .. _SunPy Chat: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org

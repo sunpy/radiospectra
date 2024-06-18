@@ -247,7 +247,8 @@ def test_callisto(parse_path_moc):
     assert spec.end_time.datetime == datetime(2011, 6, 7, 6, 39)
     assert spec.wavelength.min.to(u.MHz) == 20 * u.MHz
     assert spec.wavelength.max.to(u.MHz).round(1) == 91.8 * u.MHz
-    assert str(spec.observatory_location) == "(3801942.21260148, 528924.60367802, 5077174.56861812) m"
+    assert spec.observatory_location.value.tolist() == (3801942.212601484, 528924.6036780173, 5077174.568618115)
+    assert spec.observatory_location.unit == u.m
 
 
 @mock.patch("sunpy.util.io.is_file")
@@ -490,4 +491,5 @@ def test_callisto_hour_rollover(hdul_moc, is_file_mock):
     assert spec.end_time.datetime == datetime(2011, 6, 8, 0, 1, 6, 0)
     assert spec.wavelength.min.to(u.MHz) == 20 * u.MHz
     assert spec.wavelength.max.to(u.MHz).round(1) == 91.8 * u.MHz
-    assert str(spec.observatory_location) == "(3801942.21260148, 528924.60367802, 5077174.56861812) m"
+    assert spec.observatory_location.value.tolist() == (3801942.212601484, 528924.6036780173, 5077174.568618115)
+    assert spec.observatory_location.unit == u.m
