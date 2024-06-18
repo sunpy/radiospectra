@@ -45,7 +45,7 @@ jobs:
     needs: [test]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      default_python: '3.9'
+      default_python: '3.12'
       submodules: false
       pytest: false
       toxdeps: tox-pypi-filter
