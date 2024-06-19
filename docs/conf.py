@@ -10,28 +10,11 @@ isort:skip_file
 import os
 import sys
 import datetime
-from pkg_resources import get_distribution
 from packaging.version import Version
-
-# -- Check for dependencies ----------------------------------------------------
-
-doc_requires = get_distribution("radiospectra").requires(extras=("docs",))
-missing_requirements = []
-for requirement in doc_requires:
-    try:
-        get_distribution(requirement)
-    except Exception as e:
-        missing_requirements.append(requirement.name)
-if missing_requirements:
-    print(
-        f"The {' '.join(missing_requirements)} package(s) could not be found and "
-        "is needed to build the documentation, please install the 'docs' requirements."
-    )
-    sys.exit(1)
 
 # -- Read the Docs Specific Configuration --------------------------------------
 
-# This needs to be done before sunpy is imported
+# This needs to be done before radiospectra is imported
 on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 if on_rtd:
     os.environ["SUNPY_CONFIGDIR"] = "/home/docs/"
@@ -167,8 +150,7 @@ intersphinx_mapping = {
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-
-from sunpy_sphinx_theme.conf import *  # NOQA
+html_theme = "sunpy"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
