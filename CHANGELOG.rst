@@ -1,3 +1,13 @@
+0.6.0 (2024-07-23)
+==================
+
+Backwards Incompatible Changes
+------------------------------
+
+- Dropped support for Python 3.9 (`#111 <https://github.com/sunpy/radiospectra/pull/111>`__)
+- Increased the minimum required version of ``sunpy``  to v6.0.0. (`#112 <https://github.com/sunpy/radiospectra/pull/112>`__)
+
+
 0.5.0 (2024-03-01)
 ==================
 
