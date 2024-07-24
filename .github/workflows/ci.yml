@@ -28,21 +28,38 @@ jobs:
       toxdeps: tox-pypi-filter
       envs: |
         - linux: py312
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  sdist_verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -U --user build
+      - run: python -m build . --sdist
+      - run: python -m pip install -U --user twine
+      - run: python -m twine check dist/*
 
   test:
-    needs: [core]
+    needs: [core, sdist_verify]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
+      posargs: -n auto
       envs: |
-        - macos: py311
-        - windows: py310
+        - windows: py311
+        - macos: py310
         - linux: py310-oldestdeps
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   docs:
-    needs: [test]
+    needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
       default_python: '3.12'
@@ -55,6 +72,23 @@ jobs:
           - graphviz
       envs: |
         - linux: build_docs
+
+  cron:
+    if: |
+      github.event_name == 'workflow_dispatch' || (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'Run cron CI')
+      )
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    with:
+      default_python: '3.12'
+      submodules: false
+      coverage: codecov
+      toxdeps: tox-pypi-filter
+      envs: |
+        - linux: py311-devdeps
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
@@ -69,9 +103,10 @@ jobs:
         - linux: py312-devdeps
 
   publish:
-    # Build wheels when pushing to any branch except main
-    # publish.yml will only publish if tagged ^v.*
+    # Build wheels on PRs only when labelled. Releases will only be published if tagged ^v.*
+    # see https://github-actions-workflows.openastronomy.org/en/latest/publish.html#upload-to-pypi
     if: |
+      github.event_name != 'pull_request' ||
       (
         github.event_name != 'pull_request' && (
           github.ref_name != 'main' ||
@@ -81,12 +116,12 @@ jobs:
         github.event_name == 'pull_request' &&
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
-    needs: [test]
+    needs: [test, docs]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@main
     with:
-      python-version: "3.12"
-      test_extras: 'dev'
-      test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs radiospectra'
+      python-version: '3.12'
+      test_extras: 'tests'
+      test_command: 'pytest -p no:warnings --doctest-rst --pyargs radiospectra'
       submodules: false
     secrets:
       pypi_token: ${{ secrets.pypi_token }}

@@ -48,6 +48,7 @@ When you are interacting with the SunPy community you are asked to follow our `C
 
 .. toctree::
    :maxdepth: 2
+   :caption: Contents:
 
    overview
    code_ref/index

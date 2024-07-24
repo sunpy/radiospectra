@@ -1,10 +1,60 @@
 [build-system]
 requires = [
-  "setuptools>=56,!=61.0.0",
+  "setuptools>=62.1",
   "setuptools_scm[toml]>=6.2",
   "wheel",
 ]
-build-backend = 'setuptools.build_meta'
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "radiospectra"
+description = "Provide support for some type of radio spectra in solar physics."
+requires-python = ">=3.10"
+readme = { file = "README.rst", content-type = "text/x-rst" }
+license = { file = "licenses/LICENSE.rst" }
+authors = [
+  { name = "The SunPy Community", email = "sunpy@googlegroups.com" },
+]
+dependencies = [
+  "sunpy[net]>=6.0.0",
+  "numpy>1.24",
+  "matplotlib",
+  "scipy",
+  "cdflib>=0.3.20"
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+tests = [
+  "pytest",
+  "pytest-astropy",
+  "pytest-doctestplus",
+  "pytest-cov",
+  "pytest-xdist",
+  "sunpy-soar",
+]
+docs = [
+  "sphinx",
+  "sphinx-automodapi",
+  "sphinx-changelog",
+  "sphinx-gallery",
+  "sunpy-sphinx-theme",
+  "packaging",
+
+]
+[project.urls]
+repository = "https://sunpy.org"
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["radiospectra*"]
+exclude = ["radiospectra._dev*"]
+
+[tool.setuptools_scm]
+write_to = "radiospectra/_version.py"
 
 [tool.black]
 line-length = 120

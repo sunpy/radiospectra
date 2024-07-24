@@ -1,0 +1,31 @@
+{
+  "template": "https://github.com/sunpy/package-template",
+  "commit": "ed1ad671639f78312b042a76075ea7e9073ab804",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "package_name": "radiospectra",
+      "module_name": "radiospectra",
+      "short_description": "Provide support for some type of radio spectra in solar physics.",
+      "author_name": "The SunPy Community",
+      "author_email": "sunpy@googlegroups.com",
+      "project_url": "https://sunpy.org",
+      "license": "BSD 2-Clause",
+      "minimum_python_version": "3.10",
+      "use_compiled_extensions": "n",
+      "enable_dynamic_dev_versions": "y",
+      "include_example_code": "n",
+      "include_cruft_update_github_workflow": "y",
+      "_sphinx_theme": "alabaster",
+      "_parent_project": "",
+      "_install_requires": "",
+      "_copy_without_render": [
+        "docs/_templates",
+        "docs/_static",
+        ".github/workflows/sub_package_update.yml"
+      ],
+      "_template": "https://github.com/sunpy/package-template"
+    }
+  },
+  "directory": null
+}
