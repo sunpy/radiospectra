@@ -4,6 +4,7 @@ from unittest import mock
 import pytest
 
 import astropy.units as u
+
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
@@ -67,7 +68,7 @@ def test_ilofar_client_polarisation(mock_urlopen, client, html_responses):
 
 
 @mock.patch("sunpy.net.scraper.urlopen")
-def test_ilofar_client_polarisation(mock_urlopen, client, html_responses):
+def test_ilofar_client_wavelength(mock_urlopen, client, html_responses):
     mock_urlopen.return_value.read = mock.MagicMock()
     mock_urlopen.return_value.read.side_effect = html_responses * 6
     mock_urlopen.close = mock.MagicMock(return_value=None)
