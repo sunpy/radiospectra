@@ -1,6 +1,7 @@
 import numpy as np
 
 import astropy.units as u
+
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import GenericClient, QueryResponse
 from sunpy.net.scraper import Scraper

@@ -7,7 +7,7 @@ from radiospectra.net.attrs import Observatory
 
 class eCALLISTOClient(GenericClient):
     """
-    Provides access to `eCallisto radio spectrometer <http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/>`__
+    Provides access to `eCallisto radio spectrometer <http://soleil80.cs.technique.fhnw.ch/solarradio/data/2002-20yy_Callisto/>`__
     `data archive <https://spdf.gsfc.nasa.gov>`__.
 
     `Further information <http://www.e-callisto.org>`__.
@@ -40,7 +40,7 @@ class eCALLISTOClient(GenericClient):
     """
 
     baseurl = (
-        r"http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/"
+        r"http://soleil80.cs.technique.fhnw.ch/solarradio/data/2002-20yy_Callisto/"
         r"%Y/%m/%d/{obs}_%Y%m%d_%H%M%S.*.fit.gz"
     )
     pattern = (

@@ -43,7 +43,7 @@ def test_client(urlopen, client, http_responses):
     query = client.search(a.Time("2019/10/05 23:00", "2019/10/06 00:59"), a.Instrument("eCALLISTO"))
     assert urlopen.call_count == 2
     # 2nd call
-    urlopen.assert_called_with("http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/2019/10/06/")
+    urlopen.assert_called_with("http://soleil80.cs.technique.fhnw.ch/solarradio/data/2002-20yy_Callisto/2019/10/06/")
     assert len(query) == 156
 
 
@@ -68,7 +68,7 @@ def test_client_with_observatory(urlopen, client, http_responses):
     )
     assert urlopen.call_count == 2
     # 2nd call
-    urlopen.assert_called_with("http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/2019/10/06/")
+    urlopen.assert_called_with("http://soleil80.cs.technique.fhnw.ch/solarradio/data/2002-20yy_Callisto/2019/10/06/")
     assert len(query) == 8
 
 

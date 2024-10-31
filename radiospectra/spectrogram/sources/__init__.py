@@ -16,11 +16,11 @@ from .swaves import *  # NOQA
 from .waves import *  # NOQA
 
 __all__ = [
-    "SWAVESSpectrogram",  # NOQA: F405
-    "RFSSpectrogram",  # NOQA: F405
-    "CALISTOSpectrogram",  # NOQA: F405
-    "EOVSASpectrogram",  # NOQA: F405
-    "RSTNSpectrogram",  # NOQA: F405
-    "RPWSpectrogram",  # NOQA: F405
-    "ILOFARMode357Spectrogram",  # NOQA: F405
+    "SWAVESSpectrogram",
+    "RFSSpectrogram",
+    "CALISTOSpectrogram",
+    "EOVSASpectrogram",
+    "RSTNSpectrogram",
+    "RPWSpectrogram",
+    "ILOFARMode357Spectrogram",
 ]
