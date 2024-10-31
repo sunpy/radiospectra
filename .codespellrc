@@ -1,5 +1,5 @@
 [codespell]
-skip = *.asdf,*.fits,*.fts,*.header,*.json,*.xsh,*cache*,*egg*,*extern*,.git,.idea,.tox,_build,*truncated,*.svg,.asv_env,.history
+skip = *.asdf,*.fits,*.fts,*.header,*.json,*.xsh,*cache*,*egg*,*extern*,.git,.idea,.tox,_build,*truncated,*.svg,.asv_env,.history,radiospectra/net/sources/tests/*.html
 ignore-words-list =
     alog,
     nd,
@@ -10,4 +10,5 @@ ignore-words-list =
     upto,
     afile,
     precessed,
-    precess
+    precess,
+    technik
