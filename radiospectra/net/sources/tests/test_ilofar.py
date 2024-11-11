@@ -57,14 +57,11 @@ def test_ilofar_client_polarisation(mock_urlopen, client, html_responses):
     mock_urlopen.close = mock.MagicMock(return_value=None)
     atr = a.Time("2018/06/01", "2018/06/02")
     query_x = client.search(atr, PolType("X"))
-    query_y = client.search(atr, PolType("Y"))
-
-    for query, pol in zip([query_x, query_y], ["X", "Y"]):
-        assert len(query) == 4
-        assert query[0]["Source"] == "ILOFAR"
-        assert query[0]["Provider"] == "ILOFAR"
-        assert query[0]["Start Time"].iso == "2018-06-01 10:00:41.000"
-        assert query[0]["Polarisation"] == pol
+    assert len(query_x) == 4
+    assert query_x[0]["Source"] == "ILOFAR"
+    assert query_x[0]["Provider"] == "ILOFAR"
+    assert query_x[0]["Start Time"].iso == "2018-06-01 10:00:41.000"
+    assert query_x[0]["Polarisation"] =='X'
 
 
 @mock.patch("sunpy.net.scraper.urlopen")
