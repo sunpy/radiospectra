@@ -1,6 +1,7 @@
 import numpy as np
 
 import astropy.units as u
+
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import GenericClient, QueryResponse
 from sunpy.net.scraper import Scraper
@@ -104,8 +105,8 @@ class ILOFARMode357Client(GenericClient):
         mask = np.full(len(query_response), True)
         pol = matchdict.get("PolType")
         if len(pol) == 1:
-            pol = pol.upper()
-            mask = mask & query_response["Polarisation"] == pol
+            pol = pol[0].upper()
+            mask = mask & (query_response["Polarisation"] == pol)
 
         if query_response:
             query_response.remove_column("PolType")

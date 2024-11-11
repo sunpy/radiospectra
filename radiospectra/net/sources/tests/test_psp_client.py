@@ -7,6 +7,7 @@ import pytest
 
 import astropy.units as u
 from astropy.time import Time
+
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
@@ -21,7 +22,7 @@ def client():
 
 
 @pytest.mark.parametrize(
-    "req_wave,receivers",
+    ("req_wave", "receivers"),
     [
         # Completely contain the both receiver ranges
         (a.Wavelength(1 * u.kHz, 25000 * u.kHz), ["rfs_lfr", "rfs_hfr"]),

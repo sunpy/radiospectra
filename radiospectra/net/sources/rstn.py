@@ -62,7 +62,7 @@ class RSTNClient(GenericClient):
 
     def post_search_hook(self, exdict, matchdict):
         original = super().post_search_hook(exdict, matchdict)
-        obs, *_ = [original.pop(name) for name in ["obs", "year2", "month2", "obs_short"]]
+        obs, *_ = (original.pop(name) for name in ["obs", "year2", "month2", "obs_short"])
         original["Observatory"] = self.observatory_map[obs]
         return original
 

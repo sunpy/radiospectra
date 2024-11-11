@@ -6,6 +6,7 @@ import numpy as np
 
 import astropy.units as u
 from astropy.time import Time
+
 from sunpy.net import attrs as a
 
 from radiospectra.spectrogram import Spectrogram
@@ -111,7 +112,7 @@ def test_psp_rfs_lfr(parse_path_moc):
     assert spec.observatory == "PSP"
     assert spec.instrument == "FIELDS/RFS"
     assert spec.detector == "LFR"
-    # TODO check why not exact prob base on spacecrast ET so won't match utc exacly
+    # TODO check why not exact prob base on spacecrast ET so won't match utc exactly
     assert spec.start_time.datetime == datetime(2019, 4, 9, 0, 1, 16, 197889)
     assert spec.end_time.datetime == datetime(2019, 4, 10, 0, 1, 4, 997573)
     assert spec.wavelength.min.round(1) == 10.5 * u.kHz
@@ -219,7 +220,7 @@ def test_psp_rfs_hfr(parse_path_moc):
     assert spec.observatory == "PSP"
     assert spec.instrument == "FIELDS/RFS"
     assert spec.detector == "HFR"
-    # TODO check why not exact prob base on spacecrast ET so won't match utc exacly
+    # TODO check why not exact prob base on spacecrast ET so won't match utc exactly
     assert spec.start_time.datetime == datetime(2019, 4, 9, 0, 1, 13, 904188)
     assert spec.end_time.datetime == datetime(2019, 4, 10, 0, 1, 2, 758315)
     assert spec.wavelength.min == 1275.0 * u.kHz

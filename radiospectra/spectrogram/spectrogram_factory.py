@@ -16,6 +16,7 @@ import astropy.units as u
 from astropy.io import fits
 from astropy.io.fits import Header
 from astropy.time import Time
+
 from sunpy import log
 from sunpy.data import cache
 from sunpy.net import attrs as a
@@ -113,10 +114,10 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 args.insert(i, (data, header))
                 nargs -= 1
             elif isinstance(arg, str) and is_url(arg):
-                # Repalce URL string with a Request object to dispatch on later
+                # Replace URL string with a Request object to dispatch on later
                 args[i] = Request(arg)
             elif possibly_a_path(arg):
-                # Repalce path strings with Path objects
+                # Replace path strings with Path objects
                 args[i] = pathlib.Path(arg)
             i += 1
         # Parse the arguments
@@ -416,14 +417,14 @@ class SpectrogramFactory(BasicRegistrationFactory):
             short, _long = cdf_globals["Descriptor"][0].split(">")
 
             detector = short[4:].lower()
-            times, data, freqs = [
+            times, data, freqs = (
                 cdf.varget(name)
                 for name in [
                     f"epoch_{detector}_auto_averages_ch0_V1V2",
                     f"psp_fld_l2_rfs_{detector}_auto_averages_ch0_V1V2",
                     f"frequency_{detector}_auto_averages_ch0_V1V2",
                 ]
-            ]
+            )
             times = Time("J2000.0", scale="tt") + (times << u.ns)
             freqs = freqs[0, :] << u.Hz
             data = data.T << u.Unit("Volt**2/Hz")
@@ -530,7 +531,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
 
             # Define hfr bands
             hfc = np.array(["HF1", "HF2"])
-            hfr_bands = hfc[band[:100] - 1]
+            hfc[band[:100] - 1]
 
             hfr_frequency = hfr_frequency << u.kHz
 
@@ -672,7 +673,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
             }
             return data, meta
         else:
-            raise ValueError(f"Unrecognized IDL .sav file: {file}")
+            raise ValueError(f"Unrecognized IDL .save file: {file}")
 
 
 Spectrogram = SpectrogramFactory(registry=GenericSpectrogram._registry, default_widget_type=GenericSpectrogram)

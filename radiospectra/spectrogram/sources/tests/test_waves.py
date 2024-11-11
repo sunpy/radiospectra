@@ -6,6 +6,7 @@ import numpy as np
 
 import astropy.units as u
 from astropy.time import Time
+
 from sunpy.net import attrs as a
 
 from radiospectra.spectrogram import Spectrogram
