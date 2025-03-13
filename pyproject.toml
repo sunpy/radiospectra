@@ -137,12 +137,6 @@ exclude = '''
       name = "Documentation Fixes"
       showcontent = true
 
-<<<<<<<
-    [[tool.towncrier.type]]
-      directory = "trivial"
-      name = "Trivial/Internal Changes"
-      showcontent = true
-=======
 [tool.setuptools_scm]
 write_to = "radiospectra/_version.py"
 
@@ -205,4 +199,3 @@ write_to = "radiospectra/_version.py"
   directory = "trivial"
   name = "Internal Changes"
   showcontent = true
->>>>>>>
