@@ -37,10 +37,7 @@ docs = [
   "sphinx",
   "sphinx-automodapi",
   "sphinx-changelog",
-<<<<<<<
   "sphinx-gallery",
-=======
->>>>>>>
   "sunpy-sphinx-theme",
   "packaging",
 
