@@ -42,6 +42,7 @@ docs = [
   "packaging",
 
 ]
+dev = ["radiospectra[tests,docs]"]
 
 [project.urls]
 Homepage = "https://sunpy.org"
