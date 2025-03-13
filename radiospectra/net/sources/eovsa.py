@@ -26,8 +26,13 @@ class EOVSAClient(GenericClient):
     <BLANKLINE>
     <BLANKLINE>
     """
-    pattern = ("https://ovsa.njit.edu/fits/synoptic/{{year:4d}}/{{month:2d}}/{{day:2d}}/"
-               "EOVSA_{{PolType:5l}}_{{year:4d}}{{month:2d}}{{day:2d}}.fts")
+    from sunpy import __version__
+    if __version__ >= "6.1.0":
+        pattern = ("https://ovsa.njit.edu/fits/synoptic/{{year:4d}}/{{month:2d}}/{{day:2d}}/"
+                "EOVSA_{{PolType:5l}}_{{year:4d}}{{month:2d}}{{day:2d}}.fts")
+    else:
+        baseurl = "https://ovsa.njit.edu/fits/synoptic/%Y/%m/%d/EOVSA_.*_%Y%m%d.fts"
+        pattern = "{}/synoptic/{year:4d}/{month:2d}/{day:2d}/EOVSA_{PolType:5l}_{year:4d}{month:2d}{day:2d}.fts"
     pol_map = {"Total": "TPall", "Cross": "XPall", "TPall": "Total", "XPall": "Cross"}
 
     @classmethod
