@@ -54,9 +54,9 @@ jobs:
       posargs: -n auto
       envs: |
         - windows: py311
-        - macos: py310
+        - macos: py312
         - linux: py310-oldestdeps
-        - linux: py311-devdeps
+        - linux: py313-devdeps
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -85,7 +85,6 @@ jobs:
       toxdeps: tox-pypi-filter
       envs: |
         - linux: py313-online
-        - linux: py313-devdeps
 
   publish:
     # Build wheels on PRs only when labelled. Releases will only be published if tagged ^v.*
