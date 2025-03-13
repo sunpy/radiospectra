@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/sunpy/package-template",
-  "commit": "51fb616094a4d7577c8898445aa50effb89afa31",
+  "commit": "c60ccf2ddc71d3cf126cea15132a15da307864f7",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -10,6 +10,12 @@
       "author_name": "The SunPy Community",
       "author_email": "sunpy@googlegroups.com",
       "project_url": "https://sunpy.org",
+      "github_repo": "",
+      "sourcecode_url": "",
+      "download_url": "https://pypi.org/project/radiospectra",
+      "documentation_url": "",
+      "changelog_url": "",
+      "issue_tracker_url": "",
       "license": "BSD 2-Clause",
       "minimum_python_version": "3.10",
       "use_compiled_extensions": "n",
