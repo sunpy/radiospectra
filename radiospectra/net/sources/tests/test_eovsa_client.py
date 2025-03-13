@@ -37,7 +37,7 @@ def test_client(urlopen, client, http_responses):
     query = client.search(a.Time("2020/10/05 00:00", "2020/10/06 23:00"), a.Instrument("EOVSA"))
     assert urlopen.call_count == 2
     # last call should be for 2020/10/06
-    assert urlopen.call_args[0][0] == "http://ovsa.njit.edu/fits/synoptic/2020/10/06/"
+    assert urlopen.call_args[0][0] == "https://ovsa.njit.edu/fits/synoptic/2020/10/06/"
     assert len(query) == 4
 
 
@@ -49,8 +49,8 @@ def test_client_observatory(urlopen, client, http_responses):
     query = client.search(a.Time("2020/10/05 00:00", "2020/10/06 00:00"), a.Instrument("EOVSA"), PolType.cross)
     assert urlopen.call_count == 2
     # last call should be for 2020/10/06
-    assert urlopen.call_args[0][0] == "http://ovsa.njit.edu/fits/synoptic/2020/10/06/"
-    assert len(query) == 4
+    assert urlopen.call_args[0][0] == "https://ovsa.njit.edu/fits/synoptic/2020/10/06/"
+    assert len(query) == 2
     assert np.all(query["PolType"] == "Cross")
 
 
