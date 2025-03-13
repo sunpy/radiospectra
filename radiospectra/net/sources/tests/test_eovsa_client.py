@@ -50,7 +50,7 @@ def test_client_observatory(urlopen, client, http_responses):
     assert urlopen.call_count == 2
     # last call should be for 2020/10/06
     assert urlopen.call_args[0][0] == "http://ovsa.njit.edu/fits/synoptic/2020/10/06/"
-    assert len(query) == 2
+    assert len(query) == 4
     assert np.all(query["PolType"] == "Cross")
 
 
