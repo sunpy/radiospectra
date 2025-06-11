@@ -1,7 +1,7 @@
 [build-system]
 requires = [
   "setuptools>=62.1",
-  "setuptools_scm[toml]>=6.2",
+  "setuptools_scm[toml]>=8.0.0",
   "wheel",
 ]
 build-backend = "setuptools.build_meta"
@@ -57,7 +57,7 @@ include = ["radiospectra*"]
 exclude = ["radiospectra._dev*"]
 
 [tool.setuptools_scm]
-write_to = "radiospectra/_version.py"
+version_file = "radiospectra/_version.py"
 
 [tool.black]
 line-length = 120
