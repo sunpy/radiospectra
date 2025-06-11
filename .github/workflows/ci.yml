@@ -77,15 +77,6 @@ jobs:
       toxdeps: tox-pypi-filter
       cache-key: docs-${{ github.run_id }}
       libraries: |
-<<<<<<<
-=======
-      envs: |
-        - linux: build_docs
-
-  publish:
-    # Build wheels on PRs only when labelled. Releases will only be published if tagged ^v.*
-    # see https://github-actions-workflows.openastronomy.org/en/latest/publish.html#upload-to-pypi
->>>>>>>
         apt:
           - graphviz
       envs: |
