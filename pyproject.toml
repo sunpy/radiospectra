@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "radiospectra"
 description = "Provide support for some type of radio spectra in solar physics."
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 readme = { file = "README.rst", content-type = "text/x-rst" }
 license = { file = "licenses/LICENSE.rst" }
 authors = [
