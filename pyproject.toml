@@ -11,7 +11,7 @@ name = "radiospectra"
 description = "Provide support for some type of radio spectra in solar physics."
 requires-python = ">=3.12"
 readme = { file = "README.rst", content-type = "text/x-rst" }
-license = { file = "licenses/LICENSE.rst" }
+license-files = ["licenses/LICENSE.rst"]
 authors = [
   { name = "The SunPy Community", email = "sunpy@googlegroups.com" },
 ]
