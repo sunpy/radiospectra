@@ -20,5 +20,5 @@ def test_freq_at_index():
     assert spec.freq_at_index(2) == 300
 
     # Test out-of-bounds index
-    with pytest.raises(ValueError, match="Index out of bounds"):
+    with pytest.raises(ValueError, match=r"Index \d+ out of bounds for freq_axis of length \d+"):
         spec.freq_at_index(5)
