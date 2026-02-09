@@ -51,7 +51,7 @@ class RSTNClient(GenericClient):
         metalist = []
         for obs in matchdict["Observatory"]:
             obs_path = self.observatory_map[obs.title()]
-            scraper = Scraper(pattern.replace("{obs}", obs_path))
+            scraper = Scraper(format=pattern.replace("{obs}", obs_path))
             tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
             filesmeta = scraper._extract_files_meta(tr, matcher=matchdict)
 

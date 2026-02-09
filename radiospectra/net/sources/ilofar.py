@@ -96,7 +96,7 @@ class ILOFARMode357Client(GenericClient):
         tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
 
         for dataset in DATASET_NAMES:
-            scraper = Scraper(self.pattern.replace("{dataset}", dataset))
+            scraper = Scraper(format=self.pattern.replace("{dataset}", dataset))
             filesmeta = scraper._extract_files_meta(tr)
             for i in filesmeta:
                 rowdict = self.post_search_hook(i, matchdict)

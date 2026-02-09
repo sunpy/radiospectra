@@ -111,7 +111,7 @@ class RFSClient(GenericClient):
         for receiver in receivers:
             for year in range(start_year, end_year + 1):
                 pattern = self.pattern.replace("{receiver}", receiver).replace("{year_path}", str(year))
-                scraper = Scraper(pattern)
+                scraper = Scraper(format=pattern)
                 filesmeta = scraper._extract_files_meta(tr)
                 for i in filesmeta:
                     rowdict = self.post_search_hook(i, matchdict)
