@@ -32,6 +32,15 @@ class Spectrum(np.ndarray):
             raise ValueError("Dimensions of data and frequency axis do not match")
         self.freq_axis = freq_axis
 
+
+    def freq_at_index(self, idx):
+        """Return the frequency at a given index of freq_axis."""
+        try:
+            return self.freq_axis[idx]
+        except IndexError:
+            raise ValueError(f"Index {idx} out of bounds for freq_axis of length {len(self.freq_axis)}")
+
+
     def plot(self, axes=None, **matplot_args):
         """
         Plot spectrum onto current axes.
