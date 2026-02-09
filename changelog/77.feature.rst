@@ -1,0 +1,1 @@
+Added a setter for the ``times`` property in `~radiospectra.spectrogram.GenericSpectrogram` to allow updating time coordinates, enabling light travel time corrections when comparing data from multiple spacecraft at different distances.
