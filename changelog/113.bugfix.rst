@@ -1,0 +1,1 @@
+Migrated all network clients to the new unified Scraper format introduced in ``sunpy`` 6.1, resolving compatibility issues with ``sunpy`` 7.1.0.

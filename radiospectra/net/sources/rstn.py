@@ -31,11 +31,11 @@ class RSTNClient(GenericClient):
     <BLANKLINE>
     """
 
-    baseurl = (
+    pattern = (
         r"https://www.ngdc.noaa.gov/stp/space-weather/solar-data/"
-        r"solar-features/solar-radio/rstn-spectral/{obs}/%Y/%m/.*.gz"
+        r"solar-features/solar-radio/rstn-spectral/{obs}/{{year:4d}}/{{month:2d}}/"
+        r"{{obs_short:2l}}{{year2:2d}}{{month2:2d}}{{day:2d}}.SRS.gz"
     )
-    pattern = r"{}/rstn-spectral/{obs}/{year:4d}/{month:2d}/" r"{obs_short:2l}{year2:2d}{month2:2d}{day:2d}.SRS.gz"
 
     observatory_map = {
         "Holloman": "holloman",
@@ -47,14 +47,16 @@ class RSTNClient(GenericClient):
     observatory_map = {**observatory_map, **dict(map(reversed, observatory_map.items()))}
 
     def search(self, *args, **kwargs):
-        baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
+        _, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
         metalist = []
         for obs in matchdict["Observatory"]:
-            scraper = Scraper(baseurl.format(obs=self.observatory_map[obs.title()]), regex=True)
+            obs_path = self.observatory_map[obs.title()]
+            scraper = Scraper(pattern.replace("{obs}", obs_path))
             tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
-            filesmeta = scraper._extract_files_meta(tr, extractor=pattern, matcher=matchdict)
+            filesmeta = scraper._extract_files_meta(tr, matcher=matchdict)
 
             for i in filesmeta:
+                i["obs"] = obs_path
                 rowdict = self.post_search_hook(i, matchdict)
                 metalist.append(rowdict)
 

@@ -48,9 +48,11 @@ class ILOFARMode357Client(GenericClient):
     <BLANKLINE>
     """
 
-    baseurl = r"https://data.lofar.ie/%Y/%m/%d/bst/kbt/{dataset}/" r"%Y%m%d_\d{{6}}_bst_00\S{{1}}.dat"
-
-    pattern = r"{}/{year:4d}{month:2d}{day:2d}_{hour:2d}{minute:2d}{second:2d}" r"_bst_00{Polarisation}.dat"
+    pattern = (
+        r"https://data.lofar.ie/{{year:4d}}/{{month:2d}}/{{day:2d}}/bst/kbt/{dataset}/"
+        r"{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}"
+        r"_bst_00{{Polarisation}}.dat"
+    )
 
     @classmethod
     def _check_wavelengths(cls, wavelength):
@@ -94,9 +96,8 @@ class ILOFARMode357Client(GenericClient):
         tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
 
         for dataset in DATASET_NAMES:
-            url = self.baseurl.format(dataset=dataset)
-            scraper = Scraper(url, regex=True)
-            filesmeta = scraper._extract_files_meta(tr, extractor=self.pattern)
+            scraper = Scraper(self.pattern.replace("{dataset}", dataset))
+            filesmeta = scraper._extract_files_meta(tr)
             for i in filesmeta:
                 rowdict = self.post_search_hook(i, matchdict)
                 metalist.append(rowdict)
