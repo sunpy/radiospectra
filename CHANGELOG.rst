@@ -1,3 +1,12 @@
+0.7.0 (2025-02-09)
+==================
+
+Features
+--------
+
+- Re-implemented ``GenericSpectrogram.join_many`` class method to concatenated spectrograms along the time axis. (`#82 <https://github.com/sunpy/radiospectra/issues/82>`__)
+
+
 0.6.0 (2024-07-23)
 ==================
 
