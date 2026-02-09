@@ -1,5 +1,4 @@
 import astropy.units as u
-import numpy as np
 from astropy.time import Time
 
 from radiospectra.exceptions import SpectraMetaValidationError

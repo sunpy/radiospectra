@@ -1,7 +1,9 @@
-import astropy.units as u
 import numpy as np
 import pytest
+
+import astropy.units as u
 from astropy.time import Time
+
 from sunpy.net import attrs as a
 
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
