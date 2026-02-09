@@ -39,26 +39,23 @@ class eCALLISTOClient(GenericClient):
     <BLANKLINE>
     """
 
-    baseurl = (
-        r"http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/"
-        r"%Y/%m/%d/{obs}_%Y%m%d_%H%M%S.*.fit.gz"
-    )
     pattern = (
-        r"{}/2002-20yy_Callisto/{year:4d}/{month:2d}/{day:2d}/"
-        r"{Observatory}_{year:4d}{month:2d}{day:2d}"
-        r"_{hour:2d}{minute:2d}{second:2d}{suffix}.fit.gz"
+        r"http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/"
+        r"{{year:4d}}/{{month:2d}}/{{day:2d}}/{obs}_{{year:4d}}{{month:2d}}{{day:2d}}"
+        r"_{{hour:2d}}{{minute:2d}}{{second:2d}}{{suffix}}.fit.gz"
     )
 
     @classmethod
     def pre_search_hook(cls, *args, **kwargs):
         baseurl, pattern, matchdict = super().pre_search_hook(*args, **kwargs)
-        obs = matchdict.pop("Observatory")
+        obs = matchdict["Observatory"]
         if obs[0] == "*":
-            baseurl = baseurl.format(obs=r".*")
+            pattern = pattern.replace("{obs}", "{{Observatory}}")
+            matchdict.pop("Observatory")
         else:
             # Need case sensitive so have to override
             obs_attr = [a for a in args if isinstance(a, Observatory)][0]
-            baseurl = baseurl.format(obs=obs_attr.value)
+            pattern = pattern.replace("{obs}", obs_attr.value)
         return baseurl, pattern, matchdict
 
     def post_search_hook(self, exdict, matchdict):
