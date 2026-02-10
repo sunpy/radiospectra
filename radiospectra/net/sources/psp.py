@@ -111,10 +111,18 @@ class RFSClient(GenericClient):
         tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
         for receiver in receivers:
             for year in range(start_year, end_year + 1):
-                urlpattern = self.baseurl.format(Wavelength=receiver, year=year)
-                scraper = Scraper(urlpattern, regex=True)
-                filesmeta = scraper._extract_files_meta(tr, extractor=self.pattern)
+                # Use SunPy 'parse' syntax. Scraper(regex=True) is not supported.
+                # Double braces {{ }} are needed for Scraper.format().
+                # Quadruple braces {{{{ }}}} are needed for Python f-string escaping.
+                # Directory: {year:4d}
+                # Filename: ..._{year:4d}{month:2d}{day:2d}_v{version:2d}.cdf
+                prefix = self.baseurl.split("/l2/{Wavelength}")[0]
+                pat = f"{prefix}/l2/{receiver}/{{{{year:4d}}}}/psp_fld_l2_{receiver}_{{{{year:4d}}}}{{{{month:2d}}}}{{{{day:2d}}}}_v{{{{version:2d}}}}.cdf"
+
+                scraper = Scraper(pat)
+                filesmeta = scraper._extract_files_meta(tr)
                 for i in filesmeta:
+                    i["Wavelength"] = receiver
                     rowdict = self.post_search_hook(i, matchdict)
                     metalist.append(rowdict)
 

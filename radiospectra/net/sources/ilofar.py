@@ -94,9 +94,19 @@ class ILOFARMode357Client(GenericClient):
         tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
 
         for dataset in DATASET_NAMES:
-            url = self.baseurl.format(dataset=dataset)
-            scraper = Scraper(url, regex=True)
-            filesmeta = scraper._extract_files_meta(tr, extractor=self.pattern)
+            # Use SunPy 'parse' syntax. Scraper(regex=True) is not supported.
+            # {year:4d}/{month:2d}/{day:2d} matches directory and generates URLs.
+            # Filename matching uses strict format. {Polarisation} captures until .dat (so X or Y).
+            # Use SunPy 'parse' syntax. Scraper(regex=True) is not supported.
+            # Double braces {{ }} are needed for Scraper.format().
+            # Quadruple braces {{{{ }}}} are needed for Python f-string escaping.
+            # {year:4d}/{month:2d}/{day:2d} matches directory and generates URLs.
+            # Filename matching uses strict format. {Polarisation} captures until .dat (so X or Y).
+            pat = f"https://data.lofar.ie/{{{{year:4d}}}}/{{{{month:2d}}}}/{{{{day:2d}}}}/bst/kbt/{dataset}/{{{{year:4d}}}}{{{{month:2d}}}}{{{{day:2d}}}}_" \
+                  f"{{{{hour:2d}}}}{{{{minute:2d}}}}{{{{second:2d}}}}_bst_00{{{{Polarisation}}}}.dat"
+
+            scraper = Scraper(pat)
+            filesmeta = scraper._extract_files_meta(tr)
             for i in filesmeta:
                 rowdict = self.post_search_hook(i, matchdict)
                 metalist.append(rowdict)
