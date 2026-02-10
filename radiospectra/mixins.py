@@ -1,3 +1,12 @@
+def _times_utc_datetime(times):
+    """
+    Convert time values to UTC before exposing datetimes, when supported.
+    """
+    if hasattr(times, "utc"):
+        times = times.utc
+    return times.datetime
+
+
 class PcolormeshPlotMixin:
     """
     Class provides plotting functions using `~pcolormesh`.
@@ -35,13 +44,14 @@ class PcolormeshPlotMixin:
         if self.instrument != self.detector:
             title = f"{title}, {self.detector}"
 
+        times = _times_utc_datetime(self.times)
         axes.set_title(title)
-        axes.plot(self.times.datetime[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
+        axes.plot(times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
         if self.times.shape[0] == self.data.shape[0] and self.frequencies.shape[0] == self.data.shape[1]:
-            ret = axes.pcolormesh(self.times.datetime, self.frequencies.value, data, shading="auto", **kwargs)
+            ret = axes.pcolormesh(times, self.frequencies.value, data, shading="auto", **kwargs)
         else:
-            ret = axes.pcolormesh(self.times.datetime, self.frequencies.value, data[:-1, :-1], shading="auto", **kwargs)
-        axes.set_xlim(self.times.datetime[0], self.times.datetime[-1])
+            ret = axes.pcolormesh(times, self.frequencies.value, data[:-1, :-1], shading="auto", **kwargs)
+        axes.set_xlim(times[0], times[-1])
         locator = mdates.AutoDateLocator(minticks=4, maxticks=8)
         formatter = mdates.ConciseDateFormatter(locator)
         axes.xaxis.set_major_locator(locator)
@@ -68,6 +78,7 @@ class NonUniformImagePlotMixin:
         if axes is None:
             fig, axes = plt.subplots()
 
+        times = _times_utc_datetime(self.times)
         im = NonUniformImage(axes, interpolation="none", **kwargs)
-        im.set_data(mdates.date2num(self.times.datetime), self.frequencies.value, self.data)
-        axes.images.append(im)
+        im.set_data(mdates.date2num(times), self.frequencies.value, self.data)
+        axes.add_image(im)
