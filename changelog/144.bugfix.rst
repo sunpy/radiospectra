@@ -1,0 +1,1 @@
+Fixed an issue where plotting spectrograms with non-UTC time scales (e.g., 'tt') would result in time offsets by ensuring conversion to UTC before plotting.
