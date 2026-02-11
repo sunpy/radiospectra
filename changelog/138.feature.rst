@@ -1,0 +1,2 @@
+Adds a freq_at_index() method to GenericSpectrogram
+to return the frequency at a given index of freq_axis.

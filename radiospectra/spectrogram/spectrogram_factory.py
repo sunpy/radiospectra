@@ -587,7 +587,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 "fits_meta": hd_pairs[0].header,
                 "detector": "e-CALLISTO",
                 "instrument": "e-CALLISTO",
-                "observatory": hd_pairs[0].header["INSTRUME"],
+                "observatory": hd_pairs[0].header.get("INSTRUME", "e-CALLISTO"),
                 "start_time": start_time,
                 "end_time": end_time,
                 "wavelength": a.Wavelength(freqs.min(), freqs.max()),

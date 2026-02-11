@@ -61,13 +61,14 @@ class eCALLISTOClient(GenericClient):
             baseurl = baseurl.format(obs=obs_attr.value)
         return baseurl, pattern, matchdict
 
-    def post_search_hook(self, exdict, matchdict):
+    def post_search_hook(self, exdict, matchdict):  
         original = super().post_search_hook(exdict, matchdict)
         original["ID"] = original["suffix"].replace("_", "")
         del original["suffix"]
         # We don't know the end time for all files
         # https://github.com/sunpy/radiospectra/issues/60
         del original["End Time"]
+        original["Observatory"] = original.get("Observatory", "e-CALLISTO")
         return original
 
     @classmethod

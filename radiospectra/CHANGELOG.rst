@@ -1,0 +1,1 @@
+- Fix #56: Correct Callisto client and observatory fallback (PR #145)
