@@ -1,5 +1,1 @@
-Correct Callisto client and observatory fallback
-------------------------------------------------
-
-- Correct the client name and observatory fallback for Callisto vs eCallisto
-  so that data can be correctly downloaded and plotted.
+Correct Callisto client and observatory fallback to fix Callisto vs eCallisto client name.
