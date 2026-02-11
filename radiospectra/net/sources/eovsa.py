@@ -1,5 +1,7 @@
 from sunpy.net import attrs as a
-from sunpy.net.dataretriever.client import GenericClient
+from sunpy.net.dataretriever.client import GenericClient, QueryResponse
+from sunpy.net.scraper import Scraper
+from sunpy.time import TimeRange
 
 from radiospectra.net.attrs import PolType
 
@@ -26,13 +28,8 @@ class EOVSAClient(GenericClient):
     <BLANKLINE>
     <BLANKLINE>
     """
-    from sunpy import __version__
-    if __version__ >= "6.1.0":
-        pattern = ("https://ovsa.njit.edu/fits/synoptic/{{year:4d}}/{{month:2d}}/{{day:2d}}/"
-                "EOVSA_{{PolType:5l}}_{{year:4d}}{{month:2d}}{{day:2d}}.fts")
-    else:
-        baseurl = "https://ovsa.njit.edu/fits/synoptic/%Y/%m/%d/EOVSA_.*_%Y%m%d.fts"
-        pattern = "{}/synoptic/{year:4d}/{month:2d}/{day:2d}/EOVSA_{PolType:5l}_{year:4d}{month:2d}{day:2d}.fts"
+    pattern = ("https://ovsa.njit.edu/fits/synoptic/{{year:4d}}/{{month:2d}}/{{day:2d}}/"
+               "EOVSA_{{PolType:5l}}_{{year:4d}}{{month:2d}}{{day:2d}}.fts")
     pol_map = {"Total": "TPall", "Cross": "XPall", "TPall": "Total", "XPall": "Cross"}
 
     @classmethod
@@ -55,3 +52,28 @@ class EOVSAClient(GenericClient):
             PolType: [("Total", "Total polarisation"), ("Cross", "Cross polarisation")],
         }
         return adict
+
+    def search(self, *args, **kwargs):
+        """
+        Query this client for a list of results.
+
+        Parameters
+        ----------
+        *args: `tuple`
+            `sunpy.net.attrs` objects representing the query.
+        **kwargs: `dict`
+             Any extra keywords to refine the search.
+
+        Returns
+        -------
+        A `QueryResponse` instance containing the query result.
+        """
+        baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
+        metalist = []
+        scraper = Scraper(pattern) if pattern else Scraper(baseurl)
+        tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
+        filesmeta = scraper._extract_files_meta(tr, matcher=matchdict)
+        for i in filesmeta:
+            rowdict = self.post_search_hook(i, matchdict)
+            metalist.append(rowdict)
+        return QueryResponse(metalist, client=self)

@@ -1,0 +1,1 @@
+Re-implemented ``GenericSpectrogram.join_many`` class method to concatenate spectrograms along the time axis.

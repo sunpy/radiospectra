@@ -1,6 +1,8 @@
 from sunpy.net import attrs as a
 from sunpy.net.attr import SimpleAttr
-from sunpy.net.dataretriever.client import GenericClient
+from sunpy.net.dataretriever.client import GenericClient, QueryResponse
+from sunpy.net.scraper import Scraper
+from sunpy.time import TimeRange
 
 from radiospectra.net.attrs import Observatory
 
@@ -52,19 +54,59 @@ class eCALLISTOClient(GenericClient):
     @classmethod
     def pre_search_hook(cls, *args, **kwargs):
         baseurl, pattern, matchdict = super().pre_search_hook(*args, **kwargs)
-        obs = matchdict.pop("Observatory")
-        if obs[0] == "*":
-            baseurl = baseurl.format(obs=r".*")
+        obs = matchdict["Observatory"]
+        if obs == "*" or obs == ["*"]:
+            # Use {{obs}} (double braces) so Scraper.format() produces {obs} for parsing
+            baseurl = baseurl.format(obs="{{obs}}")
         else:
             # Need case sensitive so have to override
             obs_attr = [a for a in args if isinstance(a, Observatory)][0]
             baseurl = baseurl.format(obs=obs_attr.value)
         return baseurl, pattern, matchdict
 
+    def search(self, *args, **kwargs):
+        baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
+        metalist = []
+
+        # Use baseurl (which is already formatted with obs).
+        # Convert to parse syntax (curly braces) for Scraper.
+        # {suffix} captures user-defined suffix (was .*) - parse matches until next literal (.fit.gz)
+        # Double braces {{ }} are needed because Scraper.format() consumes one level.
+        pat = baseurl
+        pat = pat.replace(".*", r"{{suffix}}")
+        pat = pat.replace("%Y%m%d", r"{{year:4d}}{{month:2d}}{{day:2d}}")
+        pat = pat.replace("%H%M%S", r"{{hour:2d}}{{minute:2d}}{{second:2d}}")
+        pat = pat.replace("%Y", r"{{year:4d}}")
+        pat = pat.replace("%m", r"{{month:2d}}")
+        pat = pat.replace("%d", r"{{day:2d}}")
+
+        scraper = Scraper(pat)
+        tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
+
+        # If wildcard, remove Observatory from matcher to avoid Scraper filtering it out
+        # (Scraper compares 'ALASKA' with ['*'])
+        matcher = matchdict.copy()
+        if matcher.get("Observatory") == ["*"] or matcher.get("Observatory") == "*":
+            del matcher["Observatory"]
+
+        filesmeta = scraper._extract_files_meta(tr, matcher=matcher)
+
+        for i in filesmeta:
+            rowdict = self.post_search_hook(i, matchdict)
+            metalist.append(rowdict)
+
+        return QueryResponse(metalist, client=self)
+
     def post_search_hook(self, exdict, matchdict):
         original = super().post_search_hook(exdict, matchdict)
-        original["ID"] = original["suffix"].replace("_", "")
-        del original["suffix"]
+        if "obs" in original:
+            original["Observatory"] = original.pop("obs")
+
+        # ID is derived from suffix.
+        if "suffix" in original:
+            original["ID"] = original["suffix"].replace("_", "")
+            del original["suffix"]
+
         # We don't know the end time for all files
         # https://github.com/sunpy/radiospectra/issues/60
         del original["End Time"]

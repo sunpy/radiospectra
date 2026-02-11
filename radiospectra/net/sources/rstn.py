@@ -24,8 +24,6 @@ class RSTNClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     1 Results from the RSTNClient:
-           Start Time               End Time        Provider Instrument Observatory
-    ----------------------- ----------------------- -------- ---------- -----------
     2003-03-15 00:00:00.000 2003-03-15 23:59:59.999     RSTN       RSTN    San Vito
     <BLANKLINE>
     <BLANKLINE>
@@ -50,20 +48,38 @@ class RSTNClient(GenericClient):
         baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
         metalist = []
         for obs in matchdict["Observatory"]:
-            scraper = Scraper(baseurl.format(obs=self.observatory_map[obs.title()]), regex=True)
+            # Construct pattern template for Scraper
+            # baseurl is like .../rstn-spectral/{obs}/...
+            # pattern is {}/rstn-spectral/{obs}/...
+            # Resolve {} and {obs}
+            domain = baseurl.split("/rstn-spectral")[0]
+            obs_norm = self.observatory_map[obs.title()]
+
+            # Construct regex pattern for Scraper
+            # Use SunPy 'parse' syntax (curly braces) which Scraper expects.
+            # Double braces {{ }} are needed for Scraper.format().
+            # Quadruple braces {{{{ }}}} are needed for Python f-string escaping.
+            # Filename matching uses strict format.
+            pat = f"{domain}/rstn-spectral/{obs_norm}/{{{{year:4d}}}}/{{{{month:2d}}}}/{{{{obs_short}}}}{{{{year:2d}}}}{{{{month:2d}}}}{{{{day:2d}}}}.SRS.gz"
+
+            scraper = Scraper(pat)
             tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
-            filesmeta = scraper._extract_files_meta(tr, extractor=pattern, matcher=matchdict)
+            filesmeta = scraper._extract_files_meta(tr)
 
             for i in filesmeta:
                 rowdict = self.post_search_hook(i, matchdict)
+                # Ensure Title Case for Observatory name (e.g. San Vito)
+                # Obs might be 'san vito' or 'san-vito'. Map handles hyphenated.
+                # .title() handles checking space-separated.
+                mapped = self.observatory_map.get(obs, obs)
+                rowdict["Observatory"] = mapped if mapped != obs else obs.title()
                 metalist.append(rowdict)
 
         return QueryResponse(metalist, client=self)
 
     def post_search_hook(self, exdict, matchdict):
         original = super().post_search_hook(exdict, matchdict)
-        obs, *_ = (original.pop(name) for name in ["obs", "year2", "month2", "obs_short"])
-        original["Observatory"] = self.observatory_map[obs]
+        original.pop("obs_short", None)
         return original
 
     @classmethod

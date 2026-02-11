@@ -1,0 +1,1 @@
+Fixed `sunpy.net.scraper.Scraper` regex compatibility with `SunPy 7.1.0` in `ecallisto`, `rstn`, `ilofar`, and `psp` clients. This addresses CI failures caused by the removal of `regex=True` support in newer `SunPy` versions.
