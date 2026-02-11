@@ -26,6 +26,27 @@ class Spectrum(np.ndarray):
 
     def __new__(cls, data, *args, **kwargs):
         return np.asarray(data).view(cls)
+    def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
+        new_inputs = []
+        for x in inputs:
+            if isinstance(x, Spectrum):
+                new_inputs.append(x.view(np.ndarray))
+            else:
+                new_inputs.append(x)
+
+        result = getattr(ufunc, method)(*new_inputs, **kwargs)
+
+        if isinstance(result, tuple):
+            return tuple(self._wrap_result(r) for r in result)
+
+        return self._wrap_result(result)
+
+    def _wrap_result(self, result):
+        if isinstance(result, np.ndarray):
+            result = result.view(Spectrum)
+            if hasattr(self, "freq_axis"):
+                result.freq_axis = self.freq_axis.copy()
+        return result
 
     def __init__(self, data, freq_axis):
         if np.shape(data)[0] != np.shape(freq_axis)[0]:
