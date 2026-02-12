@@ -31,6 +31,7 @@ from sunpy.util.exceptions import SunpyUserWarning, warn_user
 from sunpy.util.io import is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
 from sunpy.util.util import expand_list
+from sunpy.sun.constants import sfu
 
 from radiospectra.exceptions import NoSpectrogramInFileError, SpectraMetaValidationError
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
@@ -433,6 +434,31 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 "detector": detector,
                 "instrument": "FIELDS/RFS",
                 "observatory": "PSP",
+                "start_time": times[0],
+                "end_time": times[-1],
+                "wavelength": a.Wavelength(freqs.min(), freqs.max()),
+                "times": times,
+                "freqs": freqs,
+            }
+            return data, meta
+        elif ("SOLO" in cdf_globals.get("Project", "")[0]
+            and ("RPW-TNR-SURV-FLUX" in cdf_globals.get("Descriptor", "")[0]
+            or "RPW-HFR-SURV-FLUX" in cdf_globals.get("Descriptor", "")[0])):
+            epoch = cdf.varget("Epoch")
+            times = Time("J2000.0") + epoch * u.ns
+
+            freqs = cdf.varget("FREQUENCY") << u.Unit(
+                cdf.varattsget("FREQUENCY")["UNITS"]
+            )
+            data = cdf.varget("PSD_SFU")
+            data = np.squeeze(data).T <<  sfu
+            descriptor = cdf_globals.get("Descriptor", "")[0]
+            detector = "RPW-TNR" if "TNR" in descriptor else "RPW-HFR"
+            meta = {
+                "cdf_globals": cdf_globals,
+                "detector": detector,
+                "instrument": "RPW",
+                "observatory": "SOLO",
                 "start_time": times[0],
                 "end_time": times[-1],
                 "wavelength": a.Wavelength(freqs.min(), freqs.max()),
