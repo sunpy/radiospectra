@@ -1,0 +1,2 @@
+Added a local development environment setup guide with copy-pasteable conda and pip/venv workflows. 
+Linked the guide from the top-level README and the documentation index so contributor setup is easier to find.
