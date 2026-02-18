@@ -1,0 +1,2 @@
+Added a guide for running CI and tests locally before submitting a pull request.
+
