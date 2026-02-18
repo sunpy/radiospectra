@@ -20,6 +20,7 @@ from astropy.time import Time
 from sunpy import log
 from sunpy.data import cache
 from sunpy.net import attrs as a
+from sunpy.sun.constants import sfu
 from sunpy.time import parse_time
 from sunpy.util.datatype_factory_base import (
     BasicRegistrationFactory,
@@ -31,7 +32,6 @@ from sunpy.util.exceptions import SunpyUserWarning, warn_user
 from sunpy.util.io import is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
 from sunpy.util.util import expand_list
-from sunpy.sun.constants import sfu
 
 from radiospectra.exceptions import NoSpectrogramInFileError, SpectraMetaValidationError
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
