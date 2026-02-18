@@ -53,3 +53,4 @@ When you are interacting with the SunPy community you are asked to follow our `C
    overview
    code_ref/index
    whatsnew/index
+   dev_guide
