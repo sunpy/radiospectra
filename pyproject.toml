@@ -42,6 +42,7 @@ docs = [
   "packaging",
 
 ]
+all = ["radiospectra[tests,docs]"]
 dev = ["radiospectra[tests,docs]"]
 
 [project.urls]
