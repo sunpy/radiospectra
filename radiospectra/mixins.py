@@ -1,12 +1,3 @@
-def _times_utc_datetime(times):
-    """
-    Convert time values to UTC before exposing datetimes, when supported.
-    """
-    if hasattr(times, "utc"):
-        times = times.utc
-    return times.datetime
-
-
 class PcolormeshPlotMixin:
     """
     Class provides plotting functions using `~pcolormesh`.
@@ -27,8 +18,9 @@ class PcolormeshPlotMixin:
         -------
         `matplotlib.collections.QuadMesh`
         """
-        import matplotlib.dates as mdates
         from matplotlib import pyplot as plt
+
+        from astropy.visualization import time_support
 
         if axes is None:
             fig, axes = plt.subplots()
@@ -44,19 +36,16 @@ class PcolormeshPlotMixin:
         if self.instrument != self.detector:
             title = f"{title}, {self.detector}"
 
-        times = _times_utc_datetime(self.times)
         axes.set_title(title)
-        axes.plot(times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
-        if self.times.shape[0] == self.data.shape[0] and self.frequencies.shape[0] == self.data.shape[1]:
-            ret = axes.pcolormesh(times, self.frequencies.value, data, shading="auto", **kwargs)
-        else:
-            ret = axes.pcolormesh(times, self.frequencies.value, data[:-1, :-1], shading="auto", **kwargs)
-        axes.set_xlim(times[0], times[-1])
-        locator = mdates.AutoDateLocator(minticks=4, maxticks=8)
-        formatter = mdates.ConciseDateFormatter(locator)
-        axes.xaxis.set_major_locator(locator)
-        axes.xaxis.set_major_formatter(formatter)
-        fig.autofmt_xdate()
+        with time_support():
+            axes.plot(self.times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
+            if self.times.shape[0] == self.data.shape[0] and self.frequencies.shape[0] == self.data.shape[1]:
+                ret = axes.pcolormesh(self.times, self.frequencies.value, data, shading="auto", **kwargs)
+            else:
+                ret = axes.pcolormesh(self.times, self.frequencies.value, data[:-1, :-1], shading="auto", **kwargs)
+            axes.set_xlim(self.times[0], self.times[-1])
+            fig.autofmt_xdate()
+
         # Set current axes/image if pyplot is being used (makes colorbar work)
         for i in plt.get_fignums():
             if axes in plt.figure(i).axes:
@@ -71,14 +60,18 @@ class NonUniformImagePlotMixin:
     """
 
     def plotim(self, fig=None, axes=None, **kwargs):
-        import matplotlib.dates as mdates
         from matplotlib import pyplot as plt
         from matplotlib.image import NonUniformImage
+
+        from astropy.visualization import time_support
 
         if axes is None:
             fig, axes = plt.subplots()
 
-        times = _times_utc_datetime(self.times)
-        im = NonUniformImage(axes, interpolation="none", **kwargs)
-        im.set_data(mdates.date2num(times), self.frequencies.value, self.data)
-        axes.add_image(im)
+        with time_support():
+            axes.plot(self.times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
+            im = NonUniformImage(axes, interpolation="none", **kwargs)
+            im.set_data(axes.convert_xunits(self.times), self.frequencies.value, self.data)
+            axes.add_image(im)
+            axes.set_xlim(self.times[0], self.times[-1])
+            axes.set_ylim(self.frequencies.value[0], self.frequencies.value[-1])
