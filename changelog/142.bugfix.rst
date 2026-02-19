@@ -1,0 +1,1 @@
+Migrated network clients to the unified ``sunpy.net.scraper.Scraper`` format, fixing scraper-based searches with newer ``sunpy`` releases.
