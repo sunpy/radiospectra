@@ -16,7 +16,7 @@ authors = [
   { name = "The SunPy Community", email = "sunpy@googlegroups.com" },
 ]
 dependencies = [
-  "sunpy[net]>=7.1.0",
+  "sunpy[net]>=7.0",
   "numpy>=1.26.0",
   "matplotlib>=3.8.0",
   "scipy>=1.12.0",
@@ -42,7 +42,6 @@ docs = [
   "packaging",
 
 ]
-all = ["radiospectra[tests,docs]"]
 dev = ["radiospectra[tests,docs]"]
 
 [project.urls]

@@ -1,1 +1,0 @@
-Support for ``sunpy`` versions older than 7.1.0 is deprecated because the network clients now require the unified ``sunpy.net.scraper.Scraper`` interface.
