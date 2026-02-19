@@ -34,6 +34,37 @@ To install ``radiospectra`` once miniforge is installed run the following comman
 
 For detailed installation instructions, see the `installation guide <https://docs.sunpy.org/en/stable/guide/installation.html>`__ in the ``sunpy`` docs.
 
+Development Setup
+=================
+
+Use Python 3.12 or newer for local development.
+
+Conda workflow
+--------------
+
+.. code:: bash
+
+    conda create -n radiospectra-dev python=3.12 -y
+    conda activate radiospectra-dev
+    git clone https://github.com/sunpy/radiospectra.git
+    cd radiospectra
+    python -m pip install -U pip
+    python -m pip install -e ".[dev]"
+
+pip/venv workflow
+-----------------
+
+.. code:: bash
+
+    git clone https://github.com/sunpy/radiospectra.git
+    cd radiospectra
+    python3.12 -m venv .venv
+    source .venv/bin/activate
+    python -m pip install -U pip
+    python -m pip install -e ".[dev]"
+
+For test, style, and documentation commands, see the `development setup guide <https://docs.sunpy.org/projects/radiospectra/en/latest/development.html>`__.
+
 Getting Help
 ============
 

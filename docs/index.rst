@@ -36,8 +36,8 @@ For more information or to ask questions about ``radiospectra`` or any other Sun
 
 Contributing
 ============
-If you would like to get involved, start by joining the `SunPy Chat`_ and check out our `Newcomers' guide <https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html>`__.
-This will walk you through getting set up for contributing.
+If you would like to get involved, start with the :doc:`development` guide.
+You can also join the `SunPy Chat`_ and check out the `Newcomers' guide <https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html>`__.
 
 Code of Conduct
 ===============
@@ -51,5 +51,6 @@ When you are interacting with the SunPy community you are asked to follow our `C
    :caption: Contents:
 
    overview
+   development
    code_ref/index
    whatsnew/index
