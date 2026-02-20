@@ -444,7 +444,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
             if "RPW-HFR-SURV" not in cdf_globals.get("Descriptor", "")[0]:
                 raise ValueError(
                     f"Currently radiospectra supports Level 2 HFR survey data the file"
-                    f'{file.name} is {cdf_globals.get("Descriptor", "")}'
+                    f"{file.name} is {cdf_globals.get('Descriptor', '')}"
                 )
 
             # FREQUENCY_BAND_LABELS = ["HF1", "HF2"]
