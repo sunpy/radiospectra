@@ -46,11 +46,10 @@ class RFSClient(GenericClient):
     <BLANKLINE>
     """
 
-    baseurl = (
-        r"https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/{Wavelength}/"
-        r"{year}/psp_fld_l2_(\w){{7}}_(\d){{8}}_v(\d){{2}}.cdf"
+    pattern = (
+        r"https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/{receiver}/{year_path}/"
+        r"psp_fld_l2_{{Wavelength}}_{{year:4d}}{{month:2d}}{{day:2d}}_v{{version:2d}}.cdf"
     )
-    pattern = r"{}/{Wavelength}/{year:4d}/" r"psp_fld_l2_{Wavelength}_{year:4d}{month:2d}{day:2d}_v{:2d}.cdf"
 
     @classmethod
     def _check_wavelengths(cls, wavelength):
@@ -111,9 +110,9 @@ class RFSClient(GenericClient):
         tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
         for receiver in receivers:
             for year in range(start_year, end_year + 1):
-                urlpattern = self.baseurl.format(Wavelength=receiver, year=year)
-                scraper = Scraper(urlpattern, regex=True)
-                filesmeta = scraper._extract_files_meta(tr, extractor=self.pattern)
+                pattern = self.pattern.replace("{receiver}", receiver).replace("{year_path}", str(year))
+                scraper = Scraper(format=pattern)
+                filesmeta = scraper._extract_files_meta(tr)
                 for i in filesmeta:
                     rowdict = self.post_search_hook(i, matchdict)
                     metalist.append(rowdict)
