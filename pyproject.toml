@@ -59,27 +59,6 @@ exclude = ["radiospectra._dev*"]
 [tool.setuptools_scm]
 version_file = "radiospectra/_version.py"
 
-[tool.black]
-line-length = 120
-include = '\.pyi?$'
-exclude = '''
-(
-  /(
-      \.eggs
-    | \.git
-    | \.mypy_cache
-    | \.tox
-    | \.venv
-    | _build
-    | buck-out
-    | build
-    | dist
-    | docs
-    | .history
-  )/
-)
-'''
-
 [tool.gilesbot]
   [tool.gilesbot.pull_requests]
   enabled = true
