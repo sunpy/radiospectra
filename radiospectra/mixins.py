@@ -16,6 +16,18 @@ def _get_axis_converter(axis):
             return None
 
 
+def _set_axis_converter(axis, converter):
+    """Safe method to set axis converter for older and newer MPL versions."""
+    try:
+        axis.set_converter(converter)
+    except AttributeError:
+        try:
+            axis._set_converter(converter)
+            axis._converter_is_explicit = True
+        except AttributeError:
+            axis.converter = converter
+
+
 def _frequency_values_for_axes(axes, frequencies):
     """
     Convert frequencies to the unit already used on the axes when available.
@@ -89,7 +101,7 @@ class PcolormeshPlotMixin:
             # Pin existing converter to avoid warnings when re-plotting with different units
             converter = _get_axis_converter(axes.xaxis)
             if converter is not None:
-                axes.xaxis.set_converter(converter)
+                _set_axis_converter(axes.xaxis, converter)
 
             axes.plot(self.times[[0, -1]], [plot_frequencies[0], plot_frequencies[-1]], linestyle="None", marker="None")
             if self.times.shape[0] == self.data.shape[0] and self.frequencies.shape[0] == self.data.shape[1]:
@@ -126,7 +138,7 @@ class NonUniformImagePlotMixin:
             # Pin existing converter to avoid warnings when re-plotting with different units
             converter = _get_axis_converter(axes.xaxis)
             if converter is not None:
-                axes.xaxis.set_converter(converter)
+                _set_axis_converter(axes.xaxis, converter)
 
             axes.plot(self.times[[0, -1]], [plot_frequencies[0], plot_frequencies[-1]], linestyle="None", marker="None")
             im = NonUniformImage(axes, interpolation="none", **kwargs)
