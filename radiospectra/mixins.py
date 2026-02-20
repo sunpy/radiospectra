@@ -1,3 +1,6 @@
+from astropy.visualization import time_support
+
+
 class PcolormeshPlotMixin:
     """
     Class provides plotting functions using `~pcolormesh`.
@@ -19,8 +22,6 @@ class PcolormeshPlotMixin:
         `matplotlib.collections.QuadMesh`
         """
         from matplotlib import pyplot as plt
-
-        from astropy.visualization import time_support
 
         if axes is None:
             fig, axes = plt.subplots()
@@ -62,8 +63,6 @@ class NonUniformImagePlotMixin:
     def plotim(self, fig=None, axes=None, **kwargs):
         from matplotlib import pyplot as plt
         from matplotlib.image import NonUniformImage
-
-        from astropy.visualization import time_support
 
         if axes is None:
             fig, axes = plt.subplots()
