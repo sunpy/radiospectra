@@ -5,7 +5,7 @@ import numpy as np
 
 import astropy.units as u
 
-from radiospectra.mixins import _get_axis_converter
+from radiospectra.mixins import _get_axis_converter, _set_axis_converter
 
 
 def test_plot_mixed_frequency_units_on_same_axes(make_spectrogram):
@@ -122,6 +122,16 @@ def test_plotim_uses_time_support_for_datetime_conversion(make_spectrogram):
     np.testing.assert_allclose(image, spec.data)
 
 
+def test_get_axis_converter_falls_back_to_converter_attribute():
+    """_get_axis_converter should return converter attribute when getter is missing."""
+
+    class DummyAxis:
+        def __init__(self):
+            self.converter = "conv"
+
+    assert _get_axis_converter(DummyAxis()) == "conv"
+
+
 def test_get_axis_converter_without_attribute():
     """_get_axis_converter should return None when no converter exists."""
 
@@ -129,3 +139,34 @@ def test_get_axis_converter_without_attribute():
         pass
 
     assert _get_axis_converter(DummyAxis()) is None
+
+
+def test_set_axis_converter_private_setter_fallback():
+    """_set_axis_converter should use private setter when public setter is unavailable."""
+
+    class DummyAxis:
+        def __init__(self):
+            self.calls = []
+            self._converter_is_explicit = False
+
+        def _set_converter(self, converter):
+            self.calls.append(converter)
+
+    axis = DummyAxis()
+    _set_axis_converter(axis, "conv")
+
+    assert axis.calls == ["conv"]
+    assert axis._converter_is_explicit is True
+
+
+def test_set_axis_converter_attribute_fallback():
+    """_set_axis_converter should fall back to plain converter attribute assignment."""
+
+    class DummyAxis:
+        def __init__(self):
+            self.converter = None
+
+    axis = DummyAxis()
+    _set_axis_converter(axis, "conv")
+
+    assert axis.converter == "conv"

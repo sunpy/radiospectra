@@ -1,12 +1,13 @@
 from matplotlib import pyplot as plt
 from matplotlib.image import NonUniformImage
 
-from astropy import units as u
-from astropy.visualization import time_support
+from astropy.visualization import quantity_support, time_support
 
 
 def _get_axis_converter(axis):
-    """Safe method to get axis converter for older and newer MPL versions."""
+    """
+    Safe method to get axis convert for older and newer MPL versions
+    """
     try:
         return axis.get_converter()
     except AttributeError:
@@ -26,34 +27,6 @@ def _set_axis_converter(axis, converter):
             axis._converter_is_explicit = True
         except AttributeError:
             axis.converter = converter
-
-
-def _frequency_values_for_axes(axes, frequencies):
-    """
-    Convert frequencies to the unit already used on the axes when available.
-    """
-    if not hasattr(frequencies, "unit"):
-        return frequencies, None
-
-    target_unit = None
-    if axes.has_data():
-        target_unit = getattr(axes, "_radiospectra_frequency_unit", None)
-        if target_unit is None:
-            target_unit = axes.yaxis.get_units()
-        if target_unit is not None:
-            try:
-                target_unit = u.Unit(target_unit)
-            except (TypeError, ValueError):
-                target_unit = None
-
-    if target_unit is None:
-        target_unit = frequencies.unit
-    try:
-        frequency_values = frequencies.to_value(target_unit)
-    except u.UnitConversionError:
-        target_unit = frequencies.unit
-        frequency_values = frequencies.value
-    return frequency_values, target_unit
 
 
 class PcolormeshPlotMixin:
@@ -91,23 +64,23 @@ class PcolormeshPlotMixin:
         if self.instrument != self.detector:
             title = f"{title}, {self.detector}"
 
-        plot_frequencies, plot_frequency_unit = _frequency_values_for_axes(axes, self.frequencies)
-        if plot_frequency_unit is not None:
-            axes._radiospectra_frequency_unit = plot_frequency_unit
-            axes.set_ylabel(f"Frequency [{plot_frequency_unit.to_string()}]")
-
         axes.set_title(title)
-        with time_support():
-            # Pin existing converter to avoid warnings when re-plotting with different units
-            converter = _get_axis_converter(axes.xaxis)
-            if converter is not None:
-                _set_axis_converter(axes.xaxis, converter)
 
-            axes.plot(self.times[[0, -1]], [plot_frequencies[0], plot_frequencies[-1]], linestyle="None", marker="None")
+        with time_support(), quantity_support():
+            # Pin existing converters to avoid warnings when re-plotting on shared axes.
+            converter_y = _get_axis_converter(axes.yaxis)
+            if converter_y is not None and not getattr(axes.yaxis, "_converter_is_explicit", False):
+                _set_axis_converter(axes.yaxis, converter_y)
+
+            converter_x = _get_axis_converter(axes.xaxis)
+            if converter_x is not None and not getattr(axes.xaxis, "_converter_is_explicit", False):
+                _set_axis_converter(axes.xaxis, converter_x)
+
+            axes.plot(self.times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
             if self.times.shape[0] == self.data.shape[0] and self.frequencies.shape[0] == self.data.shape[1]:
-                ret = axes.pcolormesh(self.times, plot_frequencies, data, shading="auto", **kwargs)
+                ret = axes.pcolormesh(self.times, self.frequencies, data, shading="auto", **kwargs)
             else:
-                ret = axes.pcolormesh(self.times, plot_frequencies, data[:-1, :-1], shading="auto", **kwargs)
+                ret = axes.pcolormesh(self.times, self.frequencies, data[:-1, :-1], shading="auto", **kwargs)
             axes.set_xlim(self.times[0], self.times[-1])
             fig.autofmt_xdate()
 
@@ -129,20 +102,22 @@ class NonUniformImagePlotMixin:
         if axes is None:
             fig, axes = plt.subplots()
 
-        plot_frequencies, plot_frequency_unit = _frequency_values_for_axes(axes, self.frequencies)
-        if plot_frequency_unit is not None:
-            axes._radiospectra_frequency_unit = plot_frequency_unit
-            axes.set_ylabel(f"Frequency [{plot_frequency_unit.to_string()}]")
+        with time_support(), quantity_support():
+            # Pin existing converters to avoid warnings when re-plotting on shared axes.
+            converter_y = _get_axis_converter(axes.yaxis)
+            if converter_y is not None and not getattr(axes.yaxis, "_converter_is_explicit", False):
+                _set_axis_converter(axes.yaxis, converter_y)
 
-        with time_support():
-            # Pin existing converter to avoid warnings when re-plotting with different units
-            converter = _get_axis_converter(axes.xaxis)
-            if converter is not None:
-                _set_axis_converter(axes.xaxis, converter)
+            converter_x = _get_axis_converter(axes.xaxis)
+            if converter_x is not None and not getattr(axes.xaxis, "_converter_is_explicit", False):
+                _set_axis_converter(axes.xaxis, converter_x)
 
-            axes.plot(self.times[[0, -1]], [plot_frequencies[0], plot_frequencies[-1]], linestyle="None", marker="None")
+            axes.yaxis.update_units(self.frequencies)
+            frequencies = axes.yaxis.convert_units(self.frequencies)
+
+            axes.plot(self.times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
             im = NonUniformImage(axes, interpolation="none", **kwargs)
-            im.set_data(axes.convert_xunits(self.times), plot_frequencies, self.data)
+            im.set_data(axes.convert_xunits(self.times), frequencies, self.data)
             axes.add_image(im)
             axes.set_xlim(self.times[0], self.times[-1])
-            axes.set_ylim(plot_frequencies[0], plot_frequencies[-1])
+            axes.set_ylim(frequencies[0], frequencies[-1])
