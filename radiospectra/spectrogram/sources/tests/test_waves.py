@@ -11,6 +11,7 @@ from sunpy.net import attrs as a
 
 from radiospectra.spectrogram import Spectrogram
 from radiospectra.spectrogram.sources import WAVESSpectrogram
+from radiospectra.spectrogram.spectrogram_factory import SpectrogramFactory
 
 
 @mock.patch("radiospectra.spectrogram.spectrogram_factory.parse_path")
@@ -63,3 +64,13 @@ def test_waves_rad2(parse_path_moc):
     assert spec.end_time.datetime == datetime(2020, 11, 28, 23, 59)
     assert spec.wavelength.min == 1.075 * u.MHz
     assert spec.wavelength.max == 13.825 * u.MHz
+
+
+@mock.patch("radiospectra.spectrogram.spectrogram_factory.readsav")
+def test_waves_prefixed_filename_parses_date(readsav_mock):
+    data_array = np.zeros((256, 1441))
+    readsav_mock.return_value = {"arrayb": data_array}
+
+    _, meta = SpectrogramFactory._read_idl_sav(Path("wind_waves_rad1_20200711.R1"), instrument="waves")
+
+    assert meta["start_time"].isot == "2020-07-11T00:00:00.000"
