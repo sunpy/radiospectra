@@ -1,0 +1,1 @@
+Restored the WIND/WAVES ``Fido`` client to fetch data from the updated SPDF directories (``rad1_idl_binary`` and ``rad2_idl_binary``).
