@@ -4,11 +4,13 @@ from radiospectra.net.sources.eovsa import EOVSAClient
 from radiospectra.net.sources.ilofar import ILOFARMode357Client
 from radiospectra.net.sources.psp import RFSClient
 from radiospectra.net.sources.rstn import RSTNClient
+from radiospectra.net.sources.wind import WAVESClient
 
 __all__ = [
     "eCALLISTOClient",
     "EOVSAClient",
     "RFSClient",
     "RSTNClient",
+    "WAVESClient",
     "ILOFARMode357Client",
 ]
