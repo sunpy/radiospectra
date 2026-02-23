@@ -74,8 +74,12 @@ def test_waves_client(mock_urlopen, client, html_responses):
     assert query[3]["End Time"].datetime == datetime(2020, 1, 3, 23, 59, 59, 999000)
 
     query_urls = [row["url"] for row in query]
-    assert "https://spdf.gsfc.nasa.gov/pub/data/wind/waves/rad1_idl_binary/2020/wind_waves_rad1_20200102.R1" in query_urls
-    assert "https://spdf.gsfc.nasa.gov/pub/data/wind/waves/rad2_idl_binary/2020/wind_waves_rad2_20200103.R2" in query_urls
+    assert (
+        "https://spdf.gsfc.nasa.gov/pub/data/wind/waves/rad1_idl_binary/2020/wind_waves_rad1_20200102.R1" in query_urls
+    )
+    assert (
+        "https://spdf.gsfc.nasa.gov/pub/data/wind/waves/rad2_idl_binary/2020/wind_waves_rad2_20200103.R2" in query_urls
+    )
 
 
 @pytest.mark.parametrize(
