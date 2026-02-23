@@ -1,1 +1,1 @@
-Restored the WIND/WAVES ``Fido`` client to fetch data from the updated SPDF directories (``rad1_idl_binary`` and ``rad2_idl_binary``).
+Restored the WIND/WAVES ``Fido`` client `~radiospectra.net.sources.wind.WAVESClient` and updated it to use NASA SPDF server and altered paths and filenames.
