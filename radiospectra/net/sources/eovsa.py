@@ -26,10 +26,14 @@ class EOVSAClient(GenericClient):
     <BLANKLINE>
     <BLANKLINE>
     """
+
     from sunpy import __version__
+
     if __version__ >= "6.1.0":
-        pattern = ("https://ovsa.njit.edu/fits/synoptic/{{year:4d}}/{{month:2d}}/{{day:2d}}/"
-                "EOVSA_{{PolType:5l}}_{{year:4d}}{{month:2d}}{{day:2d}}.fts")
+        pattern = (
+            "https://ovsa.njit.edu/fits/synoptic/{{year:4d}}/{{month:2d}}/{{day:2d}}/"
+            "EOVSA_{{PolType:5l}}_{{year:4d}}{{month:2d}}{{day:2d}}.fts"
+        )
     else:
         baseurl = "https://ovsa.njit.edu/fits/synoptic/%Y/%m/%d/EOVSA_.*_%Y%m%d.fts"
         pattern = "{}/synoptic/{year:4d}/{month:2d}/{day:2d}/EOVSA_{PolType:5l}_{year:4d}{month:2d}{day:2d}.fts"

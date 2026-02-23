@@ -61,7 +61,7 @@ def test_ilofar_client_polarisation(mock_urlopen, client, html_responses):
     assert query_x[0]["Source"] == "ILOFAR"
     assert query_x[0]["Provider"] == "ILOFAR"
     assert query_x[0]["Start Time"].iso == "2018-06-01 10:00:41.000"
-    assert query_x[0]["Polarisation"] =='X'
+    assert query_x[0]["Polarisation"] == "X"
 
 
 @mock.patch("sunpy.net.scraper.urlopen")
