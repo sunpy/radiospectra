@@ -1,0 +1,1 @@
+Fixed mixed frequency unit plotting on shared axes to correctly convert units when multiple spectrograms with different frequency units are plotted together.
