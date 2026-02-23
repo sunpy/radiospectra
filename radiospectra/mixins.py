@@ -6,7 +6,11 @@ from astropy.visualization import quantity_support, time_support
 
 def _get_axis_converter(axis):
     """
-    Safe method to get axis convert for older and newer MPL versions
+    Safe method to get axis converter for older and newer MPL versions.
+
+    ``axis.get_converter()`` / ``axis.set_converter()`` were added in
+    Matplotlib 3.9.  Once the minimum supported Matplotlib version is
+    >= 3.9 these helpers can be replaced by direct get/set calls.
     """
     try:
         return axis.get_converter()
@@ -18,7 +22,11 @@ def _get_axis_converter(axis):
 
 
 def _set_axis_converter(axis, converter):
-    """Safe method to set axis converter for older and newer MPL versions."""
+    """
+    Safe method to set axis converter for older and newer MPL versions.
+
+    See `_get_axis_converter` for version notes.
+    """
     try:
         axis.set_converter(converter)
     except AttributeError:

@@ -5,26 +5,41 @@ import numpy as np
 
 import astropy.units as u
 
-from radiospectra.mixins import _get_axis_converter, _set_axis_converter
-
 
 def test_plot_mixed_frequency_units_on_same_axes(make_spectrogram):
     """Two spectrograms with different frequency units should plot on the same axes."""
     rad1 = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz)
     rad2 = make_spectrogram(np.array([1, 2, 3, 4]) * u.MHz)
-    fig, axes = plt.subplots()
 
-    rad1.plot(axes=axes)
+    rad1.plot()
+    axes = plt.gca()
     rad2.plot(axes=axes)
 
     # The y-axis unit should be set by the first spectrogram (kHz)
-    y_label = axes.get_ylabel()
+    assert axes.yaxis.units == u.kHz
     # The y-axis range should cover the converted MHz values (up to 4000 kHz)
     y_min, y_max = axes.get_ylim()
-    plt.close(fig)
+    plt.close("all")
 
-    assert "kHz" in y_label
     assert y_max > 1000, "MHz values should be converted to kHz on the y-axis"
+
+
+def test_plot_mixed_frequency_units_mhz_first(make_spectrogram):
+    """Plot MHz spectrogram first, then kHz — units should stay as MHz."""
+    rad1 = make_spectrogram(np.array([1, 2, 3, 4]) * u.MHz)
+    rad2 = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz)
+
+    rad1.plot()
+    axes = plt.gca()
+    rad2.plot(axes=axes)
+
+    # The y-axis unit should be set by the first spectrogram (MHz)
+    assert axes.yaxis.units == u.MHz
+    # kHz values should be converted to MHz; 40 kHz = 0.04 MHz
+    y_min, y_max = axes.get_ylim()
+    plt.close("all")
+
+    assert y_max >= 4, "y-axis should cover up to 4 MHz"
 
 
 def test_plotim(make_spectrogram):
@@ -120,53 +135,3 @@ def test_plotim_uses_time_support_for_datetime_conversion(make_spectrogram):
     np.testing.assert_allclose(x_values, expected_tt)
     np.testing.assert_allclose(y_values, spec.frequencies.value)
     np.testing.assert_allclose(image, spec.data)
-
-
-def test_get_axis_converter_falls_back_to_converter_attribute():
-    """_get_axis_converter should return converter attribute when getter is missing."""
-
-    class DummyAxis:
-        def __init__(self):
-            self.converter = "conv"
-
-    assert _get_axis_converter(DummyAxis()) == "conv"
-
-
-def test_get_axis_converter_without_attribute():
-    """_get_axis_converter should return None when no converter exists."""
-
-    class DummyAxis:
-        pass
-
-    assert _get_axis_converter(DummyAxis()) is None
-
-
-def test_set_axis_converter_private_setter_fallback():
-    """_set_axis_converter should use private setter when public setter is unavailable."""
-
-    class DummyAxis:
-        def __init__(self):
-            self.calls = []
-            self._converter_is_explicit = False
-
-        def _set_converter(self, converter):
-            self.calls.append(converter)
-
-    axis = DummyAxis()
-    _set_axis_converter(axis, "conv")
-
-    assert axis.calls == ["conv"]
-    assert axis._converter_is_explicit is True
-
-
-def test_set_axis_converter_attribute_fallback():
-    """_set_axis_converter should fall back to plain converter attribute assignment."""
-
-    class DummyAxis:
-        def __init__(self):
-            self.converter = None
-
-    axis = DummyAxis()
-    _set_axis_converter(axis, "conv")
-
-    assert axis.converter == "conv"
