@@ -657,7 +657,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
             # bg which is already subtracted from data ?
             bg = data_array[:, -1]
             data = data_array[:, :-1]
-            start_time = Time.strptime(file.stem, "%Y%m%d")
+            start_time = Time.strptime(file.stem.split("_")[-1], "%Y%m%d")
             end_time = start_time + 86399 * u.s
             times = start_time + (np.arange(1440) * 60 + 30) * u.s
             meta = {
