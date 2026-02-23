@@ -441,24 +441,21 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 "freqs": freqs,
             }
             return data, meta
-        elif ("SOLO" in cdf_globals.get("Project", "")[0]):
+        elif "SOLO" in cdf_globals.get("Project", "")[0]:
             data_type = cdf_globals.get("Data_type", [""])[0]
             data_descriptor = cdf_globals.get("Descriptor", "")[0]
-            if ("RPW-HFR-SURV" not in data_descriptor
-            and "RPW-TNR-SURV-FLUX" not in data_descriptor):
-                    raise ValueError(
-                        f"Currently radiospectra supports Level 2 HFR survey data "
-                        "and Level 3 HFR, TNR survey data the file "
-                        f'{file.name} is {cdf_globals.get("Logical_source_description", [""])[0]}'
-                    )
-            if("L3" in data_type):
+            if "RPW-HFR-SURV" not in data_descriptor and "RPW-TNR-SURV-FLUX" not in data_descriptor:
+                raise ValueError(
+                    f"Currently radiospectra supports Level 2 HFR survey data "
+                    "and Level 3 HFR, TNR survey data the file "
+                    f"{file.name} is {cdf_globals.get('Logical_source_description', [''])[0]}"
+                )
+            if "L3" in data_type:
                 epoch = cdf.varget("Epoch")
                 times = Time("J2000.0") + epoch * u.ns
-                freqs = cdf.varget("FREQUENCY") << u.Unit(
-                    cdf.varattsget("FREQUENCY")["UNITS"]
-                )
+                freqs = cdf.varget("FREQUENCY") << u.Unit(cdf.varattsget("FREQUENCY")["UNITS"])
                 data = cdf.varget("PSD_SFU")
-                data = np.squeeze(data).T <<  sfu
+                data = np.squeeze(data).T << sfu
                 detector = cdf_globals.get("Instrument", [""])[0].split(">")[0]
                 meta = {
                     "cdf_globals": cdf_globals,

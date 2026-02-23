@@ -17,7 +17,7 @@ from radiospectra.spectrogram.sources import RPWSpectrogram
 def test_solo_rpw_tnr(parse_path_moc):
     start_time = Time("2024-03-23 00:00:00.000")
     end_time = Time("2024-03-24 00:00:00.000")
-
+    # fmt: off
     meta = {
         "cdf_meta": {
             "Project": "SOLO>Solar Orbiter",
@@ -51,7 +51,7 @@ def test_solo_rpw_tnr(parse_path_moc):
             634525, 662618, 691955, 722590, 754582, 787990, 822878, 859310, 897355,
             937084, 978572]) * u.Hz,
                 }
-
+    # fmt: on
 
     array = np.zeros((128, 7322))
     parse_path_moc.return_value = [(array, meta)]
@@ -74,6 +74,7 @@ def test_solo_rpw_hfr(parse_path_moc):
     start_time = Time("2024-03-23 00:00:00.000")
     end_time = Time("2024-03-24 00:00:00.000")
 
+    # fmt: off
     meta = {
         "cdf_meta": {
             "Project": "SOLO>Solar Orbiter",
@@ -100,7 +101,7 @@ def test_solo_rpw_hfr(parse_path_moc):
             13375000, 13725000, 14375000, 14925000, 15275000, 15625000,
             16075000, 16325000]) * u.Hz,
     }
-
+    # fmt: on
 
     array = np.zeros((50, 16499))
     parse_path_moc.return_value = [(array, meta)]
