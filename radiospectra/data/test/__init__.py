@@ -18,7 +18,12 @@ def get_test_data_filepath(filename):
     filename : `str`
         Name of the file in ``radiospectra.data.test``.
     """
-    path = TEST_DATA_DIR / filename
+    base_dir = TEST_DATA_DIR.resolve()
+    path = (TEST_DATA_DIR / Path(filename)).resolve()
+    try:
+        path.relative_to(base_dir)
+    except ValueError as exc:
+        raise ValueError(f"Test data path '{filename}' escapes the test-data directory '{base_dir}'.") from exc
     if not path.is_file():
         raise FileNotFoundError(f"No bundled test data file named '{filename}' in '{TEST_DATA_DIR}'.")
     return path
