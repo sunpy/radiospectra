@@ -6,6 +6,8 @@ import numpy as np
 import astropy.units as u
 from ndcube import NDCube
 
+from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
+
 
 def test_plot_mixed_frequency_units_on_same_axes(make_spectrogram):
     """Two spectrograms with different frequency units should plot on the same axes."""
@@ -144,3 +146,12 @@ def test_generic_spectrogram_is_ndcube(make_spectrogram):
 def test_generic_spectrogram_registers_extra_coords(make_spectrogram):
     spec = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz)
     assert set(spec.extra_coords.keys()) == {"time", "frequency"}
+
+
+def test_numeric_time_without_start_time_not_registered_as_extra_coord():
+    meta = {
+        "times": np.arange(4),
+        "freqs": np.arange(4) * u.kHz,
+    }
+    spec = GenericSpectrogram(np.arange(16).reshape(4, 4), meta)
+    assert set(spec.extra_coords.keys()) == {"frequency"}

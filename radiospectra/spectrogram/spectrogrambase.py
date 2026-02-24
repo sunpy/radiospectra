@@ -32,8 +32,10 @@ def _coerce_extra_coord_values(name, values, meta):
     if isinstance(values, (list, tuple, np.ndarray)):
         arr = np.asarray(values)
         if np.issubdtype(arr.dtype, np.number):
-            if name == "time" and hasattr(meta, "get") and isinstance(meta.get("start_time"), Time):
-                return meta["start_time"] + arr * u.s
+            if name == "time":
+                if hasattr(meta, "get") and isinstance(meta.get("start_time"), Time):
+                    return meta["start_time"] + arr * u.s
+                return None
             return arr * u.one
 
     return None
