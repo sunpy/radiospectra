@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+from matplotlib.dates import AutoDateLocator, ConciseDateFormatter, date2num
 from matplotlib.image import NonUniformImage
 
 from astropy.visualization import quantity_support, time_support
@@ -37,7 +38,19 @@ def _set_axis_converter(axis, converter):
             axis.converter = converter
 
 
-class PcolormeshPlotMixin:
+class _TimeAxisMixin:
+    def _setup_time_axis(self, axes):
+        """
+        Apply `~matplotlib.dates.ConciseDateFormatter` to the x-axis.
+        """
+        locator = AutoDateLocator()
+        formatter = ConciseDateFormatter(locator)
+        axes.xaxis.set_major_locator(locator)
+        axes.xaxis.set_major_formatter(formatter)
+        axes.set_xlabel(f"Time ({self.times.scale})")
+
+
+class PcolormeshPlotMixin(_TimeAxisMixin):
     """
     Class provides plotting functions using `~pcolormesh`.
     """
@@ -59,9 +72,7 @@ class PcolormeshPlotMixin:
         """
 
         if axes is None:
-            fig, axes = plt.subplots()
-        else:
-            fig = axes.get_figure()
+            _, axes = plt.subplots()
 
         if hasattr(self.data, "value"):
             data = self.data.value
@@ -84,13 +95,15 @@ class PcolormeshPlotMixin:
             if converter_x is not None and not getattr(axes.xaxis, "_converter_is_explicit", False):
                 _set_axis_converter(axes.xaxis, converter_x)
 
-            axes.plot(self.times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
+            times_datetime = self.times.datetime
+            axes.plot(times_datetime[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
             if self.times.shape[0] == self.data.shape[0] and self.frequencies.shape[0] == self.data.shape[1]:
-                ret = axes.pcolormesh(self.times, self.frequencies, data, shading="auto", **kwargs)
+                ret = axes.pcolormesh(times_datetime, self.frequencies, data, shading="auto", **kwargs)
             else:
-                ret = axes.pcolormesh(self.times, self.frequencies, data[:-1, :-1], shading="auto", **kwargs)
-            axes.set_xlim(self.times[0], self.times[-1])
-            fig.autofmt_xdate()
+                ret = axes.pcolormesh(times_datetime, self.frequencies, data[:-1, :-1], shading="auto", **kwargs)
+            axes.set_xlim(times_datetime[0], times_datetime[-1])
+
+        self._setup_time_axis(axes)
 
         # Set current axes/image if pyplot is being used (makes colorbar work)
         for i in plt.get_fignums():
@@ -100,7 +113,7 @@ class PcolormeshPlotMixin:
         return ret
 
 
-class NonUniformImagePlotMixin:
+class NonUniformImagePlotMixin(_TimeAxisMixin):
     """
     Class provides plotting functions using `NonUniformImage`.
     """
@@ -123,9 +136,13 @@ class NonUniformImagePlotMixin:
             axes.yaxis.update_units(self.frequencies)
             frequencies = axes.yaxis.convert_units(self.frequencies)
 
-            axes.plot(self.times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
+            times_datetime = self.times.datetime
+            times_num = date2num(times_datetime)
+            axes.plot(times_datetime[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
             im = NonUniformImage(axes, interpolation="none", **kwargs)
-            im.set_data(axes.convert_xunits(self.times), frequencies, self.data)
+            im.set_data(times_num, frequencies, self.data)
             axes.add_image(im)
-            axes.set_xlim(self.times[0], self.times[-1])
+            axes.set_xlim(times_datetime[0], times_datetime[-1])
             axes.set_ylim(frequencies[0], frequencies[-1])
+
+        self._setup_time_axis(axes)

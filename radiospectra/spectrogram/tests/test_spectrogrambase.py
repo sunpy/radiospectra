@@ -2,6 +2,7 @@ from unittest import mock
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.dates import ConciseDateFormatter, date2num
 
 import astropy.units as u
 
@@ -53,7 +54,9 @@ def test_plotim(make_spectrogram):
     plt.close("all")
 
     _, x_values, y_values, image = set_data.call_args.args
+    expected_times = date2num(rad_im.times.datetime)
     assert len(x_values) == len(rad_im.times)
+    np.testing.assert_allclose(x_values, expected_times)
     np.testing.assert_allclose(y_values, rad_im.frequencies.value)
     np.testing.assert_allclose(image, rad_im.data)
 
@@ -104,12 +107,12 @@ def test_plot_instrument_detector_differ(make_spectrogram):
 
 
 def test_plot_uses_time_support_for_datetime_conversion(make_spectrogram):
-    """Plotting with non-UTC time scale should use time_support."""
+    """Plotting with non-UTC time scale should use datetime conversion."""
     spec = make_spectrogram(np.linspace(10, 40, 4) * u.MHz, scale="tt")
 
     mesh = spec.plot()
     x_limits = np.array(mesh.axes.get_xlim())
-    expected_tt_limits = mesh.axes.convert_xunits(spec.times[[0, -1]])
+    expected_tt_limits = date2num(spec.times.datetime[[0, -1]])
 
     plt.close(mesh.axes.figure)
 
@@ -117,7 +120,7 @@ def test_plot_uses_time_support_for_datetime_conversion(make_spectrogram):
 
 
 def test_plotim_uses_time_support_for_datetime_conversion(make_spectrogram):
-    """plotim with non-UTC time scale should use time_support."""
+    """plotim with non-UTC time scale should use datetime conversion."""
     spec = make_spectrogram(np.linspace(10, 40, 4) * u.MHz, scale="tt")
     fig, axes = plt.subplots()
 
@@ -130,8 +133,43 @@ def test_plotim_uses_time_support_for_datetime_conversion(make_spectrogram):
     plt.close(fig)
 
     _, x_values, y_values, image = set_data.call_args.args
-    expected_tt = axes.convert_xunits(spec.times)
+    expected_tt = date2num(spec.times.datetime)
 
     np.testing.assert_allclose(x_values, expected_tt)
     np.testing.assert_allclose(y_values, spec.frequencies.value)
     np.testing.assert_allclose(image, spec.data)
+
+
+def test_plot_uses_concise_date_formatter(make_spectrogram):
+    """plot() should apply ConciseDateFormatter to the x-axis."""
+    rad = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz)
+    mesh = rad.plot()
+    formatter = mesh.axes.xaxis.get_major_formatter()
+    plt.close("all")
+
+    assert isinstance(formatter, ConciseDateFormatter)
+
+
+def test_plotim_uses_concise_date_formatter(make_spectrogram):
+    """plotim() should apply ConciseDateFormatter to the x-axis."""
+    rad = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz)
+    fig, axes = plt.subplots()
+    with (
+        mock.patch("matplotlib.image.NonUniformImage.set_interpolation", autospec=True),
+        mock.patch("matplotlib.image.NonUniformImage.set_data", autospec=True),
+    ):
+        rad.plotim(axes=axes)
+    formatter = axes.xaxis.get_major_formatter()
+    plt.close("all")
+
+    assert isinstance(formatter, ConciseDateFormatter)
+
+
+def test_plot_xlabel_includes_time_scale(make_spectrogram):
+    """plot() should set the x-label to include the time scale."""
+    rad = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz)
+    mesh = rad.plot()
+    xlabel = mesh.axes.get_xlabel()
+    plt.close("all")
+
+    assert "utc" in xlabel.lower()
