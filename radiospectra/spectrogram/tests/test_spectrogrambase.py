@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import astropy.units as u
+from ndcube import NDCube
 
 
 def test_plot_mixed_frequency_units_on_same_axes(make_spectrogram):
@@ -77,18 +78,16 @@ def test_plotim_mixed_frequency_units_on_same_axes(make_spectrogram):
 
 def test_plot_with_quantity_data(make_spectrogram):
     """Test plotting when data is an astropy Quantity."""
-    rad = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz)
-    rad.data = rad.data * u.ct
+    data = np.arange(16).reshape(4, 4) * u.ct
+    rad = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz, data=data)
     rad.plot()
     plt.close("all")
 
 
 def test_plot_with_shape_mismatch(make_spectrogram):
     """Test plotting branch when data shape doesn't exactly match time/freq arrays."""
-    rad = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz)
-    # times/freqs are length 4, data shape (4, 4) matches.
-    # make data (5, 5) to trigger the `else` branch (data[:-1, :-1])
-    rad.data = np.zeros((5, 5))
+    # times/freqs are length 4, so a (5, 5) array triggers the data[:-1, :-1] path.
+    rad = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz, data=np.zeros((5, 5)))
     rad.plot()
     plt.close("all")
 
@@ -135,3 +134,13 @@ def test_plotim_uses_time_support_for_datetime_conversion(make_spectrogram):
     np.testing.assert_allclose(x_values, expected_tt)
     np.testing.assert_allclose(y_values, spec.frequencies.value)
     np.testing.assert_allclose(image, spec.data)
+
+
+def test_generic_spectrogram_is_ndcube(make_spectrogram):
+    spec = make_spectrogram(np.linspace(10, 40, 4) * u.MHz)
+    assert isinstance(spec, NDCube)
+
+
+def test_generic_spectrogram_registers_extra_coords(make_spectrogram):
+    spec = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz)
+    assert set(spec.extra_coords.keys()) == {"time", "frequency"}

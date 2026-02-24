@@ -1,0 +1,2 @@
+Reworked ``radiospectra.spectrogram.GenericSpectrogram`` to use ``ndcube.NDCube`` as
+its underlying data model while preserving existing metadata properties and plotting APIs.
