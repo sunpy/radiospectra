@@ -1,9 +1,9 @@
 import numpy as np
+from ndcube import NDCube
 
 import astropy.units as u
 from astropy.time import Time
 from astropy.wcs import WCS
-from ndcube import NDCube
 
 from radiospectra.exceptions import SpectraMetaValidationError
 from radiospectra.mixins import NonUniformImagePlotMixin, PcolormeshPlotMixin
@@ -39,6 +39,11 @@ def _coerce_extra_coord_values(name, values, meta):
             return arr * u.one
 
     return None
+
+
+def _iter_extra_coord_names(extra_coords):
+    for _, table_coord in getattr(extra_coords, "_lookup_tables", ()):
+        yield from getattr(table_coord, "names", ()) or ()
 
 
 class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, NDCube):
@@ -113,7 +118,7 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, NDCube):
         )
 
         if extra_coords is not None:
-            existing = set(self.extra_coords.keys() or ())
+            existing = set(_iter_extra_coord_names(self.extra_coords))
             for name, axis, values in extra_coords:
                 if name in existing:
                     continue
