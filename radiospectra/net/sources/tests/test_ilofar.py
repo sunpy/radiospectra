@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest import mock
 
 import pytest
@@ -8,6 +7,7 @@ import astropy.units as u
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
+from radiospectra.data.test import get_test_data_filepath
 from radiospectra.net.attrs import PolType
 from radiospectra.net.sources.ilofar import ILOFARMode357Client
 
@@ -19,7 +19,7 @@ def client():
 
 @pytest.fixture
 def html_responses():
-    paths = [Path(__file__).parent / "data" / n for n in ["ilofar_resp1.html", "ilofar_resp2.html"]]
+    paths = [get_test_data_filepath(n) for n in ["ilofar_resp1.html", "ilofar_resp2.html"]]
     response_htmls = []
     for p in paths:
         with p.open("r") as f:

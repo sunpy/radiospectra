@@ -1,5 +1,4 @@
 import gzip
-from pathlib import Path
 from unittest import mock
 
 import pytest
@@ -7,6 +6,7 @@ import pytest
 from sunpy.net import attrs as a
 from sunpy.net.fido_factory import Fido
 
+from radiospectra.data.test import get_test_data_filepath
 from radiospectra.net.sources.ecallisto import Observatory, eCALLISTOClient
 
 MOCK_PATH = "sunpy.net.scraper.urlopen"
@@ -19,7 +19,7 @@ def client():
 
 @pytest.fixture
 def http_responses():
-    paths = [Path(__file__).parent / "data" / n for n in ["ecallisto_resp1.html.gz", "ecallisto_resp2.html.gz"]]
+    paths = [get_test_data_filepath(n) for n in ["ecallisto_resp1.html.gz", "ecallisto_resp2.html.gz"]]
     response_htmls = []
     for p in paths:
         with gzip.open(p) as f:
@@ -29,7 +29,7 @@ def http_responses():
 
 @pytest.fixture
 def http_response_alt():
-    path = Path(__file__).parent / "data" / "ecallisto_resp_alt_format.html"
+    path = get_test_data_filepath("ecallisto_resp_alt_format.html")
     with path.open("r") as file:
         response_html = file.read()
         return response_html

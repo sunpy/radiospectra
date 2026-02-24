@@ -1,5 +1,4 @@
 import gzip
-from pathlib import Path
 from unittest import mock
 
 import numpy as np
@@ -11,6 +10,7 @@ from astropy.time import Time
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
+from radiospectra.data.test import get_test_data_filepath
 from radiospectra.net.sources.psp import RFSClient
 
 MOCK_PATH = "sunpy.net.scraper.urlopen"
@@ -58,7 +58,7 @@ def test_fido():
 
 @pytest.fixture
 def http_responces():
-    paths = [Path(__file__).parent / "data" / n for n in ["psp_resp1.html.gz", "psp_resp2.html.gz"]]
+    paths = [get_test_data_filepath(n) for n in ["psp_resp1.html.gz", "psp_resp2.html.gz"]]
     response_htmls = []
     for p in paths:
         with gzip.open(p) as f:

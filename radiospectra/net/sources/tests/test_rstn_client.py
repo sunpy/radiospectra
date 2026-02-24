@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest import mock
 
 import pytest
@@ -6,6 +5,7 @@ import pytest
 from sunpy.net import attrs as a
 from sunpy.net.fido_factory import Fido
 
+from radiospectra.data.test import get_test_data_filepath
 from radiospectra.net.attrs import Observatory
 from radiospectra.net.sources.rstn import RSTNClient
 
@@ -19,9 +19,7 @@ def client():
 
 @pytest.fixture
 def http_responses():
-    paths = [
-        Path(__file__).parent / "data" / n for n in ["rstn_holloman.html", "rstn_learmonth.html", "rstn_san-vito.html"]
-    ]
+    paths = [get_test_data_filepath(n) for n in ["rstn_holloman.html", "rstn_learmonth.html", "rstn_san-vito.html"]]
     response_htmls = []
     for p in paths:
         with p.open("r") as f:

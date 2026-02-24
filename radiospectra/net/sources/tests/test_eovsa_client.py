@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest import mock
 
 import numpy as np
@@ -7,6 +6,7 @@ import pytest
 from sunpy.net import attrs as a
 from sunpy.net.fido_factory import Fido
 
+from radiospectra.data.test import get_test_data_filepath
 from radiospectra.net.attrs import PolType
 from radiospectra.net.sources.eovsa import EOVSAClient
 
@@ -20,7 +20,7 @@ def client():
 
 @pytest.fixture
 def http_responses():
-    paths = [Path(__file__).parent / "data" / n for n in ["eovsa_resp1.html", "eovsa_resp2.html"]]
+    paths = [get_test_data_filepath(n) for n in ["eovsa_resp1.html", "eovsa_resp2.html"]]
     response_htmls = []
     for p in paths:
         with p.open("r") as f:
