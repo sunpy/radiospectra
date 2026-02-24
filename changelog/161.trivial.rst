@@ -1,0 +1,2 @@
+Moved bundled test fixtures to ``radiospectra.data.test`` and added a helper to
+load those files by name for tests and downstream tooling.
