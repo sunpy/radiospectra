@@ -1,0 +1,1 @@
+Improved default time axis formatting on spectrogram plots by using `matplotlib.dates.ConciseDateFormatter`. This also changes the internal time axis representation to native Python `datetime` objects; users should now use `datetime` objects when manually setting axis limits (e.g., via `~matplotlib.axes.Axes.set_xlim`).
