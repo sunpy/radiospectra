@@ -2,9 +2,10 @@ from unittest import mock
 
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.dates import ConciseDateFormatter, date2num
+from matplotlib.dates import ConciseDateFormatter
 
 import astropy.units as u
+from astropy.time import Time
 
 
 def test_plot_mixed_frequency_units_on_same_axes(make_spectrogram):
@@ -54,7 +55,7 @@ def test_plotim(make_spectrogram):
     plt.close("all")
 
     _, x_values, y_values, image = set_data.call_args.args
-    expected_times = date2num(rad_im.times.datetime)
+    expected_times = rad_im.times.plot_date
     assert len(x_values) == len(rad_im.times)
     np.testing.assert_allclose(x_values, expected_times)
     np.testing.assert_allclose(y_values, rad_im.frequencies.value)
@@ -106,21 +107,21 @@ def test_plot_instrument_detector_differ(make_spectrogram):
     plt.close("all")
 
 
-def test_plot_uses_time_support_for_datetime_conversion(make_spectrogram):
-    """Plotting with non-UTC time scale should use datetime conversion."""
+def test_plot_uses_plot_date_conversion(make_spectrogram):
+    """Plotting with non-UTC time scale should use matplotlib plot-date conversion."""
     spec = make_spectrogram(np.linspace(10, 40, 4) * u.MHz, scale="tt")
 
     mesh = spec.plot()
     x_limits = np.array(mesh.axes.get_xlim())
-    expected_tt_limits = date2num(spec.times.datetime[[0, -1]])
+    expected_tt_limits = spec.times.plot_date[[0, -1]]
 
     plt.close(mesh.axes.figure)
 
     np.testing.assert_allclose(x_limits, expected_tt_limits)
 
 
-def test_plotim_uses_time_support_for_datetime_conversion(make_spectrogram):
-    """plotim with non-UTC time scale should use datetime conversion."""
+def test_plotim_uses_plot_date_conversion(make_spectrogram):
+    """plotim with non-UTC time scale should use matplotlib plot-date conversion."""
     spec = make_spectrogram(np.linspace(10, 40, 4) * u.MHz, scale="tt")
     fig, axes = plt.subplots()
 
@@ -133,11 +134,76 @@ def test_plotim_uses_time_support_for_datetime_conversion(make_spectrogram):
     plt.close(fig)
 
     _, x_values, y_values, image = set_data.call_args.args
-    expected_tt = date2num(spec.times.datetime)
+    expected_tt = spec.times.plot_date
 
     np.testing.assert_allclose(x_values, expected_tt)
     np.testing.assert_allclose(y_values, spec.frequencies.value)
     np.testing.assert_allclose(image, spec.data)
+
+
+def test_plot_accepts_astropy_time_xlim(make_spectrogram):
+    """plot() should still accept astropy Time values in set_xlim()."""
+    rad = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz)
+    mesh = rad.plot()
+    mesh.axes.set_xlim(rad.times[0], rad.times[-1])
+    x_limits = np.array(mesh.axes.get_xlim())
+    plt.close(mesh.axes.figure)
+
+    np.testing.assert_allclose(x_limits, rad.times.plot_date[[0, -1]])
+
+
+def test_plot_accepts_datetime_xlim(make_spectrogram):
+    """plot() should accept datetime values in set_xlim()."""
+    rad = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz)
+    mesh = rad.plot()
+    mesh.axes.set_xlim(rad.times.datetime[0], rad.times.datetime[-1])
+    x_limits = np.array(mesh.axes.get_xlim())
+    plt.close(mesh.axes.figure)
+
+    np.testing.assert_allclose(x_limits, rad.times.plot_date[[0, -1]])
+
+
+def test_plotim_accepts_astropy_time_xlim(make_spectrogram):
+    """plotim() should still accept astropy Time values in set_xlim()."""
+    rad = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz)
+    fig, axes = plt.subplots()
+    with (
+        mock.patch("matplotlib.image.NonUniformImage.set_interpolation", autospec=True),
+        mock.patch("matplotlib.image.NonUniformImage.set_data", autospec=True),
+    ):
+        rad.plotim(axes=axes)
+    axes.set_xlim(rad.times[0], rad.times[-1])
+    x_limits = np.array(axes.get_xlim())
+    plt.close(fig)
+
+    np.testing.assert_allclose(x_limits, rad.times.plot_date[[0, -1]])
+
+
+def test_plotim_accepts_datetime_xlim(make_spectrogram):
+    """plotim() should accept datetime values in set_xlim()."""
+    rad = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz)
+    fig, axes = plt.subplots()
+    with (
+        mock.patch("matplotlib.image.NonUniformImage.set_interpolation", autospec=True),
+        mock.patch("matplotlib.image.NonUniformImage.set_data", autospec=True),
+    ):
+        rad.plotim(axes=axes)
+    axes.set_xlim(rad.times.datetime[0], rad.times.datetime[-1])
+    x_limits = np.array(axes.get_xlim())
+    plt.close(fig)
+
+    np.testing.assert_allclose(x_limits, rad.times.plot_date[[0, -1]])
+
+
+def test_plot_handles_leap_seconds(make_spectrogram):
+    """plot() should not fail for times that include a leap second."""
+    leap_times = Time("2016-12-31T23:59:58", scale="utc") + np.arange(4) * u.s
+    rad = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz, times=leap_times)
+    mesh = rad.plot()
+    x_limits = np.array(mesh.axes.get_xlim())
+    plt.close(mesh.axes.figure)
+
+    np.testing.assert_allclose(x_limits, leap_times.plot_date[[0, -1]])
 
 
 def test_plot_uses_concise_date_formatter(make_spectrogram):
