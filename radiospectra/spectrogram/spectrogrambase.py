@@ -1,7 +1,9 @@
 import numpy as np
+
+from astropy.time import Time
+
 from sunpy.net import attrs as a
 from sunpy.time import parse_time
-from astropy.time import Time
 
 from radiospectra.exceptions import SpectraMetaValidationError
 from radiospectra.mixins import NonUniformImagePlotMixin, PcolormeshPlotMixin
@@ -90,7 +92,7 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
         return self.meta["freqs"]
 
     def slice(self, time=None, freq=None):
-        '''
+        """
         times = [t0, t1, t2, t3, t4, t5]
         freqs = [f0, f1, f2, f3, f4]
 
@@ -101,7 +103,7 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
 
         After slice method:
         sliced_data = slice(time=(t1, t4), freq=(f1, f3))
-        '''
+        """
         times = self.times
         freqs = self.frequencies
 

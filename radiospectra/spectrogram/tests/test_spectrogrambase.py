@@ -136,7 +136,9 @@ def test_plotim_uses_time_support_for_datetime_conversion(make_spectrogram):
     np.testing.assert_allclose(y_values, spec.frequencies.value)
     np.testing.assert_allclose(image, spec.data)
 
+
 # --------- Tests for GenericSpectrogram.slice() ---------
+
 
 def test_slice_by_time_only(make_spectrogram):
     """Slicing by time should keep only matching rows."""
