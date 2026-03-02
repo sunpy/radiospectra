@@ -93,8 +93,7 @@ Note: This disclaimer was originally written by
 `Adrienne Lowe <https://github.com/adriennefriend>`__ for a
 `PyCon talk <https://www.youtube.com/watch?v=6Uj746j9Heo>`__, and was adapted by
 radiospectra based on its use in the README file for the
-<<<<<<<
-`MetPy project <https://github.com/Unidata/MetPy>`_.
+`MetPy project <https://github.com/Unidata/MetPy>`__.
 
 Code of Conduct
 ===============
@@ -102,6 +101,3 @@ Code of Conduct
 When you are interacting with the SunPy community you are asked to follow our `Code of Conduct <https://sunpy.org/coc>`__.
 
 .. _SunPy Chat: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
-=======
-`MetPy project <https://github.com/Unidata/MetPy>`__.
->>>>>>>
