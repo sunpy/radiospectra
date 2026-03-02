@@ -3,7 +3,10 @@ from sunpy.net.attr import SimpleAttr
 from sunpy.net.dataretriever.client import GenericClient
 
 from radiospectra.net.attrs import Observatory
-
+import zlib
+import urllib.request
+from astropy.io import fits
+from astropy.time import Time
 
 class eCALLISTOClient(GenericClient):
     """
@@ -62,10 +65,28 @@ class eCALLISTOClient(GenericClient):
         original = super().post_search_hook(exdict, matchdict)
         original["ID"] = original["suffix"].replace("_", "")
         del original["suffix"]
-        # We don't know the end time for all files
-        # https://github.com/sunpy/radiospectra/issues/60
-        del original["End Time"]
-        return original
+        url = exdict.get('url')
+        if url:
+            start_h, end_h = self._fetch_remote_header(url)
+            if start_h:
+                try:
+                    original["Start Time"] = Time(start_h)
+                except Exception:
+                    pass
+
+            if end_h:
+                try:
+                    original["End Time"] = Time(end_h)
+                except Exception:
+                    original["End Time"] = end_h
+            else:
+                if "End Time" in original:
+                    del original["End Time"]            
+        else:
+            if "End Time" in original:
+                del original["End Time"]
+        
+        return original        
 
     @classmethod
     def register_values(cls):
@@ -97,3 +118,31 @@ class eCALLISTOClient(GenericClient):
                 ):
                     return False
         return True
+    def _fetch_remote_header(self, url):
+        headers = {'User-Agent': 'SunPy/Radiospectra', 'Range': 'bytes=0-15360'}
+        req = urllib.request.Request(url, headers=headers)
+        try:
+            with urllib.request.urlopen(req, timeout=5) as response:
+                if response.getcode() == 206:
+                    compressed_data = response.read()
+                    # e-Callisto files are .gz, so we need to decompress
+                    d = zlib.decompressobj(16 + zlib.MAX_WBITS)
+                    header_bytes = d.decompress(compressed_data)
+                    header = fits.Header.fromstring(header_bytes[:2880].decode('ascii', errors='ignore'))
+
+                    # Get Date and Time keywords
+                    date_obs = header.get('DATE-OBS')
+                    time_obs = header.get('TIME-OBS', '')
+                    date_end = header.get('DATE-END', date_obs)
+                    time_end = header.get('TIME-END', '')
+
+                    # Combine into strings for Astropy Time
+                    start = f"{date_obs} {time_obs}".strip()
+                    end = f"{date_end} {time_end}".strip()
+
+                    return (start if date_obs else None), (end if date_end else None)
+        except Exception:
+            return None, None
+        return None, None
+                
+        
