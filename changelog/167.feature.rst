@@ -1,0 +1,1 @@
+Added :meth:`radiospectra.spectrogram.GenericSpectrogram.slice` which allows slicing of a spectrogram by time and frequency ranges.
