@@ -11,9 +11,9 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
     Attributes
     ----------
     meta : `dict-like`
-        Meta data for the spectrogram.
+        Metadata for the spectrogram.
     data : `numpy.ndarray`
-        The spectrogram data itself a 2D array.
+        The spectrogram data itself is a 2D array.
     """
 
     _registry = {}
@@ -90,8 +90,8 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
 
         This method includes very basic validation checks which apply to
         all of the kinds of files that radiospectra can read.
-        Datasource-specific validation should be handled in the relevant
-        file in the radiospectra.spectrogram.sources.
+        Datasource-specific validation should be handled in the relevant 
+        file in radiospectra.spectrogram.sources.
         """
         msg = "Spectrogram coordinate units for {} axis not present in metadata."
         err_message = []
