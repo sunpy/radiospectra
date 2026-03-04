@@ -90,7 +90,7 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
 
         This method includes very basic validation checks which apply to
         all of the kinds of files that radiospectra can read.
-        Datasource-specific validation should be handled in the relevant 
+        Datasource-specific validation should be handled in the relevant
         file in radiospectra.spectrogram.sources.
         """
         msg = "Spectrogram coordinate units for {} axis not present in metadata."
