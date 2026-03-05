@@ -1,7 +1,9 @@
-from matplotlib import pyplot as plt
+from matplotlib import axes, pyplot as plt
+from matplotlib.dates import AutoDateLocator, ConciseDateFormatter
 from matplotlib.image import NonUniformImage
 
 from astropy.visualization import quantity_support, time_support
+from radiospectra import data
 
 
 def _get_axis_converter(axis):
@@ -79,18 +81,26 @@ class PcolormeshPlotMixin:
             converter_y = _get_axis_converter(axes.yaxis)
             if converter_y is not None and not getattr(axes.yaxis, "_converter_is_explicit", False):
                 _set_axis_converter(axes.yaxis, converter_y)
-
+            
             converter_x = _get_axis_converter(axes.xaxis)
             if converter_x is not None and not getattr(axes.xaxis, "_converter_is_explicit", False):
                 _set_axis_converter(axes.xaxis, converter_x)
-
+            
             axes.plot(self.times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
-            if self.times.shape[0] == self.data.shape[0] and self.frequencies.shape[0] == self.data.shape[1]:
-                ret = axes.pcolormesh(self.times, self.frequencies, data, shading="auto", **kwargs)
-            else:
-                ret = axes.pcolormesh(self.times, self.frequencies, data[:-1, :-1], shading="auto", **kwargs)
-            axes.set_xlim(self.times[0], self.times[-1])
-            fig.autofmt_xdate()
+            
+            # ✨ YOUR MAGIC FIX - REPLACE fig.autofmt_xdate()
+            locator = AutoDateLocator()
+            formatter = ConciseDateFormatter(locator)
+            axes.xaxis.set_major_locator(locator)
+            axes.xaxis.set_major_formatter(formatter)
+
+    
+        if self.times.shape[0] == self.data.shape[0] and self.frequencies.shape[0] == self.data.shape[1]:
+            ret = axes.pcolormesh(self.times, self.frequencies, data, shading="auto", **kwargs)
+        else:
+            ret = axes.pcolormesh(self.times, self.frequencies, data[:-1, :-1], shading="auto", **kwargs)
+    
+        axes.set_xlim(self.times[0], self.times[-1])
 
         # Set current axes/image if pyplot is being used (makes colorbar work)
         for i in plt.get_fignums():
@@ -115,11 +125,11 @@ class NonUniformImagePlotMixin:
             converter_y = _get_axis_converter(axes.yaxis)
             if converter_y is not None and not getattr(axes.yaxis, "_converter_is_explicit", False):
                 _set_axis_converter(axes.yaxis, converter_y)
-
+                
             converter_x = _get_axis_converter(axes.xaxis)
             if converter_x is not None and not getattr(axes.xaxis, "_converter_is_explicit", False):
                 _set_axis_converter(axes.xaxis, converter_x)
-
+                
             axes.yaxis.update_units(self.frequencies)
             frequencies = axes.yaxis.convert_units(self.frequencies)
 
