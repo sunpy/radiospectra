@@ -107,3 +107,12 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
             f" {self.wavelength.min} - {self.wavelength.max},"
             f" {self.start_time.isot} to {self.end_time.isot}>"
         )
+    def frequency_at_index(self, index):
+        """
+        Returns the frequency at a specific index.
+        """
+        freq = self.frequencies
+        max_freq= len(freq)
+        if index < 0 or index >= max_freq:
+            raise IndexError(f"Index {index} out of range for frequency axis with size {max_freq}.")
+        return freq[index]
