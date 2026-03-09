@@ -1,1 +1,1 @@
-Added a frequency_at_index method to GenericSpectrogram to allow index-to-frequency mapping.
+Added ``frequency_at_index`` method to ``GenericSpectrogram`` class
