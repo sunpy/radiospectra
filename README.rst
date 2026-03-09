@@ -24,13 +24,33 @@ To see the latest changes in ``radiospectra`` see our `changelog <https://docs.s
 
 Installation
 ============
+## Development Setup
 
-The recommended way to install ``radiospectra`` is with `miniforge <https://github.com/conda-forge/miniforge#miniforge3>`__.
-To install ``radiospectra`` once miniforge is installed run the following command:
+The recommended way to install ``radiospectra`` is:
 
-.. code:: bash
+### Prerequisites
+- Python 3.12
+- [miniforge](https://github.com/conda-forge/miniforge) (recommended) or venv
 
-    $ conda install radiospectra
+### Conda (Recommended)
+```bash
+conda create -n radiospectra-dev python=3.12
+conda activate radiospectra-dev
+git clone https://github.com/sunpy/radiospectra
+cd radiospectra
+pip install -e '.[dev,docs]'  # Editable + testing/docs extras
+
+### venv/pip
+
+ python3.12 -m venv .venv
+source .venv/bin/activate    # Linux/Mac
+# .venv\Scripts\activate     # Windows
+pip install -e '.[dev,docs]'
+
+### Verify using:
+
+pytest tests/  # Run tests
+
 
 For detailed installation instructions, see the `installation guide <https://docs.sunpy.org/en/stable/guide/installation.html>`__ in the ``sunpy`` docs.
 
