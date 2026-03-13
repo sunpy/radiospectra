@@ -24,35 +24,33 @@ To see the latest changes in ``radiospectra`` see our `changelog <https://docs.s
 
 Installation
 ============
-## Development Setup
 
-The recommended way to install ``radiospectra`` is:
+Standard Installation
+---------------------
+The recommended way to install ``radiospectra`` is via pip:
 
-### Prerequisites
-- Python 3.12
-- [miniforge](https://github.com/conda-forge/miniforge) (recommended) or venv
+.. code-block:: bash
 
-### Conda (Recommended)
-```bash
-conda create -n radiospectra-dev python=3.12
-conda activate radiospectra-dev
-git clone https://github.com/sunpy/radiospectra
-cd radiospectra
-pip install -e '.[dev,docs]'  # Editable + testing/docs extras
+    pip install radiospectra
 
-### venv/pip
+Development Setup
+-----------------
+If you want to contribute to the development of ``radiospectra``, please follow these steps:
 
- python3.12 -m venv .venv
-source .venv/bin/activate    # Linux/Mac
-# .venv\Scripts\activate     # Windows
-pip install -e '.[dev,docs]'
+1. **Prerequisites**: We recommend using ``miniforge`` or ``conda`` to manage dependencies. Please refer to the official `SunPy Conda Guide <https://docs.sunpy.org/en/latest/dev_guide/contents/conda_for_dependencies.html>`_ for detailed environment setup.
 
-### Verify using:
+2. **Editable Install**: Clone the repository and install it in editable mode:
 
-pytest tests/  # Run tests
+.. code-block:: bash
 
+    pip install -e ".[dev,docs]"
 
-For detailed installation instructions, see the `installation guide <https://docs.sunpy.org/en/stable/guide/installation.html>`__ in the ``sunpy`` docs.
+3. **Verify Installation**: Run the tests to ensure everything is working correctly:
+
+.. code-block:: bash
+
+    pytest
+
 
 Getting Help
 ============
