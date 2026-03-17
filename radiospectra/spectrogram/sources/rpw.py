@@ -26,4 +26,4 @@ class RPWSpectrogram(GenericSpectrogram):
 
     @classmethod
     def is_datasource_for(cls, data, meta, **kwargs):
-        return meta["instrument"] == "RPW"
+        return meta.get("instrument") == "RPW"
