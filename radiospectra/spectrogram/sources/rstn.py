@@ -23,4 +23,4 @@ class RSTNSpectrogram(GenericSpectrogram):
 
     @classmethod
     def is_datasource_for(cls, data, meta, **kwargs):
-        return meta["instrument"] == "RSTN"
+        return meta.get("instrument") == "RSTN"
