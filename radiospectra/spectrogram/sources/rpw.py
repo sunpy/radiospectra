@@ -11,7 +11,7 @@ class RPWSpectrogram(GenericSpectrogram):
 
     Examples
     --------
-    >>> import sunpy_soar
+    >>> import sunpy_soar  # doctest: +SKIP
     >>> from sunpy.net import Fido, attrs as a
     >>> from radiospectra.spectrogram import Spectrogram
     >>> query = Fido.search(a.Time('2020-07-11', '2020-07-11 23:59'), a.Instrument('RPW'),
