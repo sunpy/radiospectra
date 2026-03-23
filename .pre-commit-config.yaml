@@ -9,13 +9,12 @@ repos:
     hooks:
       - id: ruff-check
         args: ["--fix"]
-<<<<<<<
-      - id: ruff-format
-=======
         types: [python]
         # Define here once and then reference using YAML anchor
         exclude: &exclude_dirs ^radiospectra/(data|extern)/
->>>>>>>
+      - id: ruff-format
+        types: [python]
+        exclude: *exclude_dirs
   - repo: https://github.com/PyCQA/isort
     rev: 8.0.1
     hooks:
