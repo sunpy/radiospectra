@@ -90,7 +90,7 @@ jobs:
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
     needs: [test]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2  # zizmor: ignore[unpinned-uses]
     with:
       submodules: false
       coverage: codecov
@@ -143,5 +143,3 @@ jobs:
 
       - name: Run upload
         uses: pypa/gh-action-pypi-publish@v1.13.0  # zizmor: ignore[unpinned-uses]
-
-
