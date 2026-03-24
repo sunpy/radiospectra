@@ -1,0 +1,1 @@
+Added frequency_at_index method to GenericSpectrogram class
