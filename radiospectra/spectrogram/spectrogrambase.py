@@ -1,3 +1,10 @@
+import numpy as np
+
+from astropy.time import Time
+
+from sunpy.net import attrs as a
+from sunpy.time import parse_time
+
 from radiospectra.exceptions import SpectraMetaValidationError
 from radiospectra.mixins import NonUniformImagePlotMixin, PcolormeshPlotMixin
 
@@ -83,6 +90,55 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
         The frequencies of the spectrogram.
         """
         return self.meta["freqs"]
+
+    def slice(self, time=None, freq=None):
+        """
+        times = [t0, t1, t2, t3, t4, t5]
+        freqs = [f0, f1, f2, f3, f4]
+
+        Before slice method (manual slicing):
+        sliced_times = times[1:5]
+        sliced_freqs = freqs[1:4]
+        sliced_data = data[1:5, 1:4]
+
+        After slice method:
+        sliced_data = slice(time=(t1, t4), freq=(f1, f3))
+        """
+        times = self.times
+        freqs = self.frequencies
+
+        if time is not None:
+            t_start, t_end = time
+            if not isinstance(t_start, Time):
+                t_start = parse_time(t_start)
+            if not isinstance(t_end, Time):
+                t_end = parse_time(t_end)
+            time_mask = (times >= t_start) & (times <= t_end)
+        else:
+            time_mask = np.ones(len(times), dtype=bool)
+
+        if freq is not None:
+            f_min, f_max = freq
+            if hasattr(f_min, "unit"):
+                f_min = f_min.to(freqs.unit)
+            if hasattr(f_max, "unit"):
+                f_max = f_max.to(freqs.unit)
+            freq_mask = (freqs >= f_min) & (freqs <= f_max)
+        else:
+            freq_mask = np.ones(len(freqs), dtype=bool)
+
+        sliced_data = self.data[np.ix_(time_mask, freq_mask)]
+        sliced_times = times[time_mask]
+        sliced_freqs = freqs[freq_mask]
+
+        new_meta = dict(self.meta)
+        new_meta["times"] = sliced_times
+        new_meta["freqs"] = sliced_freqs
+        new_meta["start_time"] = sliced_times[0]
+        new_meta["end_time"] = sliced_times[-1]
+        new_meta["wavelength"] = a.Wavelength(sliced_freqs.min(), sliced_freqs.max())
+
+        return self.__class__(sliced_data, new_meta)
 
     def _validate_meta(self):
         """
