@@ -135,3 +135,34 @@ def test_plotim_uses_time_support_for_datetime_conversion(make_spectrogram):
     np.testing.assert_allclose(x_values, expected_tt)
     np.testing.assert_allclose(y_values, spec.frequencies.value)
     np.testing.assert_allclose(image, spec.data)
+
+
+def test_frequency_at_index(make_spectrogram):
+    spec = make_spectrogram(np.array([10, 20, 30, 40]) * u.MHz)
+
+    assert spec.frequency_at_index(0) == 10 * u.MHz
+    assert spec.frequency_at_index(2) == 30 * u.MHz
+
+
+def test_time_at_index(make_spectrogram):
+    spec = make_spectrogram(np.array([10, 20, 30, 40]) * u.MHz)
+
+    assert spec.time_at_index(0) == spec.times[0]
+    assert spec.time_at_index(3) == spec.times[3]
+
+
+def test_index_at_frequency(make_spectrogram):
+    spec = make_spectrogram(np.array([10, 20, 30, 40]) * u.MHz)
+
+    # 21 MHz is closer to 20 than 30, so index 1
+    assert spec.index_at_frequency(21 * u.MHz) == 1
+    # 39 MHz is closest to 40 MHz, index 3
+    assert spec.index_at_frequency(39 * u.MHz) == 3
+
+
+def test_index_at_time(make_spectrogram):
+    spec = make_spectrogram(np.array([10, 20, 30, 40]) * u.MHz)
+
+    # 10 seconds after times[1] is still closer to times[1] than times[2]
+    t = spec.times[1] + 10 * u.s
+    assert spec.index_at_time(t) == 1
