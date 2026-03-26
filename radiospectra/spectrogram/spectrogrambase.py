@@ -107,3 +107,26 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
             f" {self.wavelength.min} - {self.wavelength.max},"
             f" {self.start_time.isot} to {self.end_time.isot}>"
         )
+
+    def peek(self, **kwargs):
+        """
+        Displays a quick-look plot of the Spectrogram with a colorbar.
+
+        Parameters
+        ----------
+        **kwargs : `dict`
+            Any additional keyword arguments are passed to `~radiospectra.spectrogram.GenericSpectrogram.plot`.
+
+        Returns
+        -------
+        `matplotlib.figure.Figure`
+            The figure object containing the plot.
+        """
+        import matplotlib.pyplot as plt
+
+        figure = plt.figure()
+        axes = figure.add_subplot(111)
+        ret = self.plot(axes=axes, **kwargs)
+        figure.colorbar(ret)
+        figure.show()
+        return figure
