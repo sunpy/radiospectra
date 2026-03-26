@@ -1,3 +1,5 @@
+import numpy as np
+
 from radiospectra.exceptions import SpectraMetaValidationError
 from radiospectra.mixins import NonUniformImagePlotMixin, PcolormeshPlotMixin
 
@@ -100,6 +102,66 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
                 err_message.append(msg.format(ax))
         if err_message:
             raise SpectraMetaValidationError("\n".join(err_message))
+
+    def frequency_at_index(self, index):
+        """
+        Return the frequency at a given index along the frequency axis.
+
+        Parameters
+        ----------
+        index : int
+            Index along the frequency axis.
+
+        Returns
+        -------
+        `~astropy.units.Quantity`
+        """
+        return self.frequencies[index]
+
+    def time_at_index(self, index):
+        """
+        Return the time at a given index along the time axis.
+
+        Parameters
+        ----------
+        index : int
+            Index along the time axis.
+
+        Returns
+        -------
+        `~astropy.time.Time`
+        """
+        return self.times[index]
+
+    def index_at_frequency(self, frequency):
+        """
+        Return the index along the frequency axis closest to a given frequency.
+
+        Parameters
+        ----------
+        frequency : `~astropy.units.Quantity`
+            The frequency to search for.
+
+        Returns
+        -------
+        int
+        """
+        return int(np.argmin(np.abs(self.frequencies - frequency)))
+
+    def index_at_time(self, time):
+        """
+        Return the index along the time axis closest to a given time.
+
+        Parameters
+        ----------
+        time : `~astropy.time.Time`
+            The time to search for.
+
+        Returns
+        -------
+        int
+        """
+        return int(np.argmin(np.abs(self.times - time)))
 
     def __repr__(self):
         return (
