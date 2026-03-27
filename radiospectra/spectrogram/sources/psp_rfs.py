@@ -26,11 +26,17 @@ class RFSSpectrogram(GenericSpectrogram):
 
     @property
     def level(self):
-        return self.meta["cdf_meta"]["Data_type"].split(">")[0]
+        data_type = self.meta["cdf_meta"]["Data_type"]
+        if isinstance(data_type, list) or hasattr(data_type, "tolist"):
+            data_type = data_type[0]
+        return data_type.split(">")[0]
 
     @property
     def version(self):
-        return int(self.meta["cdf_meta"]["Data_version"])
+        data_version = self.meta["cdf_meta"]["Data_version"]
+        if isinstance(data_version, list) or hasattr(data_version, "tolist"):
+            data_version = data_version[0]
+        return int(data_version)
 
     @classmethod
     def is_datasource_for(cls, data, meta, **kwargs):

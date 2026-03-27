@@ -430,7 +430,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
             freqs = freqs[0, :] << u.Hz
             data = data.T << u.Unit("Volt**2/Hz")
             meta = {
-                "cdf_globals": cdf_globals,
+                "cdf_meta": cdf_globals,
                 "detector": detector,
                 "instrument": "FIELDS/RFS",
                 "observatory": "PSP",
@@ -458,7 +458,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 data = np.squeeze(data).T << sfu
                 detector = cdf_globals.get("Instrument", [""])[0].split(">")[0]
                 meta = {
-                    "cdf_globals": cdf_globals,
+                    "cdf_meta": cdf_globals,
                     "detector": detector,
                     "instrument": "RPW",
                     "observatory": "SOLO",
@@ -561,7 +561,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 res = []
                 if np.any(agc1):
                     meta1 = {
-                        "cdf_globals": cdf_globals,
+                        "cdf_meta": cdf_globals,
                         "detector": "RPW-AGC1",
                         "instrument": "RPW",
                         "observatory": "SOLO",
@@ -574,7 +574,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                     res.append((specs[0].T, meta1))
                 if np.any(agc2):
                     meta2 = {
-                        "cdf_globals": cdf_globals,
+                        "cdf_meta": cdf_globals,
                         "detector": "RPW-AGC2",
                         "instrument": "RPW",
                         "observatory": "SOLO",
