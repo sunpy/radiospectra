@@ -233,6 +233,8 @@ import pytest
 
 from sunpy.net import Fido
 
+import radiospectra.net  # NOQA
+
 
 @pytest.mark.remote_data
 def test_psp_rfs_real_data():
