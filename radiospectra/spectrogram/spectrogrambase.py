@@ -113,6 +113,7 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
             return NotImplemented
 
         import numpy as np
+
         if not np.array_equal(self.data, other.data):
             return False
 
@@ -131,9 +132,10 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
 
     def __copy__(self):
         import copy
+
         return self.__class__(data=copy.copy(self.data), meta=copy.copy(self.meta))
 
     def __deepcopy__(self, memo):
         import copy
-        return self.__class__(data=copy.deepcopy(self.data, memo),
-                              meta=copy.deepcopy(self.meta, memo))
+
+        return self.__class__(data=copy.deepcopy(self.data, memo), meta=copy.deepcopy(self.meta, memo))
