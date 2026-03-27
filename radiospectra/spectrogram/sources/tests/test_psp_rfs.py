@@ -227,3 +227,23 @@ def test_psp_rfs_hfr(parse_path_moc):
     assert spec.wavelength.max == 19171.876 * u.kHz
     assert spec.level == "L2"
     assert spec.version == 1
+
+
+import pytest
+
+from sunpy.net import Fido
+
+
+@pytest.mark.remote_data
+def test_psp_rfs_real_data():
+    """
+    Test that reading a real PSP RFS file successfully parses the metadata dictionary
+    and allows access to properties like 'level' without throwing a KeyError.
+
+    This ensures that the SpectrogramFactory outputs 'cdf_meta' rather than 'cdf_globals'.
+    """
+    query = Fido.search(a.Time("2020/01/01", "2020/01/31"), a.Instrument("rfs"))
+    files = Fido.fetch(query[0, 0])
+    spec = Spectrogram(files[0])
+    assert spec.level == "L2"
+    assert spec.version is not None
