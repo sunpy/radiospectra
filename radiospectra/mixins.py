@@ -1,3 +1,6 @@
+from contextlib import contextmanager
+
+import matplotlib.units as munits
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.dates import AutoDateLocator, ConciseDateFormatter, DateConverter
@@ -40,62 +43,65 @@ def _set_axis_converter(axis, converter):
             axis.converter = converter
 
 
-class _TimeDateConverter(DateConverter):
+class ConciseAstropyConverter(munits.ConversionInterface):
     """
-    Converter that supports both matplotlib date values and astropy Time.
+    Matplotlib unit converter for `astropy.time.Time` that uses concise date formatting.
+
+    Notes
+    -----
+    This converter turns times into Matplotlib internal date floats. It does
+    not handle leap seconds or nanosecond precision for the entire age of
+    the universe.
     """
 
     @staticmethod
-    def _is_time_sequence(value):
-        return (
-            isinstance(value, (list, tuple, np.ndarray))
-            and np.size(value)
-            and all(isinstance(v, Time) for v in np.asarray(value, dtype=object).flat)
-        )
-
-    @staticmethod
-    def default_units(x, axis):
-        if isinstance(x, Time) or _TimeDateConverter._is_time_sequence(x):
-            return None
-        return DateConverter.default_units(x, axis)
+    def axisinfo(unit, axis):
+        locator = AutoDateLocator()
+        formatter = ConciseDateFormatter(locator)
+        return munits.AxisInfo(majloc=locator, majfmt=formatter, label=f"Time ({unit})")
 
     @staticmethod
     def convert(value, unit, axis):
         if isinstance(value, Time):
             return value.plot_date
 
-        if _TimeDateConverter._is_time_sequence(value):
-            converted = [v.plot_date for v in np.asarray(value, dtype=object).flat]
-            if isinstance(value, np.ndarray):
-                return np.asarray(converted, dtype=float).reshape(value.shape)
-            return converted
+        if isinstance(value, (list, tuple, np.ndarray)):
+            # If it's already a Time object (could be array-valued), use its plot_date
+            if isinstance(value, Time):
+                return value.plot_date
+            # Otherwise iterate over the sequence
+            converted = [v.plot_date if isinstance(v, Time) else v for v in np.asarray(value, dtype=object).flat]
+
+            # Matplotlib dates are floats; let DateConverter handle any remaining datetimes
+            converted_val = np.asarray(converted).reshape(np.shape(value))
+            return DateConverter.convert(converted_val, unit, axis)
 
         return DateConverter.convert(value, unit, axis)
 
-
-_TIME_DATE_CONVERTER = _TimeDateConverter()
-
-
-class _TimeAxisMixin:
-    def _set_time_converter(self, axes):
-        """
-        Ensure the x-axis supports both `~astropy.time.Time` and datetime inputs.
-        """
-        if not getattr(axes.xaxis, "_converter_is_explicit", False):
-            _set_axis_converter(axes.xaxis, _TIME_DATE_CONVERTER)
-
-    def _setup_time_axis(self, axes):
-        """
-        Apply `~matplotlib.dates.ConciseDateFormatter` to the x-axis.
-        """
-        locator = AutoDateLocator()
-        formatter = ConciseDateFormatter(locator)
-        axes.xaxis.set_major_locator(locator)
-        axes.xaxis.set_major_formatter(formatter)
-        axes.set_xlabel(f"Time ({self.times.scale})")
+    @staticmethod
+    def default_units(x, axis):
+        if isinstance(x, Time):
+            return x.scale.upper()
+        return None
 
 
-class PcolormeshPlotMixin(_TimeAxisMixin):
+@contextmanager
+def concise_time_support():
+    """
+    Context manager to enable concise time formatting for `astropy.time.Time` objects.
+    """
+    original_converter = munits.registry.get(Time)
+    munits.registry[Time] = ConciseAstropyConverter()
+    try:
+        yield
+    finally:
+        if original_converter is None:
+            del munits.registry[Time]
+        else:
+            munits.registry[Time] = original_converter
+
+
+class PcolormeshPlotMixin:
     """
     Class provides plotting functions using `~pcolormesh`.
     """
@@ -130,23 +136,18 @@ class PcolormeshPlotMixin(_TimeAxisMixin):
 
         axes.set_title(title)
 
-        with quantity_support():
+        with concise_time_support(), quantity_support():
             # Pin existing converters to avoid warnings when re-plotting on shared axes.
             converter_y = _get_axis_converter(axes.yaxis)
             if converter_y is not None and not getattr(axes.yaxis, "_converter_is_explicit", False):
                 _set_axis_converter(axes.yaxis, converter_y)
 
-            self._set_time_converter(axes)
-
-            times_plot_date = self.times.plot_date
-            axes.plot(times_plot_date[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
+            axes.plot(self.times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
             if self.times.shape[0] == self.data.shape[0] and self.frequencies.shape[0] == self.data.shape[1]:
-                ret = axes.pcolormesh(times_plot_date, self.frequencies, data, shading="auto", **kwargs)
+                ret = axes.pcolormesh(self.times, self.frequencies, data, shading="auto", **kwargs)
             else:
-                ret = axes.pcolormesh(times_plot_date, self.frequencies, data[:-1, :-1], shading="auto", **kwargs)
-            axes.set_xlim(times_plot_date[0], times_plot_date[-1])
-
-        self._setup_time_axis(axes)
+                ret = axes.pcolormesh(self.times, self.frequencies, data[:-1, :-1], shading="auto", **kwargs)
+            axes.set_xlim(self.times[0], self.times[-1])
 
         # Set current axes/image if pyplot is being used (makes colorbar work)
         for i in plt.get_fignums():
@@ -156,7 +157,7 @@ class PcolormeshPlotMixin(_TimeAxisMixin):
         return ret
 
 
-class NonUniformImagePlotMixin(_TimeAxisMixin):
+class NonUniformImagePlotMixin:
     """
     Class provides plotting functions using `NonUniformImage`.
     """
@@ -166,23 +167,21 @@ class NonUniformImagePlotMixin(_TimeAxisMixin):
         if axes is None:
             fig, axes = plt.subplots()
 
-        with quantity_support():
+        with concise_time_support(), quantity_support():
             # Pin existing converters to avoid warnings when re-plotting on shared axes.
             converter_y = _get_axis_converter(axes.yaxis)
             if converter_y is not None and not getattr(axes.yaxis, "_converter_is_explicit", False):
                 _set_axis_converter(axes.yaxis, converter_y)
 
-            self._set_time_converter(axes)
-
             axes.yaxis.update_units(self.frequencies)
             frequencies = axes.yaxis.convert_units(self.frequencies)
 
-            times_plot_date = self.times.plot_date
-            axes.plot(times_plot_date[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
+            axes.plot(self.times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
             im = NonUniformImage(axes, interpolation="none", **kwargs)
-            im.set_data(times_plot_date, frequencies, self.data)
+            # NonUniformImage does not use the axis converter itself,
+            # so we manually convert the explicit input times down to floats.
+            times_numeric = axes.xaxis.convert_units(self.times)
+            im.set_data(times_numeric, frequencies, self.data)
             axes.add_image(im)
-            axes.set_xlim(times_plot_date[0], times_plot_date[-1])
+            axes.set_xlim(self.times[0], self.times[-1])
             axes.set_ylim(frequencies[0], frequencies[-1])
-
-        self._setup_time_axis(axes)
