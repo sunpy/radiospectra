@@ -13,16 +13,30 @@ The ``peek()`` method creates a new figure and plots the spectrogram with sensib
 .. plot::
     :include-source:
 
-    from radiospectra.spectrogram import Spectrogram
-    import radiospectra.net
-    from sunpy.net import Fido, attrs as a
+    import numpy as np
+    import astropy.units as u
+    from astropy.time import Time
+    from radiospectra.spectrogram import GenericSpectrogram
 
-    # Search and download data
-    query = Fido.search(a.Time('2021/05/07 00:00', '2021/05/07 01:00'), a.Instrument.eovsa)
-    files = Fido.fetch(query)
+    # Create artificial spectrogram data
+    times = Time("2021-01-01T00:00:00") + np.arange(100) * u.min
+    freqs = np.linspace(10, 100, 50) * u.MHz
+    data = np.random.rand(50, 100)
 
-    # Create spectrogram and peek
-    spec = Spectrogram(files[0])
+    # Define minimal metadata
+    meta = {
+        "observatory": "Example Data",
+        "instrument": "Mock Instrument",
+        "detector": "Mock Detector",
+        "start_time": times[0],
+        "end_time": times[-1],
+        "wavelength": u.Quantity([1, 10], unit=u.m),
+        "times": times,
+        "freqs": freqs,
+    }
+
+    # Instantiate and peek
+    spec = GenericSpectrogram(data, meta)
     spec.peek()
 
 .. automodapi:: radiospectra.spectrogram
