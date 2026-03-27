@@ -1,3 +1,5 @@
+from sunpy.visualization import peek_show
+
 from radiospectra.exceptions import SpectraMetaValidationError
 from radiospectra.mixins import NonUniformImagePlotMixin, PcolormeshPlotMixin
 
@@ -108,25 +110,22 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
             f" {self.start_time.isot} to {self.end_time.isot}>"
         )
 
-    def peek(self, **kwargs):
+    @peek_show
+    def peek(self, show_colorbar=True, **kwargs):
         """
-        Displays a quick-look plot of the Spectrogram with a colorbar.
+        Displays a quick-look plot of the Spectrogram.
 
         Parameters
         ----------
+        show_colorbar : `bool`, optional
+            Whether to show a colorbar. Defaults to `True`.
         **kwargs : `dict`
             Any additional keyword arguments are passed to `~radiospectra.spectrogram.GenericSpectrogram.plot`.
-
-        Returns
-        -------
-        `matplotlib.figure.Figure`
-            The figure object containing the plot.
         """
         import matplotlib.pyplot as plt
 
         figure = plt.figure()
-        axes = figure.add_subplot(111)
+        axes = figure.add_subplot()
         ret = self.plot(axes=axes, **kwargs)
-        figure.colorbar(ret)
-        figure.show()
-        return figure
+        if show_colorbar:
+            figure.colorbar(ret)
