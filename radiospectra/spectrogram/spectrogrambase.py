@@ -15,7 +15,8 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
     meta : `dict-like`
         Meta data for the spectrogram.
     data : `numpy.ndarray`
-        The spectrogram data itself a 2D array.
+        2D array of spectrogram intensities with shape (n_frequencies, n_times).
+        Missing or invalid values (e.g., NaNs) may be present in observational data.
     """
 
     _registry = {}
