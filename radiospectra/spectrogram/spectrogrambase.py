@@ -26,8 +26,13 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
             cls._registry[cls] = cls.is_datasource_for
 
     def __init__(self, data, meta, **kwargs):
-        self.data = data
-        self.meta = meta
+        self.data = np.asanyarray(data)
+        self.data = np.ma.masked_invalid(self.data)
+        if self.data.ndim != 2:
+    raise ValueError("Spectrogram data must be 2-dimensional.")
+        
+        
+     self.meta = meta
         self._validate_meta()
 
     @property
