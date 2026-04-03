@@ -1,3 +1,5 @@
+import numpy as np
+
 from radiospectra.exceptions import SpectraMetaValidationError
 from radiospectra.mixins import NonUniformImagePlotMixin, PcolormeshPlotMixin
 
