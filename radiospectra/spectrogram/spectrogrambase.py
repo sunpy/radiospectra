@@ -107,3 +107,35 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
             f" {self.wavelength.min} - {self.wavelength.max},"
             f" {self.start_time.isot} to {self.end_time.isot}>"
         )
+
+    def __eq__(self, other):
+        if not isinstance(other, GenericSpectrogram):
+            return NotImplemented
+
+        import numpy as np
+
+        if not np.array_equal(self.data, other.data):
+            return False
+
+        if set(self.meta.keys()) != set(other.meta.keys()):
+            return False
+
+        for k, v in self.meta.items():
+            other_v = other.meta[k]
+            if isinstance(v, np.ndarray) or hasattr(v, "__array__"):
+                if not np.array_equal(v, other_v):
+                    return False
+            else:
+                if v != other_v:
+                    return False
+        return True
+
+    def __copy__(self):
+        import copy
+
+        return self.__class__(data=copy.copy(self.data), meta=copy.copy(self.meta))
+
+    def __deepcopy__(self, memo):
+        import copy
+
+        return self.__class__(data=copy.deepcopy(self.data, memo), meta=copy.deepcopy(self.meta, memo))
