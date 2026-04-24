@@ -1,0 +1,3 @@
+Add ``frequency_at_index``, ``time_at_index``, ``index_at_frequency``, and ``index_at_time``
+methods to `~radiospectra.spectrogram.GenericSpectrogram` for converting between
+array indices and physical coordinates.
