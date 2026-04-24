@@ -117,3 +117,12 @@ def test_solo_rpw_hfr(parse_path_moc):
     assert spec.end_time.datetime == datetime(2024, 3, 24, 0, 0, 0, 0)
     assert spec.wavelength.min == 425 * u.kHz
     assert spec.wavelength.max == 16325 * u.kHz
+
+def test_rpw_missing_instrument_key():
+    from radiospectra.spectrogram.sources.rpw import RPWSpectrogram
+
+    meta = {}  # missing "instrument"
+
+    result = RPWSpectrogram.is_datasource_for(None, meta)
+
+    assert result is False
