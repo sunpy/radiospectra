@@ -4,6 +4,8 @@ omit =
   radiospectra/*setup_package*
   radiospectra/extern/*
   radiospectra/version*
+  radiospectra/_dev/*
+  */radiospectra/_dev/*
   */radiospectra/conftest.py
   */radiospectra/*setup_package*
   */radiospectra/extern/*
