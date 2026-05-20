@@ -8,11 +8,17 @@ from radiospectra.spectrogram import Spectrogram
 
 
 @pytest.mark.remote_data
-def test_wind_waves_online():
+def test_wind_waves_query():
     query = Fido.search(a.Time("2020/01/02", "2020/01/02"), a.Instrument("WAVES"))
     assert len(query[0]) > 0
     files = Fido.fetch(query[0][0])
     assert len(files) >= 1
+
+
+@pytest.mark.remote_data
+def test_wind_waves_spectrogram():
+    query = Fido.search(a.Time("2020/01/02", "2020/01/02"), a.Instrument("WAVES"))
+    files = Fido.fetch(query[0][0])
     spec = Spectrogram(files[0])
     assert spec.times is not None
     assert spec.frequencies is not None
@@ -21,13 +27,21 @@ def test_wind_waves_online():
 
 
 @pytest.mark.remote_data
-def test_ecallisto_online():
+def test_ecallisto_query():
     query = Fido.search(
         a.Time("2019/10/05 23:00", "2019/10/05 23:30"), a.Instrument("eCALLISTO"), ra.Observatory("ALASKA")
     )
     assert len(query[0]) > 0
     files = Fido.fetch(query[0][0])
     assert len(files) >= 1
+
+
+@pytest.mark.remote_data
+def test_ecallisto_spectrogram():
+    query = Fido.search(
+        a.Time("2019/10/05 23:00", "2019/10/05 23:30"), a.Instrument("eCALLISTO"), ra.Observatory("ALASKA")
+    )
+    files = Fido.fetch(query[0][0])
     spec = Spectrogram(files[0])
     assert spec.times is not None
     assert spec.frequencies is not None
@@ -37,11 +51,18 @@ def test_ecallisto_online():
 
 @pytest.mark.remote_data
 @pytest.mark.xfail(reason="EOVSA backend now requires authentication, pending upstream Fido support.")
-def test_eovsa_online():
+def test_eovsa_query():
     query = Fido.search(a.Time("2020/10/05 00:00", "2020/10/05 00:30"), a.Instrument("EOVSA"), ra.PolType.cross)
     assert len(query[0]) > 0
     files = Fido.fetch(query[0][0])
     assert len(files) >= 1
+
+
+@pytest.mark.remote_data
+@pytest.mark.xfail(reason="EOVSA backend now requires authentication, pending upstream Fido support.")
+def test_eovsa_spectrogram():
+    query = Fido.search(a.Time("2020/10/05 00:00", "2020/10/05 00:30"), a.Instrument("EOVSA"), ra.PolType.cross)
+    files = Fido.fetch(query[0][0])
     spec = Spectrogram(files[0])
     assert spec.times is not None
     assert spec.frequencies is not None
@@ -50,11 +71,17 @@ def test_eovsa_online():
 
 
 @pytest.mark.remote_data
-def test_ilofar_online():
+def test_ilofar_query():
     query = Fido.search(a.Time("2018/06/01 10:00", "2018/06/01 10:15"), a.Instrument("ILOFAR"))
     assert len(query[0]) > 0
     files = Fido.fetch(query[0][0])
     assert len(files) >= 1
+
+
+@pytest.mark.remote_data
+def test_ilofar_spectrogram():
+    query = Fido.search(a.Time("2018/06/01 10:00", "2018/06/01 10:15"), a.Instrument("ILOFAR"))
+    files = Fido.fetch(query[0][0])
     spec = Spectrogram(files[0])
     if isinstance(spec, list):
         spec = spec[0]
@@ -65,11 +92,17 @@ def test_ilofar_online():
 
 
 @pytest.mark.remote_data
-def test_psp_rfs_online():
+def test_psp_rfs_query():
     query = Fido.search(a.Time("2019/10/05", "2019/10/05"), a.Instrument("rfs"))
     assert len(query[0]) > 0
     files = Fido.fetch(query[0][0])
     assert len(files) >= 1
+
+
+@pytest.mark.remote_data
+def test_psp_rfs_spectrogram():
+    query = Fido.search(a.Time("2019/10/05", "2019/10/05"), a.Instrument("rfs"))
+    files = Fido.fetch(query[0][0])
     spec = Spectrogram(files[0])
     assert spec.times is not None
     assert spec.frequencies is not None
@@ -78,13 +111,21 @@ def test_psp_rfs_online():
 
 
 @pytest.mark.remote_data
-def test_rstn_online():
+def test_rstn_query():
     query = Fido.search(
         a.Time("2003/03/15 00:00", "2003/03/15 01:00"), a.Instrument("RSTN"), ra.Observatory("San Vito")
     )
     assert len(query[0]) > 0
     files = Fido.fetch(query[0][0])
     assert len(files) >= 1
+
+
+@pytest.mark.remote_data
+def test_rstn_spectrogram():
+    query = Fido.search(
+        a.Time("2003/03/15 00:00", "2003/03/15 01:00"), a.Instrument("RSTN"), ra.Observatory("San Vito")
+    )
+    files = Fido.fetch(query[0][0])
     spec = Spectrogram(files[0])
     assert spec.times is not None
     assert spec.frequencies is not None
