@@ -1,3 +1,5 @@
+from sunpy.coordinates import get_horizons_coord
+
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
 __all__ = ["RPWSpectrogram"]
@@ -27,3 +29,8 @@ class RPWSpectrogram(GenericSpectrogram):
     @classmethod
     def is_datasource_for(cls, data, meta, **kwargs):
         return meta["instrument"] == "RPW"
+
+    @property
+    def observer_coordinate(self):
+        "Position of Solar Orbiter at the start of the observing interval."
+        return get_horizons_coord('SolO', time=self.start_time)

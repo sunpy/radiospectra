@@ -1,6 +1,8 @@
 import astropy.units as u
 
-__all__ = ["subband_to_freq"]
+from ndcube.extra_coords.table_coord import QuantityTableCoordinate, TimeTableCoordinate
+
+__all__ = ["subband_to_freq", "build_spectrogram_wcs"]
 
 
 def subband_to_freq(subband, obs_mode):
@@ -27,3 +29,19 @@ def subband_to_freq(subband, obs_mode):
     clock = clock_dict[obs_mode]
     freq = (nyq_zone - 1 + subband / 512) * (clock / 2)
     return freq * u.MHz  # MHz
+
+
+@u.quantity_input
+def build_spectrogram_wcs(frequency: u.Hz, time, reference_time=None):
+    """
+    Build a generalized world coordinate system (gwcs) from time and frequency arrays.
+
+    Parameters
+    ----------
+    frequency: `astropy.units.Quantity`
+    time: `astropy.time.Time`
+    reference_time
+    """
+    time_coord = TimeTableCoordinate(time, reference_time=reference_time)
+    frequency_coord = QuantityTableCoordinate(frequency, names='frequency', physical_types='phys.frequency')
+    return (time_coord & frequency_coord).wcs

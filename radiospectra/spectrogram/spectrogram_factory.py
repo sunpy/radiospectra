@@ -34,6 +34,7 @@ from sunpy.util.metadata import MetaDict
 from sunpy.util.util import expand_list
 
 from radiospectra.exceptions import NoSpectrogramInFileError, SpectraMetaValidationError
+from radiospectra.spectrogram.meta import SpectrogramMeta
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 from radiospectra.utils import subband_to_freq
 
@@ -699,4 +700,4 @@ class SpectrogramFactory(BasicRegistrationFactory):
             raise ValueError(f"Unrecognized IDL .save file: {file}")
 
 
-Spectrogram = SpectrogramFactory(registry=GenericSpectrogram._registry, default_widget_type=GenericSpectrogram)
+Spectrogram = SpectrogramFactory(registry=SpectrogramMeta._registry, default_widget_type=SpectrogramMeta)
