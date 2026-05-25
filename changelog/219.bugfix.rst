@@ -1,0 +1,1 @@
+Fixed plotting multiple spectrograms on shared x-axes so each plot expands the shared time range instead of replacing it.
