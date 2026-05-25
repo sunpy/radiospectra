@@ -40,7 +40,9 @@ def build_spectrogram_wcs(frequency: u.Hz, time, reference_time=None):
     ----------
     frequency: `astropy.units.Quantity`
     time: `astropy.time.Time`
-    reference_time
+    reference_time: `astropy.time.Time`, optional
+        Reference time for the time coordinate. Defaults to the first time in the
+        time coordinate.
     """
     time_coord = TimeTableCoordinate(time, reference_time=reference_time)
     frequency_coord = QuantityTableCoordinate(frequency, names='frequency', physical_types='phys.frequency')

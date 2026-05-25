@@ -20,7 +20,7 @@ class SpectrogramMetaABC(MetaABC):
         pass
 
 
-class SpectrogramMeta(NDMeta,SpectrogramMetaABC):
+class SpectrogramMeta(NDMeta, SpectrogramMetaABC):
 
     _registry = {}
 
