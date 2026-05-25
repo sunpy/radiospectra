@@ -37,6 +37,32 @@ def _set_axis_converter(axis, converter):
             axis.converter = converter
 
 
+def _shared_x_limits(axes):
+    """
+    Return the current shared x limits if any shared sibling has plotted data.
+    """
+    siblings = axes.get_shared_x_axes().get_siblings(axes)
+    if any(sibling.has_data() for sibling in siblings):
+        return axes.get_xlim()
+    return None
+
+
+def _set_x_limits(axes, x_values, previous_limits):
+    """
+    Set x limits, expanding previous shared-axis limits when present.
+    """
+    if previous_limits is None:
+        axes.set_xlim(x_values[0], x_values[-1])
+        return
+
+    converted_limits = axes.convert_xunits(x_values)
+    lower = min(previous_limits[0], previous_limits[1], converted_limits[0], converted_limits[-1])
+    upper = max(previous_limits[0], previous_limits[1], converted_limits[0], converted_limits[-1])
+    if previous_limits[0] > previous_limits[1]:
+        lower, upper = upper, lower
+    axes.set_xlim(lower, upper)
+
+
 class PcolormeshPlotMixin:
     """
     Class provides plotting functions using `~pcolormesh`.
@@ -84,12 +110,14 @@ class PcolormeshPlotMixin:
             if converter_x is not None and not getattr(axes.xaxis, "_converter_is_explicit", False):
                 _set_axis_converter(axes.xaxis, converter_x)
 
+            previous_x_limits = _shared_x_limits(axes)
+
             axes.plot(self.times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
             if self.times.shape[0] == self.data.shape[0] and self.frequencies.shape[0] == self.data.shape[1]:
                 ret = axes.pcolormesh(self.times, self.frequencies, data, shading="auto", **kwargs)
             else:
                 ret = axes.pcolormesh(self.times, self.frequencies, data[:-1, :-1], shading="auto", **kwargs)
-            axes.set_xlim(self.times[0], self.times[-1])
+            _set_x_limits(axes, self.times[[0, -1]], previous_x_limits)
             fig.autofmt_xdate()
 
         # Set current axes/image if pyplot is being used (makes colorbar work)
@@ -123,9 +151,11 @@ class NonUniformImagePlotMixin:
             axes.yaxis.update_units(self.frequencies)
             frequencies = axes.yaxis.convert_units(self.frequencies)
 
+            previous_x_limits = _shared_x_limits(axes)
+
             axes.plot(self.times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
             im = NonUniformImage(axes, interpolation="none", **kwargs)
             im.set_data(axes.convert_xunits(self.times), frequencies, self.data)
             axes.add_image(im)
-            axes.set_xlim(self.times[0], self.times[-1])
+            _set_x_limits(axes, self.times[[0, -1]], previous_x_limits)
             axes.set_ylim(frequencies[0], frequencies[-1])
