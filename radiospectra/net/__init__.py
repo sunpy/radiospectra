@@ -5,6 +5,7 @@ from radiospectra.net.sources.ilofar import ILOFARMode357Client
 from radiospectra.net.sources.psp import RFSClient
 from radiospectra.net.sources.rstn import RSTNClient
 from radiospectra.net.sources.wind import WAVESClient
+from radiospectra.net.sources.nda import NDAClient
 
 __all__ = [
     "eCALLISTOClient",
@@ -13,4 +14,5 @@ __all__ = [
     "RSTNClient",
     "WAVESClient",
     "ILOFARMode357Client",
+    "NDAClient"
 ]
