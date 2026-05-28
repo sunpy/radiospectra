@@ -2,6 +2,7 @@ from unittest import mock
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pytest
 
 import astropy.units as u
 
@@ -77,20 +78,16 @@ def test_plotim_mixed_frequency_units_on_same_axes(make_spectrogram):
 
 def test_plot_with_quantity_data(make_spectrogram):
     """Test plotting when data is an astropy Quantity."""
-    rad = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz)
-    rad.data = rad.data * u.ct
+    rad = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz, data=np.arange(16).reshape(4, 4) * u.ct)
     rad.plot()
     plt.close("all")
 
 
-def test_plot_with_shape_mismatch(make_spectrogram):
-    """Test plotting branch when data shape doesn't exactly match time/freq arrays."""
+def test_data_shape_mismatch_is_rejected(make_spectrogram):
+    """NDCube rejects replacing data with a different shape."""
     rad = make_spectrogram(np.array([10, 20, 30, 40]) * u.kHz)
-    # times/freqs are length 4, data shape (4, 4) matches.
-    # make data (5, 5) to trigger the `else` branch (data[:-1, :-1])
-    rad.data = np.zeros((5, 5))
-    rad.plot()
-    plt.close("all")
+    with pytest.raises(TypeError, match="same shape"):
+        rad.data = np.zeros((5, 5))
 
 
 def test_plot_instrument_detector_differ(make_spectrogram):
