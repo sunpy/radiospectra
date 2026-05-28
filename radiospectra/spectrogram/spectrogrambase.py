@@ -1,19 +1,23 @@
+import ndcube
+
+import astropy.units as u
+from astropy.time import Time
+
 from radiospectra.exceptions import SpectraMetaValidationError
 from radiospectra.mixins import NonUniformImagePlotMixin, PcolormeshPlotMixin
+from radiospectra.utils import build_spectrogram_wcs
 
 __all__ = ["GenericSpectrogram"]
 
 
-class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
+class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.NDCube):
     """
-    Base spectrogram class all spectrograms inherit.
+    Base spectrogram class backed by `ndcube.NDCube`.
 
-    Attributes
-    ----------
-    meta : `dict-like`
-        Metadata for the spectrogram.
-    data : `numpy.ndarray`
-        The spectrogram data itself is a 2D array.
+    This keeps the existing ``GenericSpectrogram(data, meta)`` construction
+    pattern while the factory and source-specific metadata design is still
+    being worked out. The time and frequency arrays are used to construct the
+    WCS and are also retained in ``meta`` for compatibility with existing code.
     """
 
     _registry = {}
@@ -23,10 +27,23 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
         if hasattr(cls, "is_datasource_for"):
             cls._registry[cls] = cls.is_datasource_for
 
-    def __init__(self, data, meta, **kwargs):
-        self.data = data
-        self.meta = meta
-        self._validate_meta()
+    def __init__(self, data, meta, wcs=None, **kwargs):
+        if wcs is None:
+            self._validate_meta(meta)
+            wcs = build_spectrogram_wcs(self._time_axis_from_meta(meta), meta["freqs"])
+        super().__init__(data=data, wcs=wcs, meta=meta, **kwargs)
+
+    @classmethod
+    def from_arrays(cls, time, frequency, data, meta=None, **kwargs):
+        if meta is None:
+            meta = {}
+        meta = dict(meta)
+        meta.setdefault("times", time)
+        meta.setdefault("freqs", frequency)
+        meta.setdefault("start_time", time[0])
+        meta.setdefault("end_time", time[-1])
+        wcs = build_spectrogram_wcs(time, frequency)
+        return cls(data=data, meta=meta, wcs=wcs, **kwargs)
 
     @property
     def observatory(self):
@@ -75,31 +92,42 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
         """
         The times of the spectrogram.
         """
-        return self.meta["times"]
+        return self.time
 
     @property
     def frequencies(self):
         """
         The frequencies of the spectrogram.
         """
-        return self.meta["freqs"]
+        return self.frequency
 
-    def _validate_meta(self):
-        """
-        Validates the meta-information associated with a Spectrogram.
+    @property
+    def time(self):
+        return self.axis_world_coords("time")[0]
 
-        This method includes very basic validation checks which apply to
-        all of the kinds of files that radiospectra can read.
-        Datasource-specific validation should be handled in the relevant
-        file in radiospectra.spectrogram.sources.
-        """
+    @property
+    def frequency(self):
+        return self.axis_world_coords("em.freq")[0]
+
+    def _validate_meta(self, meta):
         msg = "Spectrogram coordinate units for {} axis not present in metadata."
         err_message = []
-        for i, ax in enumerate(["times", "freqs"]):
-            if self.meta.get(ax) is None:
+        for ax in ["times", "freqs"]:
+            if meta.get(ax) is None:
                 err_message.append(msg.format(ax))
         if err_message:
             raise SpectraMetaValidationError("\n".join(err_message))
+
+    @staticmethod
+    def _time_axis_from_meta(meta):
+        times = meta["times"]
+        if isinstance(times, Time):
+            return times
+        if "start_time" in meta:
+            if isinstance(times, u.Quantity):
+                return meta["start_time"] + times
+            return meta["start_time"] + times * u.s
+        return Time(times)
 
     def __repr__(self):
         return (
