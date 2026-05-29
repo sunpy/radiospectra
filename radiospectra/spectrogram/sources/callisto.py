@@ -31,8 +31,8 @@ class CALISTOSpectrogram(GenericSpectrogram):
 
     @property
     def observatory_location(self):
-        lat = self.meta["fits_meta"]["OBS_LAT"] * u.deg * 1.0 if self.meta["fits_meta"]["OBS_LAC"] == "N" else -1.0
-        lon = self.meta["fits_meta"]["OBS_LON"] * u.deg * 1.0 if self.meta["fits_meta"]["OBS_LOC"] == "E" else -1.0
+        lat = self.meta["fits_meta"]["OBS_LAT"] * u.deg * (1.0 if self.meta["fits_meta"]["OBS_LAC"] == "N" else -1.0)
+        lon = self.meta["fits_meta"]["OBS_LON"] * u.deg * (1.0 if self.meta["fits_meta"]["OBS_LOC"] == "E" else -1.0)
         height = self.meta["fits_meta"]["OBS_ALT"] * u.m
         return EarthLocation(lat=lat, lon=lon, height=height)
 

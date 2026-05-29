@@ -1,0 +1,1 @@
+Fix `~radiospectra.spectrogram.sources.callisto.CALISTOSpectrogram` observatory location logic bug and improve docstrings.
