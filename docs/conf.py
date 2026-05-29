@@ -2,7 +2,7 @@
 #
 # This file does only contain a selection of the most common options. For a
 # full list see the documentation:
-# http://www.sphinx-doc.org/en/master/config
+# https://www.sphinx-doc.org/en/master/config
 
 # flake8: NOQA: E402
 
@@ -20,7 +20,7 @@ if on_rtd:
     os.environ["HOME"] = "/home/docs/"
     os.environ["LANG"] = "C"
     os.environ["LC_ALL"] = "C"
-    os.environ["HIDE_PARFIVE_PROGESS"] = "True"
+    os.environ["HIDE_PARFIVE_PROGRESS"] = "True"
 
 
 # -- Project information -----------------------------------------------------
