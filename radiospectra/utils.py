@@ -46,4 +46,4 @@ def build_spectrogram_wcs(time, frequency: u.Hz, reference_time=None):
     """
     time_coord = TimeTableCoordinate(time, names="time", physical_types="time", reference_time=reference_time)
     frequency_coord = QuantityTableCoordinate(frequency, names="frequency", physical_types="em.freq")
-    return (time_coord & frequency_coord).wcs
+    return time_coord & frequency_coord

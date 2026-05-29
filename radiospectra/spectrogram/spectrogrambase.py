@@ -30,7 +30,7 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
     def __init__(self, data, meta, wcs=None, **kwargs):
         if wcs is None:
             self._validate_meta(meta)
-            wcs = build_spectrogram_wcs(self._time_axis_from_meta(meta), meta["freqs"])
+            wcs = build_spectrogram_wcs(self._time_axis_from_meta(meta), meta["freqs"]).wcs
         super().__init__(data=data, wcs=wcs, meta=meta, **kwargs)
 
     @classmethod
@@ -42,7 +42,7 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
         meta.setdefault("freqs", frequency)
         meta.setdefault("start_time", time[0])
         meta.setdefault("end_time", time[-1])
-        wcs = build_spectrogram_wcs(time, frequency)
+        wcs = build_spectrogram_wcs(time, frequency).wcs
         return cls(data=data, meta=meta, wcs=wcs, **kwargs)
 
     @property
