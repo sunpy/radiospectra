@@ -20,7 +20,7 @@ def test_psp_rfs_lfr(parse_path_moc):
     start_time = Time("2019-04-09 00:01:16.197889")
     end_time = Time("2019-04-10 00:01:04.997573")
     meta = {
-        "cdf_globals": {
+        "cdf_meta": {
             "TITLE": "PSP FIELDS RFS LFR data",
             "Project": "PSP",
             "Source_name": "PSP_FLD>Parker Solar Probe FIELDS",
@@ -128,7 +128,7 @@ def test_psp_rfs_hfr(parse_path_moc):
     start_time = Time("2019-04-09 00:01:13.904188")
     end_time = Time("2019-04-10 00:01:02.758315")
     meta = {
-        "cdf_globals": {
+        "cdf_meta": {
             "TITLE": "PSP FIELDS RFS HFR data",
             "Project": "PSP",
             "Source_name": "PSP_FLD>Parker Solar Probe FIELDS",
@@ -237,10 +237,10 @@ def test_psp_rfs_real_data():
     Test that reading a real PSP RFS file successfully parses the metadata dictionary
     and allows access to properties like 'level' without throwing a KeyError.
 
-    This ensures that the SpectrogramFactory outputs 'cdf_meta' rather than 'cdf_globals'.
+    This ensures that the SpectrogramFactory outputs the same CDF metadata key used by ``RFSSpectrogram``.
     """
     query = Fido.search(a.Time("2020/01/01", "2020/01/31"), a.Instrument("rfs"))
     files = Fido.fetch(query[0, 0])
     spec = Spectrogram(files[0])
     assert spec.level == "L2"
-    assert spec.version is not None
+    assert isinstance(spec.version, int)

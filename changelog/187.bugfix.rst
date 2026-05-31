@@ -1,1 +1,1 @@
-Fix metadata key mismatch between ``SpectrogramFactory`` and ``RFSSpectrogram`` the factory stored CDF global attributes under ``"cdf_globals"`` but ``RFSSpectrogram`` expected ``"cdf_meta"`` updated to use ``"cdf_globals"`` in both.
+Fixed a ``KeyError`` raised when accessing ``RFSSpectrogram.level`` and ``RFSSpectrogram.version`` on Parker Solar Probe RFS CDF files loaded through ``Spectrogram`` by standardizing CDF metadata storage under ``cdf_meta``.
