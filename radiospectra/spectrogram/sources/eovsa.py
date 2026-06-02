@@ -12,12 +12,12 @@ class EOVSASpectrogram(GenericSpectrogram):
     >>> import radiospectra.net
     >>> from sunpy.net import Fido, attrs as a
     >>> from radiospectra.spectrogram import Spectrogram
-    >>> query = Fido.search(a.Time('2021/05/07 00:00', '2021/05/07 23:00'), a.Instrument.eovsa)  #doctest: +REMOTE_DATA
-    >>> downloaded = Fido.fetch(query[0][0])  #doctest: +REMOTE_DATA
-    >>> spec = Spectrogram(downloaded[0])  #doctest: +REMOTE_DATA
-    >>> spec  #doctest: +REMOTE_DATA
+    >>> query = Fido.search(a.Time('2021/05/07 00:00', '2021/05/07 23:00'), a.Instrument.eovsa)  #doctest: +REMOTE_DATA +SKIP
+    >>> downloaded = Fido.fetch(query[0][0])  #doctest: +REMOTE_DATA +SKIP
+    >>> spec = Spectrogram(downloaded[0])  #doctest: +REMOTE_DATA +SKIP
+    >>> spec  #doctest: +REMOTE_DATA +SKIP
     <EOVSASpectrogram OWENS VALLEY, EOVSA, EOVSA 1105371.117591858 kHz - 17979686.737060547 kHz, 2021-05-07T13:48:20.999 to 2021-05-08T01:50:59.999>
-    >>> spec.plot()  #doctest: +REMOTE_DATA
+    >>> spec.plot()  #doctest: +REMOTE_DATA +SKIP
     <matplotlib.collections.QuadMesh object at ...>
     """
 
