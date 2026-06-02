@@ -1,6 +1,3 @@
-# doctest:
-# Until client update for new EOVSA API
-
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
 __all__ = ["EOVSASpectrogram"]

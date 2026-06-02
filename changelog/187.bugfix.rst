@@ -1,1 +1,1 @@
-Fixed a ``KeyError`` raised when accessing ``RFSSpectrogram.level`` and ``RFSSpectrogram.version`` on Parker Solar Probe RFS CDF files loaded through ``Spectrogram`` by standardizing CDF metadata storage under ``cdf_meta``.
+ Fixed a ``KeyError`` raised when accessing the ``level`` and ``version`` properties of an ``RFSSpectrogram`` constructed from a real Parker Solar Probe RFS CDF file via `~radiospectra.spectrogram.spectrogram_factory.SpectrogramFactory`.

@@ -391,7 +391,9 @@ class SpectrogramFactory(BasicRegistrationFactory):
         freq_b = (75 + 105 * (n - 1) / 400) * u.MHz
         freqs = np.hstack([freq_a, freq_b])
         data = np.hstack([np.vstack(df[name].to_numpy()) for name in ["spec1", "spec2"]]).T
-        times = Time(Time(df["time"]), format="iso")
+        times = Time(
+            Time(df["time"]), format="iso"
+        )  # TODO update once datetime format is supported by current plotters
         meta = {
             "instrument": "RSTN",
             "observatory": site_map[df["site"][0]],
@@ -430,7 +432,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
             freqs = freqs[0, :] << u.Hz
             data = data.T << u.Unit("Volt**2/Hz")
             meta = {
-                "cdf_meta": cdf_globals,
+                "cdf_globals": cdf_globals,
                 "detector": detector,
                 "instrument": "FIELDS/RFS",
                 "observatory": "PSP",
@@ -458,7 +460,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 data = np.squeeze(data).T << sfu
                 detector = cdf_globals.get("Instrument", [""])[0].split(">")[0]
                 meta = {
-                    "cdf_meta": cdf_globals,
+                    "cdf_globals": cdf_globals,
                     "detector": detector,
                     "instrument": "RPW",
                     "observatory": "SOLO",
@@ -561,7 +563,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 res = []
                 if np.any(agc1):
                     meta1 = {
-                        "cdf_meta": cdf_globals,
+                        "cdf_globals": cdf_globals,
                         "detector": "RPW-AGC1",
                         "instrument": "RPW",
                         "observatory": "SOLO",
@@ -574,7 +576,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                     res.append((specs[0].T, meta1))
                 if np.any(agc2):
                     meta2 = {
-                        "cdf_meta": cdf_globals,
+                        "cdf_globals": cdf_globals,
                         "detector": "RPW-AGC2",
                         "instrument": "RPW",
                         "observatory": "SOLO",
