@@ -55,6 +55,7 @@ def test_client_observatory(urlopen, client, http_responses):
     assert np.all(query["PolType"] == "Cross")
 
 
+@pytest.mark.skip(reason="EOVSA API update with authentication")
 @pytest.mark.remote_data
 def test_fido():
     query = Fido.search(a.Time("2020/10/05 00:00", "2020/10/06 00:00"), a.Instrument("EOVSA"), PolType.cross)
