@@ -106,3 +106,15 @@ def test_fido_other_dataset():
     assert isinstance(query[0].client, ILOFARMode357Client)
     query = query[0]
     assert len(query) == 38
+
+
+@pytest.mark.remote_data
+def test_ilofar_query_online():
+    from sunpy.net import Fido
+    from sunpy.net import attrs as a
+
+    query = Fido.search(a.Time("2018/06/01 10:00", "2018/06/01 10:15"), a.Instrument("ILOFAR"))
+    assert len(query[0]) == 2
+    assert query[0].client.__class__.__name__ == "ILOFARMode357Client"
+    assert query[0][0]["Start Time"].isot == "2018-06-01T10:00:41.000"
+    assert "url" in query[0].colnames

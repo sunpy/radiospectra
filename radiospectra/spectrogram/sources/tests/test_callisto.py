@@ -4,6 +4,7 @@ from unittest import mock
 from unittest.mock import MagicMock
 
 import numpy as np
+import pytest
 
 import astropy.units as u
 from astropy.time import Time
@@ -494,3 +495,16 @@ def test_callisto_hour_rollover(hdul_moc, is_file_mock):
     assert spec.wavelength.max.to(u.MHz).round(1) == 91.8 * u.MHz
     assert spec.observatory_location.value.tolist() == (3801942.212601484, 528924.6036780173, 5077174.568618115)
     assert spec.observatory_location.unit == u.m
+
+
+@pytest.mark.remote_data
+def test_ecallisto_spectrogram_online():
+    spec = Spectrogram(
+        "http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/2019/10/05/ALASKA-COHOE_20191005_230000_00.fit.gz"
+    )
+    assert spec.instrument == "E-CALLISTO"
+    assert spec.times[0].isot == "2019-10-05T23:00:00.171"
+    assert spec.times[-1].isot == "2019-10-05T23:14:59.921"
+    assert round(spec.frequencies[0].value, 3) == 92.938
+    assert spec.frequencies[-1].value == 45.0
+    assert spec.data.shape == (200, 3600)

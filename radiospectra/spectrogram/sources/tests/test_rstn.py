@@ -3,6 +3,7 @@ from datetime import datetime
 from unittest import mock
 
 import numpy as np
+import pytest
 
 import astropy.units as u
 from astropy.time import Time
@@ -39,3 +40,16 @@ def test_rstn(parse_path_moc):
     assert spec.end_time.datetime == datetime(2020, 1, 1, 15, 27, 43)
     assert spec.wavelength.min == 25000 * u.kHz
     assert spec.wavelength.max == 180000 * u.kHz
+
+
+@pytest.mark.remote_data
+def test_rstn_spectrogram_online():
+    spec = Spectrogram(
+        "https://www.ngdc.noaa.gov/stp/space-weather/solar-data/solar-features/solar-radio/rstn-spectral/san-vito/2003/03/SV030315.SRS.gz"
+    )
+    assert spec.instrument == "RSTN"
+    assert spec.times[0].isot == "2003-03-15T05:06:21.000"
+    assert spec.times[-1].isot == "2003-03-15T16:51:00.000"
+    assert spec.frequencies[0].value == 25.0
+    assert spec.frequencies[-1].value == 180.0
+    assert spec.data.shape == (802, 13833)

@@ -3,6 +3,7 @@ from datetime import datetime
 from unittest import mock
 
 import numpy as np
+import pytest
 
 import astropy.units as u
 from astropy.time import Time
@@ -227,3 +228,16 @@ def test_psp_rfs_hfr(parse_path_moc):
     assert spec.wavelength.max == 19171.876 * u.kHz
     assert spec.level == "L2"
     assert spec.version == 1
+
+
+@pytest.mark.remote_data
+def test_psp_rfs_spectrogram_online():
+    spec = Spectrogram(
+        "https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_lfr/2019/psp_fld_l2_rfs_lfr_20191005_v03.cdf"
+    )
+    assert spec.instrument == "FIELDS/RFS"
+    assert spec.times[0].isot == "2019-10-05T00:01:32.395"
+    assert spec.times[-1].isot == "2019-10-05T22:16:30.493"
+    assert round(spec.frequencies[0].value, 3) == 10546.880
+    assert spec.frequencies[-1].value == 1687500.0
+    assert spec.data.shape == (64, 539)

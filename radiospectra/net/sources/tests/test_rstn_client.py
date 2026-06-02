@@ -67,3 +67,19 @@ def test_fido():
     query = Fido.search(a.Time("2003/03/15 00:00", "2003/03/15 23:59"), a.Instrument("RSTN"), Observatory("San Vito"))
     assert len(query[0]) == 1
     assert all(query[0]["Observatory"] == "San Vito")
+
+
+@pytest.mark.remote_data
+def test_rstn_query_online():
+    from sunpy.net import Fido
+    from sunpy.net import attrs as a
+
+    from radiospectra.net import attrs as ra
+
+    query = Fido.search(
+        a.Time("2003/03/15 00:00", "2003/03/15 01:00"), a.Instrument("RSTN"), ra.Observatory("San Vito")
+    )
+    assert len(query[0]) == 1
+    assert query[0].client.__class__.__name__ == "RSTNClient"
+    assert query[0][0]["Start Time"].isot == "2003-03-15T00:00:00.000"
+    assert "url" in query[0].colnames

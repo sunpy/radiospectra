@@ -79,3 +79,19 @@ def test_fido():
     )
     assert len(query[0]) == 8
     assert all(query[0]["Observatory"] == "ALASKA")
+
+
+@pytest.mark.remote_data
+def test_ecallisto_query_online():
+    from sunpy.net import Fido
+    from sunpy.net import attrs as a
+
+    from radiospectra.net import attrs as ra
+
+    query = Fido.search(
+        a.Time("2019/10/05 23:00", "2019/10/05 23:30"), a.Instrument("eCALLISTO"), ra.Observatory("ALASKA")
+    )
+    assert len(query[0]) == 3
+    assert query[0].client.__class__.__name__ == "eCALLISTOClient"
+    assert query[0][0]["Start Time"].isot == "2019-10-05T23:00:00.000"
+    assert "url" in query[0].colnames

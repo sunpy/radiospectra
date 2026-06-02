@@ -59,3 +59,15 @@ def test_fido():
     query = Fido.search(a.Time("2020/10/05 00:00", "2020/10/06 00:00"), a.Instrument("EOVSA"), PolType.cross)
     assert len(query[0]) == 2
     assert np.all(query[0]["PolType"] == "Cross")
+
+
+@pytest.mark.remote_data
+@pytest.mark.xfail(reason="EOVSA backend now requires authentication, pending upstream Fido support.")
+def test_eovsa_query_online():
+    from sunpy.net import Fido
+    from sunpy.net import attrs as a
+
+    from radiospectra.net import attrs as ra
+
+    query = Fido.search(a.Time("2020/10/05 00:00", "2020/10/05 00:30"), a.Instrument("EOVSA"), ra.PolType.cross)
+    assert len(query[0]) > 0

@@ -2,6 +2,7 @@ from pathlib import Path
 from unittest import mock
 
 import numpy as np
+import pytest
 
 from radiospectra.spectrogram import Spectrogram
 
@@ -26,3 +27,16 @@ def test_ilofar(mock_is_file, mock_fromfile):
     assert spec[2].mode == 7
     assert spec[2].frequencies[0].to_value("MHz") == 210.546875
     assert spec[2].frequencies[-1].to_value("MHz") == 244.53125
+
+
+@pytest.mark.remote_data
+def test_ilofar_spectrogram_online():
+    spec = Spectrogram("https://data.lofar.ie/2018/06/01/bst/kbt/rcu357_1beam/20180601_100041_bst_00X.dat")
+    if isinstance(spec, list):
+        spec = spec[0]
+    assert spec.instrument == "ILOFAR"
+    assert spec.times[0].isot == "2018-06-01T10:00:41.000"
+    assert spec.times[-1].isot == "2018-06-01T10:26:20.000"
+    assert round(spec.frequencies[0].value, 3) == 10.547
+    assert round(spec.frequencies[-1].value, 3) == 88.281
+    assert spec.data.shape == (200, 1540)

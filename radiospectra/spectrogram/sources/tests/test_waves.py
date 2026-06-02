@@ -3,6 +3,7 @@ from datetime import datetime
 from unittest import mock
 
 import numpy as np
+import pytest
 
 import astropy.units as u
 from astropy.time import Time
@@ -74,3 +75,16 @@ def test_waves_prefixed_filename_parses_date(readsav_mock):
     _, meta = SpectrogramFactory._read_idl_sav(Path("wind_waves_rad1_20200711.R1"), instrument="waves")
 
     assert meta["start_time"].isot == "2020-07-11T00:00:00.000"
+
+
+@pytest.mark.remote_data
+def test_waves_spectrogram_online():
+    spec = Spectrogram(
+        "https://spdf.gsfc.nasa.gov/pub/data/wind/waves/rad1_idl_binary/2020/wind_waves_rad1_20200102.R1"
+    )
+    assert spec.instrument == "WAVES"
+    assert spec.times[0].isot == "2020-01-02T00:00:30.000"
+    assert spec.times[-1].isot == "2020-01-02T23:59:30.000"
+    assert spec.frequencies[0].value == 20.0
+    assert spec.frequencies[-1].value == 1040.0
+    assert spec.data.shape == (256, 1440)
