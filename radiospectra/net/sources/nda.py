@@ -9,19 +9,31 @@ __all__ = ["NDAClient"]
 
 class NDAClient(GenericClient):
     """
-    Client for NDA NewRoutine solar FITS observations.
+    Client for Nançay Decameter Array (NDA) solar radio observations.
+    
+    This client searches data in the ``NewRoutine`` format available here:
+    https://cdn.obs-nancay.fr/repository/nda/newroutine/soleil/
 
     Data source:
     https://cdn.obs-nancay.fr/repository/nda/newroutine/soleil/
 
     Examples
     --------
+    >>> from radiospectra import net
     >>> from sunpy.net import Fido, attrs as a
-
-    >>> results = Fido.search(
+    >>> query = Fido.search(
     ...     a.Time("2025-03-26", "2025-03-27"),
-    ...     a.Instrument("NDA")
-    ... )
+    ...     a.Instrument("NDA")) #doctest: +REMOTE_DATA
+    >>> query #doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at 0x107acb350>
+    Results from 1 Provider:
+    <BLANKLINE>
+    1 Results from the NDAClient:
+    Source: https://cdn.obs-nancay.fr/repository/nda/newroutine/soleil/
+
+        Start Time             End Time      Instrument  Physobs    Provider Source version
+    ----------------------- ------------------- ---------- ---------- --------- ------ -------
+    2025-03-26 07:56:00.000 2025-03-26 15:55:00        NDA radio_flux OBSNANCAY    NDA     1.1
     """
 
     pattern = (
@@ -60,22 +72,17 @@ class NDAClient(GenericClient):
             ],
 
             a.Source: [
-                ("SUN", "Solar observations")
+                ("NDA", "Nançay Data Center")
             ],
         }
     def post_search_hook(self, exdict, matchdict):
         rowdict = super().post_search_hook(exdict, matchdict)
 
         # Fix End Time from filename (important correction)
-        end = Time(datetime(
-            int(exdict["end_year"]),
-            int(exdict["end_month"]),
-            int(exdict["end_day"]),
-            int(exdict["end_hour"]),
-            int(exdict["end_minute"]),
-        ))
-
-        rowdict["End Time"] = end
+        
+        rowdict["End Time"] = Time(datetime(
+    *[int(exdict.pop(f"end_{p}")) for p in ("year", "month", "day", "hour", "minute")]
+))
 
         # Clean up helper fields
         for key in (
@@ -84,7 +91,7 @@ class NDAClient(GenericClient):
             "end_day",
             "end_hour",
             "end_minute",
-            "version",
+            "Version",
         ):
             rowdict.pop(key, None)
 
