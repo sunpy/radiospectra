@@ -117,11 +117,7 @@ def test_download(client):
 
 @pytest.mark.remote_data
 def test_psp_rfs_query_online():
-    from sunpy.net import Fido
-    from sunpy.net import attrs as a
-
     query = Fido.search(a.Time("2019/10/05", "2019/10/05"), a.Instrument("rfs"))
-    assert len(query[0]) == 2
-    assert query[0].client.__class__.__name__ == "RFSClient"
-    assert query[0][0]["Start Time"].isot == "2019-10-05T00:00:00.000"
-    assert "url" in query[0].colnames
+    assert len(query["rfs"]) == 2
+    assert query["rfs"]["Start Time"][0].isot == "2019-10-05T00:00:00.000"
+    assert "url" in query["rfs"].colnames

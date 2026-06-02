@@ -101,11 +101,7 @@ def test_check_wavelength(query_wave, receivers, client):
 
 @pytest.mark.remote_data
 def test_wind_waves_query():
-    from sunpy.net import Fido
-    from sunpy.net import attrs as a
-
     query = Fido.search(a.Time("2020/01/02", "2020/01/02"), a.Instrument("WAVES"))
-    assert len(query[0]) == 2
-    assert query[0].client.__class__.__name__ == "WAVESClient"
-    assert query[0][0]["Start Time"].isot == "2020-01-02T00:00:00.000"
-    assert "url" in query[0].colnames
+    assert len(query["waves"]) == 2
+    assert query["waves"]["Start Time"][0].isot == "2020-01-02T00:00:00.000"
+    assert "url" in query["waves"].colnames

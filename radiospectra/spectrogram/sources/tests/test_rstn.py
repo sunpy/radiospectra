@@ -50,6 +50,6 @@ def test_rstn_spectrogram_online():
     assert spec.instrument == "RSTN"
     assert spec.times[0].isot == "2003-03-15T05:06:21.000"
     assert spec.times[-1].isot == "2003-03-15T16:51:00.000"
-    assert spec.frequencies[0].value == 25.0
-    assert spec.frequencies[-1].value == 180.0
+    assert spec.frequencies[0] == 25.0 * u.MHz
+    assert spec.frequencies[-1] == 180.0 * u.MHz
     assert spec.data.shape == (802, 13833)

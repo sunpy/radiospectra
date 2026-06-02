@@ -4,6 +4,9 @@ from unittest import mock
 import numpy as np
 import pytest
 
+import astropy.units as u
+from astropy.tests.helper import assert_quantity_allclose
+
 from radiospectra.spectrogram import Spectrogram
 
 
@@ -32,11 +35,10 @@ def test_ilofar(mock_is_file, mock_fromfile):
 @pytest.mark.remote_data
 def test_ilofar_spectrogram_online():
     spec = Spectrogram("https://data.lofar.ie/2018/06/01/bst/kbt/rcu357_1beam/20180601_100041_bst_00X.dat")
-    if isinstance(spec, list):
-        spec = spec[0]
+    spec = spec[0]
     assert spec.instrument == "ILOFAR"
     assert spec.times[0].isot == "2018-06-01T10:00:41.000"
     assert spec.times[-1].isot == "2018-06-01T10:26:20.000"
-    assert round(spec.frequencies[0].value, 3) == 10.547
-    assert round(spec.frequencies[-1].value, 3) == 88.281
+    assert_quantity_allclose(spec.frequencies[0], 10.547 * u.MHz, rtol=1e-3)
+    assert_quantity_allclose(spec.frequencies[-1], 88.281 * u.MHz, rtol=1e-3)
     assert spec.data.shape == (200, 1540)

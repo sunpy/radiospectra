@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 import astropy.units as u
+from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
 
 from sunpy.net import attrs as a
@@ -238,6 +239,6 @@ def test_psp_rfs_spectrogram_online():
     assert spec.instrument == "FIELDS/RFS"
     assert spec.times[0].isot == "2019-10-05T00:01:32.395"
     assert spec.times[-1].isot == "2019-10-05T22:16:30.493"
-    assert round(spec.frequencies[0].value, 3) == 10546.880
-    assert spec.frequencies[-1].value == 1687500.0
+    assert_quantity_allclose(spec.frequencies[0], 10546.880 * u.Hz, rtol=1e-3)
+    assert_quantity_allclose(spec.frequencies[-1], 1687500.0 * u.Hz, rtol=1e-3)
     assert spec.data.shape == (64, 539)

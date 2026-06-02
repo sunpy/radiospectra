@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 
 import astropy.units as u
+from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
 
 from sunpy.net import attrs as a
@@ -505,6 +506,6 @@ def test_ecallisto_spectrogram_online():
     assert spec.instrument == "E-CALLISTO"
     assert spec.times[0].isot == "2019-10-05T23:00:00.171"
     assert spec.times[-1].isot == "2019-10-05T23:14:59.921"
-    assert round(spec.frequencies[0].value, 3) == 92.938
-    assert spec.frequencies[-1].value == 45.0
+    assert_quantity_allclose(spec.frequencies[0], 92.938 * u.MHz, rtol=1e-3)
+    assert spec.frequencies[-1] == 45.0 * u.MHz
     assert spec.data.shape == (200, 3600)

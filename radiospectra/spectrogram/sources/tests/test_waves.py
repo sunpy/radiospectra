@@ -85,6 +85,6 @@ def test_waves_spectrogram_online():
     assert spec.instrument == "WAVES"
     assert spec.times[0].isot == "2020-01-02T00:00:30.000"
     assert spec.times[-1].isot == "2020-01-02T23:59:30.000"
-    assert spec.frequencies[0].value == 20.0
-    assert spec.frequencies[-1].value == 1040.0
+    assert spec.frequencies[0] == 20.0 * u.kHz
+    assert spec.frequencies[-1] == 1040.0 * u.kHz
     assert spec.data.shape == (256, 1440)
