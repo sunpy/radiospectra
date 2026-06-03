@@ -113,6 +113,7 @@ def test_nda_post_search_hook():
 # -------------------------
 # INTEGRATION TEST: Fido 
 # -------------------------
+@pytest.mark.remote_data
 def test_nda_fido():
     query = Fido.search(
         a.Time("2025-03-26", "2025-03-27"),
