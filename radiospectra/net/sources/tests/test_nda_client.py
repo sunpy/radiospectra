@@ -1,22 +1,18 @@
-import pytest
-from unittest import mock
 from pathlib import Path
-import warnings
+from unittest import mock
+
+import pytest
 
 from astropy.time import Time
+
 from sunpy.net import attrs as a
 from sunpy.net.fido_factory import Fido
 
 from radiospectra.net.sources.nda import NDAClient
-import erfa
-
 
 MOCK_PATH = "sunpy.net.scraper.urlopen"
 
 
-# -------------------------
-# FIXTURE: NDA HTML page
-# -------------------------
 @pytest.fixture
 def nda_html_pages():
     base = Path(__file__).parent / "data"
@@ -24,19 +20,13 @@ def nda_html_pages():
         return [f.read()]
 
 
-# -------------------------
-# CLIENT TEST
-# -------------------------
 @mock.patch(MOCK_PATH)
 def test_nda_client_search(urlopen, nda_html_pages):
     client = NDAClient()
 
     urlopen.return_value.read.side_effect = nda_html_pages
 
-    query = client.search(
-        a.Time("2025-03-26", "2025-03-27"),
-        a.Instrument("NDA")
-    )
+    query = client.search(a.Time("2025-03-26", "2025-03-27"), a.Instrument("NDA"))
 
     # scraper called
     assert urlopen.call_count == 1
@@ -59,77 +49,23 @@ def test_nda_client_search(urlopen, nda_html_pages):
     assert all(query["Source"] == "NDA")
 
     # Version check
-    assert all(query["version"] == "1")
+    assert all(query["Version"] == "1")
 
 
-# -------------------------
-# CLIENT TEST: URL request
-# -------------------------
-@mock.patch(MOCK_PATH)
-def test_nda_client_url_building_and_call(urlopen, nda_html_pages):
-    client = NDAClient()
-
-    urlopen.return_value.read.side_effect = nda_html_pages
-
-    client.search(
-        a.Time("2025-03-26", "2025-03-27"),
-        a.Instrument("NDA")
-    )
-
-    assert urlopen.called  
-
-
-# -------------------------
-# CLIENT TEST: post_search_hook (no ERFA crash)
-# -------------------------
-def test_nda_post_search_hook():
-    client = NDAClient()
-
-    fake_exdict = {
-        "start_year": "2025",
-        "start_month": "03",
-        "start_day": "26",
-        "start_hour": "07",
-        "start_minute": "56",
-        "end_year": "2025",
-        "end_month": "03",
-        "end_day": "26",
-        "end_hour": "15",
-        "end_minute": "56",
-    }
-
-    fake_matchdict = {}
-
-    # silence astropy ERFA warning (this is expected behavior)
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", erfa.ErfaWarning)
-
-        row = client.post_search_hook(fake_exdict.copy(), fake_matchdict)
-
-    assert "End Time" in row
-    assert isinstance(row["End Time"], Time)
-
-
-# -------------------------
-# INTEGRATION TEST: Fido 
-# -------------------------
 @pytest.mark.remote_data
 def test_nda_fido():
-    query = Fido.search(
-        a.Time("2025-03-26", "2025-03-27"),
-        a.Instrument("NDA")
-    )
+    query = Fido.search(a.Time("2025-03-26", "2025-03-27"), a.Instrument("NDA"))
 
     assert len(query) >= 1
 
-    result_block = query[0]
+    result_block = query["nda"]
     assert len(result_block) > 0
 
     row = result_block[0]
 
     assert row["Instrument"] == "NDA"
     assert row["Source"] == "NDA"
-    assert row["version"] == "1.1"
+    assert row["Version"] == "1.1"
 
-    assert isinstance(row["Start Time"], Time)
-    assert isinstance(row["End Time"], Time)
+    assert row["Start Time"] == Time("2025-03-26 07:56:00.000")
+    assert row["End Time"] == Time("2025-03-26 15:55:00")
