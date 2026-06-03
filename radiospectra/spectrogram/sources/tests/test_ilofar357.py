@@ -2,6 +2,10 @@ from pathlib import Path
 from unittest import mock
 
 import numpy as np
+import pytest
+
+import astropy.units as u
+from astropy.tests.helper import assert_quantity_allclose
 
 from radiospectra.spectrogram import Spectrogram
 
@@ -26,3 +30,15 @@ def test_ilofar(mock_is_file, mock_fromfile):
     assert spec[2].mode == 7
     assert spec[2].frequencies[0].to_value("MHz") == 210.546875
     assert spec[2].frequencies[-1].to_value("MHz") == 244.53125
+
+
+@pytest.mark.remote_data
+def test_ilofar_spectrogram_online():
+    spec = Spectrogram("https://data.lofar.ie/2018/06/01/bst/kbt/rcu357_1beam/20180601_100041_bst_00X.dat")
+    spec = spec[0]
+    assert spec.instrument == "ILOFAR"
+    assert spec.times[0].isot == "2018-06-01T10:00:41.000"
+    assert spec.times[-1].isot == "2018-06-01T10:26:20.000"
+    assert_quantity_allclose(spec.frequencies[0], 10.547 * u.MHz, rtol=1e-3)
+    assert_quantity_allclose(spec.frequencies[-1], 88.281 * u.MHz, rtol=1e-3)
+    assert spec.data.shape == (200, 1540)

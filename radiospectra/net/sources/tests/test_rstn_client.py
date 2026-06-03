@@ -3,9 +3,10 @@ from unittest import mock
 
 import pytest
 
+from sunpy.net import Fido
 from sunpy.net import attrs as a
-from sunpy.net.fido_factory import Fido
 
+from radiospectra.net import attrs as ra
 from radiospectra.net.attrs import Observatory
 from radiospectra.net.sources.rstn import RSTNClient
 
@@ -65,5 +66,16 @@ def test_client_observatory(urlopen, client, http_responses):
 @pytest.mark.remote_data
 def test_fido():
     query = Fido.search(a.Time("2003/03/15 00:00", "2003/03/15 23:59"), a.Instrument("RSTN"), Observatory("San Vito"))
-    assert len(query[0]) == 1
+    assert len(query["rstn"]) == 1
     assert all(query[0]["Observatory"] == "San Vito")
+
+
+@pytest.mark.remote_data
+def test_rstn_query_online():
+
+    query = Fido.search(
+        a.Time("2003/03/15 00:00", "2003/03/15 01:00"), a.Instrument("RSTN"), ra.Observatory("San Vito")
+    )
+    assert len(query["rstn"]) == 1
+    assert query["rstn"]["Start Time"][0].isot == "2003-03-15T00:00:00.000"
+    assert "url" in query["rstn"].colnames

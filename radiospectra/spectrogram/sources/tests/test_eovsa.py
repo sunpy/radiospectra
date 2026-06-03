@@ -519,3 +519,11 @@ def test_eovsa_tpall(parse_path_moc, eovsa_data):
     assert spec.wavelength.min.to(u.GHz) == 1.105371117591858 * u.GHz
     assert spec.wavelength.max.to(u.GHz) == 17.979686737060547 * u.GHz
     assert spec.polarisation == "I"
+
+
+@pytest.mark.remote_data
+@pytest.mark.xfail(reason="EOVSA backend now requires authentication, pending upstream Fido support.")
+def test_eovsa_spectrogram_online():
+    url = "https://ovsa.njit.edu/fits/synoptic/2020/10/05/EOVSA_XPall_20201005.fts"
+    spec = Spectrogram(url)
+    assert spec.instrument == "EOVSA"

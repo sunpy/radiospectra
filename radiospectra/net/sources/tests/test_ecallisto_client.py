@@ -4,9 +4,10 @@ from unittest import mock
 
 import pytest
 
+from sunpy.net import Fido
 from sunpy.net import attrs as a
-from sunpy.net.fido_factory import Fido
 
+from radiospectra.net import attrs as ra
 from radiospectra.net.sources.ecallisto import Observatory, eCALLISTOClient
 
 MOCK_PATH = "sunpy.net.scraper.urlopen"
@@ -77,5 +78,16 @@ def test_fido():
     query = Fido.search(
         a.Time("2019/10/05 23:00", "2019/10/06 00:59"), a.Instrument("eCALLISTO"), Observatory("ALASKA")
     )
-    assert len(query[0]) == 8
+    assert len(query["ecallisto"]) == 8
     assert all(query[0]["Observatory"] == "ALASKA")
+
+
+@pytest.mark.remote_data
+def test_ecallisto_query_online():
+
+    query = Fido.search(
+        a.Time("2019/10/05 23:00", "2019/10/05 23:30"), a.Instrument("eCALLISTO"), ra.Observatory("ALASKA")
+    )
+    assert len(query["ecallisto"]) == 3
+    assert query["ecallisto"]["Start Time"][0].isot == "2019-10-05T23:00:00.000"
+    assert "url" in query["ecallisto"].colnames
