@@ -1,0 +1,46 @@
+"""
+Plot a WIND/WAVES spectrogram
+=============================
+
+This example demonstrates how to download and plot a WIND/WAVES spectrogram
+using Fido and the `Spectrogram` class.
+"""
+
+import matplotlib.pyplot as plt
+
+from sunpy.net import Fido
+from sunpy.net import attrs as a
+
+from radiospectra import net  # noqa: F401
+from radiospectra.spectrogram import Spectrogram
+
+###############################################################################
+# First, let's search for some WIND/WAVES data during a known event.
+# We will search for data on 2017-09-02 between 15:00 and 18:00.
+
+query = Fido.search(a.Time("2017-09-02T15:00", "2017-09-02T18:00"), a.Instrument.waves)
+print(query)
+
+###############################################################################
+# Now we fetch the files and load them into a `Spectrogram` object.
+# `Fido.fetch` returns a list of downloaded file paths, which we pass directly
+# into `Spectrogram`.
+
+waves_files = Fido.fetch(query["waves"])
+waves_spec = Spectrogram(sorted(waves_files))
+
+###############################################################################
+# We can print a string representation of the downloaded spectrograms.
+# `waves_spec` is a list of spectrograms, one for each frequency band (RAD1, RAD2).
+
+print(waves_spec)
+
+###############################################################################
+# Finally, let's plot the first spectrogram (RAD1) using matplotlib.
+# The `plot()` method automatically formats the axes.
+
+fig, ax = plt.subplots(figsize=(10, 5))
+mesh = waves_spec[0].plot(axes=ax)
+fig.colorbar(mesh, ax=ax, label="Intensity")
+ax.set_title("WIND/WAVES RAD1 Spectrogram")
+plt.show()
