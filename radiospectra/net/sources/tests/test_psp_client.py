@@ -113,3 +113,11 @@ def test_download(client):
     query = client.search(a.Time("2019/10/05", "2019/10/06"), a.Instrument("rfs"))
     download_list = client.fetch(query)
     assert len(download_list) == len(query)
+
+
+@pytest.mark.remote_data
+def test_psp_rfs_query_online():
+    query = Fido.search(a.Time("2019/10/05", "2019/10/05"), a.Instrument("rfs"))
+    assert len(query["rfs"]) == 2
+    assert query["rfs"]["Start Time"][0].isot == "2019-10-05T00:00:00.000"
+    assert "url" in query["rfs"].colnames

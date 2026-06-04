@@ -3,14 +3,17 @@ from datetime import datetime
 from unittest import mock
 
 import numpy as np
+import pytest
 
 import astropy.units as u
+from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
 
+from sunpy.net import Fido
 from sunpy.net import attrs as a
 
-from radiospectra.spectrogram import Spectrogram
-from radiospectra.spectrogram.sources import RFSSpectrogram
+import radiospectra.net  # NOQA
+from radiospectra.spectrogram import RFSSpectrogram, Spectrogram
 
 
 @mock.patch("radiospectra.spectrogram.spectrogram_factory.parse_path")
@@ -18,7 +21,7 @@ def test_psp_rfs_lfr(parse_path_moc):
     start_time = Time("2019-04-09 00:01:16.197889")
     end_time = Time("2019-04-10 00:01:04.997573")
     meta = {
-        "cdf_meta": {
+        "cdf_globals": {
             "TITLE": "PSP FIELDS RFS LFR data",
             "Project": "PSP",
             "Source_name": "PSP_FLD>Parker Solar Probe FIELDS",
@@ -126,7 +129,7 @@ def test_psp_rfs_hfr(parse_path_moc):
     start_time = Time("2019-04-09 00:01:13.904188")
     end_time = Time("2019-04-10 00:01:02.758315")
     meta = {
-        "cdf_meta": {
+        "cdf_globals": {
             "TITLE": "PSP FIELDS RFS HFR data",
             "Project": "PSP",
             "Source_name": "PSP_FLD>Parker Solar Probe FIELDS",
@@ -227,3 +230,31 @@ def test_psp_rfs_hfr(parse_path_moc):
     assert spec.wavelength.max == 19171.876 * u.kHz
     assert spec.level == "L2"
     assert spec.version == 1
+
+
+@pytest.mark.remote_data
+def test_psp_rfs_spectrogram_online():
+    spec = Spectrogram(
+        "https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_lfr/2019/psp_fld_l2_rfs_lfr_20191005_v03.cdf"
+    )
+    assert spec.instrument == "FIELDS/RFS"
+    assert spec.times[0].isot == "2019-10-05T00:01:32.395"
+    assert spec.times[-1].isot == "2019-10-05T22:16:30.493"
+    assert_quantity_allclose(spec.frequencies[0], 10546.880 * u.Hz, rtol=1e-3)
+    assert_quantity_allclose(spec.frequencies[-1], 1687500.0 * u.Hz, rtol=1e-3)
+    assert spec.data.shape == (64, 539)
+
+
+@pytest.mark.remote_data
+def test_psp_rfs_real_data():
+    """
+    Test that reading a real PSP RFS file successfully parses the metadata dictionary
+    and allows access to properties like 'level' without throwing a KeyError.
+
+    This ensures that the factory output uses the same CDF metadata key (``"cdf_globals"``).
+    """
+    query = Fido.search(a.Time("2020/01/01", "2020/01/31"), a.Instrument("rfs"))
+    files = Fido.fetch(query[0, 0])
+    spec = Spectrogram(files[0])
+    assert spec.level == "L2"
+    assert isinstance(spec.version, int)

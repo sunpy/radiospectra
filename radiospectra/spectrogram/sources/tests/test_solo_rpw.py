@@ -19,7 +19,7 @@ def test_solo_rpw_tnr(parse_path_moc):
     end_time = Time("2024-03-24 00:00:00.000")
     # fmt: off
     meta = {
-        "cdf_meta": {
+        "cdf_globals": {
             "Project": "SOLO>Solar Orbiter",
             "Source_name": "SOLO>Solar Orbiter",
             "Descriptor": "RPW-TNR-SURV-FLUX>Radio and Plasma Waves, Thermal Noise Receiver, Survey mode, spectral data in physical units",
@@ -76,7 +76,7 @@ def test_solo_rpw_hfr(parse_path_moc):
 
     # fmt: off
     meta = {
-        "cdf_meta": {
+        "cdf_globals": {
             "Project": "SOLO>Solar Orbiter",
             "Source_name": "SOLO>Solar Orbiter",
             "Descriptor": "RPW-HFR-SURV-FLUX>Radio and Plasma Waves,High Frequency Receiver, Survey mode, spectral data in physical units",

@@ -97,3 +97,11 @@ def test_waves_client(mock_urlopen, client, html_responses):
 )
 def test_check_wavelength(query_wave, receivers, client):
     assert set(client._check_wavelengths(query_wave)) == set(receivers)
+
+
+@pytest.mark.remote_data
+def test_wind_waves_query():
+    query = Fido.search(a.Time("2020/01/02", "2020/01/02"), a.Instrument("WAVES"))
+    assert len(query["waves"]) == 2
+    assert query["waves"]["Start Time"][0].isot == "2020-01-02T00:00:00.000"
+    assert "url" in query["waves"].colnames
