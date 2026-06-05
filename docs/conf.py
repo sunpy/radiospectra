@@ -124,17 +124,10 @@ autoclass_content = "both"
 
 # -- Sphinx Gallery ----------------------------------------------------------
 
-from sphinx_gallery.sorting import ExplicitOrder
-
 sphinx_gallery_conf = {
     "backreferences_dir": os.path.join("generated", "modules"),
     "filename_pattern": "^((?!skip_).)*$",
     "examples_dirs": os.path.join("..", "examples"),
-    "subsection_order": ExplicitOrder(
-        [
-            "../examples/plotting",
-        ]
-    ),
     "gallery_dirs": os.path.join("generated", "gallery"),
     "abort_on_example_error": False,
     "plot_gallery": "True",
