@@ -3,7 +3,7 @@ Plot a WIND/WAVES spectrogram
 =============================
 
 This example demonstrates how to download and plot a WIND/WAVES spectrogram
-using `~sunpy.net.Fido` and the `~radiospectra.spectrogram.Spectrogram` class.
+using `sunpy.net.Fido` and the `~radiospectra.spectrogram.Spectrogram` class.
 """
 
 import matplotlib.pyplot as plt
@@ -22,9 +22,9 @@ query = Fido.search(a.Time("2017-09-02T15:00", "2017-09-02T18:00"), a.Instrument
 print(query)
 
 ###############################################################################
-# Now we fetch the files and load them into a `Spectrogram` object.
-# `Fido.fetch` returns a list of downloaded file paths, which we pass directly
-# into `Spectrogram`.
+# Now we fetch the files and load them into a `~radiospectra.spectrogram.Spectrogram` object.
+# `sunpy.net.Fido.fetch` returns a list of downloaded file paths, which we pass directly
+# into `~radiospectra.spectrogram.Spectrogram`.
 
 waves_files = Fido.fetch(query["waves"])
 waves_spec = Spectrogram(sorted(waves_files))
