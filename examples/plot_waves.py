@@ -4,6 +4,7 @@ Plot a WIND/WAVES spectrogram
 
 This example demonstrates how to download and plot a WIND/WAVES spectrogram
 using `sunpy.net.Fido` and the `~radiospectra.spectrogram.Spectrogram` class.
+
 """
 
 import matplotlib.pyplot as plt

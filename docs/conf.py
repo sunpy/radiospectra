@@ -67,6 +67,9 @@ extensions = [
     "sphinx_gallery.gen_gallery",
 ]
 
+# Set automodapi to generate files inside the generated directory
+automodapi_toctreedirnm = "generated/api"
+
 # Add any paths that contain templates here, relative to this directory.
 # templates_path = ["_templates"]
 
@@ -88,7 +91,25 @@ default_role = "py:obj"
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {"python": ("https://docs.python.org/", None)}
+intersphinx_mapping = {
+    "python": (
+        "https://docs.python.org/3/",
+        (None, "http://www.astropy.org/astropy-data/intersphinx/python3.inv"),
+    ),
+    "numpy": (
+        "https://numpy.org/doc/stable/",
+        (None, "http://www.astropy.org/astropy-data/intersphinx/numpy.inv"),
+    ),
+    "scipy": (
+        "https://docs.scipy.org/doc/scipy/reference/",
+        (None, "http://www.astropy.org/astropy-data/intersphinx/scipy.inv"),
+    ),
+    "astropy": ("https://docs.astropy.org/en/stable/", None),
+    "matplotlib": ("https://matplotlib.org/stable", None),
+    "mpl_animators": ("https://docs.sunpy.org/projects/mpl-animators/en/stable/", None),
+    "ndcube": ("https://docs.sunpy.org/projects/ndcube/en/stable/", None),
+    "sunpy": ("https://docs.sunpy.org/en/stable/", None),
+}
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -132,6 +153,6 @@ sphinx_gallery_conf = {
     "abort_on_example_error": False,
     "plot_gallery": "True",
     "remove_config_comments": True,
-    "doc_module": ("radiospectra",),
+    "doc_module": "radiospectra",
     "only_warn_on_example_error": True,
 }
