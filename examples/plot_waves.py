@@ -37,7 +37,7 @@ print(waves_spec)
 
 ###############################################################################
 # Finally, let's plot the first spectrogram (RAD1) using matplotlib.
-# The `plot()` method automatically formats the axes.
+# The `~radiospectra.spectrogram.Spectrogram.plot()` method automatically formats the axes.
 
 fig, ax = plt.subplots(figsize=(10, 5))
 mesh = waves_spec[0].plot(axes=ax)
