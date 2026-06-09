@@ -23,9 +23,8 @@ query = Fido.search(a.Time("2017-09-02T15:00", "2017-09-02T18:00"), a.Instrument
 print(query)
 
 ###############################################################################
-# Now we fetch the files and load them into a `~radiospectra.spectrogram.Spectrogram` object.
-# `sunpy.net.Fido.fetch` returns a list of downloaded file paths, which we pass directly
-# into `~radiospectra.spectrogram.Spectrogram`.
+# Now we fetch the files using `sunpy.net.Fido` and load them into a
+# `~radiospectra.spectrogram.Spectrogram` object.
 
 waves_files = Fido.fetch(query["waves"])
 waves_spec = Spectrogram(sorted(waves_files))
@@ -44,4 +43,5 @@ fig, ax = plt.subplots(figsize=(10, 5))
 mesh = waves_spec[0].plot(axes=ax)
 fig.colorbar(mesh, ax=ax, label="Intensity")
 ax.set_title("WIND/WAVES RAD1 Spectrogram")
+fig.tight_layout()
 plt.show()
