@@ -69,7 +69,7 @@ jobs:
         - macos: py312
         - linux: py312-oldestdeps
         - linux: py314-devdeps
-        - linux: py313-online
+        - macos: py313-online
 
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
