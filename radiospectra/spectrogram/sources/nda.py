@@ -25,7 +25,7 @@ class NDASpectrogram(GenericSpectrogram):
     >>> downloaded = Fido.fetch(query[0][0])  #doctest: +REMOTE_DATA
     >>> spec = Spectrogram(downloaded[0])  #doctest: +REMOTE_DATA
     >>> spec[0]  #doctest: +REMOTE_DATA
-    <NDASpectrogram NDA, newroutine, ORN 10.010000228881836 MHz - 87.98999786376953 MHz, ...>
+    <NDASpectrogram ORN, NDA, NEWROUTINE 10009.765625 kHz - 87988.28125 kHz, 2025-03-26T07:56:27.260 to 2025-03-26T15:55:59.892>
     """
 
     def __init__(self, data, meta, **kwargs):
