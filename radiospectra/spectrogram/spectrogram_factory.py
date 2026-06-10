@@ -391,7 +391,9 @@ class SpectrogramFactory(BasicRegistrationFactory):
         freq_b = (75 + 105 * (n - 1) / 400) * u.MHz
         freqs = np.hstack([freq_a, freq_b])
         data = np.hstack([np.vstack(df[name].to_numpy()) for name in ["spec1", "spec2"]]).T
-        times = Time(df["time"])
+        times = Time(
+            Time(df["time"]), format="iso"
+        )  # TODO update once datetime format is supported by current plotters
         meta = {
             "instrument": "RSTN",
             "observatory": site_map[df["site"][0]],
