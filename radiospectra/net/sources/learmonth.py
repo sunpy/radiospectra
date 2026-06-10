@@ -38,17 +38,17 @@ class LearmonthClient(GenericClient):
 
     def post_search_hook(self, exdict, matchdict):
         """
-        The filename only carries a two-digit year, so the default scraper
-        builds ``Start Time`` / ``End Time`` as year ``YY`` AD. Reconstruct
-        them as ``20YY``.
+        The filename only carries a two-digit year, so the scraper's
+        ``get_timerange_from_exdict`` would otherwise build a ``Time`` with
+        year ``YY`` AD (triggering an ERFA "dubious year" warning).
+        Promote the year to ``20YY`` before delegating to the parent, which
+        then constructs ``Start Time`` / ``End Time`` correctly as
+        labelled-date midnight-to-end-of-day nominal bounds.
         """
-        rowdict = super().post_search_hook(exdict, matchdict)
-        yr = int(exdict["year"]) + 2000
-        mo = int(exdict["month"])
-        dy = int(exdict["day"])
-        rowdict["Start Time"] = Time(datetime.datetime(yr, mo, dy))
-        rowdict["End Time"] = Time(datetime.datetime(yr, mo, dy, 23, 59, 59, 999000))
-        return rowdict
+        exdict = dict(exdict)
+        exdict["year"] = int(exdict["year"]) + 2000
+        return super().post_search_hook(exdict, matchdict)
+
 
     @classmethod
     def register_values(cls):
