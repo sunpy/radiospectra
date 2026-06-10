@@ -6,7 +6,7 @@ from radiospectra.net.attrs import Observatory
 __all__ = ["LearmonthClient"]
 
 
-class LearmonthClient(GenericClient):
+class ASWSClient(GenericClient):
     """
     Provides access to Learmonth Solar Observatory dynamic spectra
     (SRS format) hosted at the Australian Bureau of Meteorology

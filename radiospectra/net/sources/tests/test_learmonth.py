@@ -9,14 +9,14 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 from radiospectra.net.attrs import Observatory
-from radiospectra.net.sources.learmonth import LearmonthClient
+from radiospectra.net.sources.learmonth import ASWSClient
 
 MOCK_PATH = "sunpy.net.scraper.urlopen"
 
 
 @pytest.fixture
 def client():
-    return LearmonthClient()
+    return ASWSClient()
 
 
 @pytest.fixture
