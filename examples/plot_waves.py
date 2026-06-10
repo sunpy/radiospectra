@@ -20,7 +20,8 @@ from radiospectra.spectrogram import Spectrogram
 ###############################################################################
 # First, let's search for some WIND/WAVES data during a known event.
 # We will search for data on 2017-09-02 between 15:00 and 18:00.
-
+# With no `~sunpy.net.attrs.Wavelength` specified, the search
+# returns one file per receiver (RAD1 and RAD2).
 # With no `~sunpy.net.attrs.Wavelength` specified, the search
 # returns one file per receiver (RAD1 and RAD2).
 
