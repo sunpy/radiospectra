@@ -2,6 +2,7 @@ from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import GenericClient
 from astropy.time import Time 
 import datetime
+from radiospectra.net.attrs import Observatory
 
 __all__ = ["LearmonthClient"]
 
@@ -37,24 +38,18 @@ class LearmonthClient(GenericClient):
     )
 
     def post_search_hook(self, exdict, matchdict):
-        """
-        The filename only carries a two-digit year, so the scraper's
-        ``get_timerange_from_exdict`` would otherwise build a ``Time`` with
-        year ``YY`` AD (triggering an ERFA "dubious year" warning).
-        Promote the year to ``20YY`` before delegating to the parent, which
-        then constructs ``Start Time`` / ``End Time`` correctly as
-        labelled-date midnight-to-end-of-day nominal bounds.
-        """
         exdict = dict(exdict)
         exdict["year"] = int(exdict["year"]) + 2000
-        return super().post_search_hook(exdict, matchdict)
-
+        rowdict = super().post_search_hook(exdict, matchdict)
+        rowdict["Observatory"] = "Learmonth"
+        return rowdict
 
     @classmethod
     def register_values(cls):
         adict = {
-            a.Instrument: [("Learmonth", "Learmonth Solar Observatory.")],
-            a.Source: [("Learmonth", "Learmonth Solar Observatory.")],
             a.Provider: [("SWS", "Australian Bureau of Meteorology Space Weather Services.")],
+            a.Instrument: [("RSTN", "Radio Solar Telescope Network.")],
+            Observatory: [("Learmonth", "Learmonth Solar Observatory.")],
         }
         return adict
+
