@@ -1,9 +1,12 @@
 """
-Plot a WIND/WAVES spectrogram
-=============================
+Searching for and plotting a WIND/WAVES spectrogram
+===================================================
 
 This example demonstrates how to download and plot a WIND/WAVES spectrogram
 using `sunpy.net.Fido` and the `~radiospectra.spectrogram.Spectrogram` class.
+
+# WAVES is the radio and plasma wave instrument on the WIND spacecraft. Its two
+# radio receivers, RAD1 (20-1040 kHz) and RAD2 (1.075-13.825 MHz)
 
 """
 
@@ -18,6 +21,8 @@ from radiospectra.spectrogram import Spectrogram
 ###############################################################################
 # First, let's search for some WIND/WAVES data during a known event.
 # We will search for data on 2017-09-02 between 15:00 and 18:00.
+# With no `~sunpy.net.attrs.Wavelength` specified, the search
+# returns one file per receiver (RAD1 and RAD2).
 
 query = Fido.search(a.Time("2017-09-02T15:00", "2017-09-02T18:00"), a.Instrument.waves)
 print(query)
@@ -25,6 +30,9 @@ print(query)
 ###############################################################################
 # Now we fetch the files using `sunpy.net.Fido` and load them into a
 # `~radiospectra.spectrogram.Spectrogram` object.
+# As the search matched both receivers, ``waves_spec`` is a list with one spectrogram per receiver.
+# Sorting the files by name places the RAD1 (lower-frequency) spectrogram first and RAD2
+# (higher-frequency) second.
 
 waves_files = Fido.fetch(query["waves"])
 waves_spec = Spectrogram(sorted(waves_files))
