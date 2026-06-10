@@ -4,7 +4,6 @@ Searching for and plotting a WIND/WAVES spectrogram
 
 This example demonstrates how to download and plot a WIND/WAVES spectrogram
 using `sunpy.net.Fido` and the `~radiospectra.spectrogram.Spectrogram` class.
-
 # WAVES is the radio and plasma wave instrument on the WIND spacecraft. Its two
 # radio receivers, RAD1 (20-1040 kHz) and RAD2 (1.075-13.825 MHz)
 
