@@ -20,6 +20,7 @@ from radiospectra.spectrogram import Spectrogram
 ###############################################################################
 # First, let's search for some WIND/WAVES data during a known event.
 # We will search for data on 2017-09-02 between 15:00 and 18:00.
+
 # With no `~sunpy.net.attrs.Wavelength` specified, the search
 # returns one file per receiver (RAD1 and RAD2).
 
@@ -29,16 +30,17 @@ print(query)
 ###############################################################################
 # Now we fetch the files using `sunpy.net.Fido` and load them into a
 # `~radiospectra.spectrogram.Spectrogram` object.
-# As the search matched both receivers, ``waves_spec`` is a list with one spectrogram per receiver.
-# Sorting the files by name places the RAD1 (lower-frequency) spectrogram first and RAD2
-# (higher-frequency) second.
 
 waves_files = Fido.fetch(query["waves"])
 waves_spec = Spectrogram(sorted(waves_files))
 
 ###############################################################################
 # We can print a string representation of the downloaded spectrograms.
-# `waves_spec` is a list of spectrograms, one for each frequency band (RAD1, RAD2).
+# As the search matched both receivers, ``waves_spec`` is a list with one spectrogram
+# per receiver.
+# Sorting the files by name places the RAD1 (lower-frequency) spectrogram first and
+# RAD2
+# (higher-frequency) second.
 
 print(waves_spec)
 
