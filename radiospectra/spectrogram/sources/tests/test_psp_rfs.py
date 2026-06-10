@@ -231,7 +231,6 @@ def test_psp_rfs_hfr(parse_path_moc):
     assert spec.version == 1
 
 
-@pytest.mark.skip(reason="SPDF website down")
 @pytest.mark.remote_data
 def test_psp_rfs_spectrogram_online():
     spec = Spectrogram(

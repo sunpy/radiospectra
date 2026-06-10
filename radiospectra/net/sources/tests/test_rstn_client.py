@@ -67,6 +67,7 @@ def test_fido():
     query = Fido.search(a.Time("2003/03/15 00:00", "2003/03/15 23:59"), a.Instrument("RSTN"), Observatory("San Vito"))
     assert isinstance(query["rstn"].client, RSTNClient)
     assert len(query["rstn"]) == 1
-    assert all(query[0]["Observatory"] == "San Vito")
+    assert all(query["rstn"]["Observatory"] == "San Vito")
+    assert "url" in query["rstn"].colnames
     assert query["rstn"]["Start Time"][0].isot == "2003-03-15T00:00:00.000"
     assert query["rstn"]["End Time"][0].isot == "2003-03-15T23:59:59.999"
