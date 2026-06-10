@@ -1,5 +1,7 @@
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import GenericClient
+from astropy.time import Time 
+import datetime
 
 __all__ = ["LearmonthClient"]
 
@@ -34,11 +36,25 @@ class LearmonthClient(GenericClient):
         r"{{year:2d}}/LM{{year:2d}}{{month:2d}}{{day:2d}}.srs"
     )
 
+    def post_search_hook(self, exdict, matchdict):
+        """
+        The filename only carries a two-digit year, so the default scraper
+        builds ``Start Time`` / ``End Time`` as year ``YY`` AD. Reconstruct
+        them as ``20YY``.
+        """
+        rowdict = super().post_search_hook(exdict, matchdict)
+        yr = int(exdict["year"]) + 2000
+        mo = int(exdict["month"])
+        dy = int(exdict["day"])
+        rowdict["Start Time"] = Time(datetime.datetime(yr, mo, dy))
+        rowdict["End Time"] = Time(datetime.datetime(yr, mo, dy, 23, 59, 59, 999000))
+        return rowdict
+
     @classmethod
     def register_values(cls):
         adict = {
             a.Instrument: [("Learmonth", "Learmonth Solar Observatory.")],
-            a.Source: [("SWS", "Australian Bureau of Meteorology Space Weather Services.")],
+            a.Source: [("Learmonth", "Learmonth Solar Observatory.")],
             a.Provider: [("SWS", "Australian Bureau of Meteorology Space Weather Services.")],
         }
         return adict
