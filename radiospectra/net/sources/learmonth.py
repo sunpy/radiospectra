@@ -1,7 +1,6 @@
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import GenericClient
-from astropy.time import Time 
-import datetime
+
 from radiospectra.net.attrs import Observatory
 
 __all__ = ["LearmonthClient"]
@@ -13,6 +12,12 @@ class LearmonthClient(GenericClient):
     (SRS format) hosted at the Australian Bureau of Meteorology
     `Space Weather Services <https://downloads.sws.bom.gov.au/wdc/wdc_spec/data/learmonth/raw/>`__
     World Data Centre archive.
+
+    Learmonth is part of the RSTN network, so this client uses the same
+    ``Instrument('RSTN')`` / ``Observatory('Learmonth')`` query convention as
+    `~radiospectra.net.sources.rstn.RSTNClient`. The two clients differ by
+    ``Provider``: ``'RSTN'`` for the NOAA NGDC mirror (pre-2019) and
+    ``'SWS'`` for the actively-updated SWS archive served here.
 
     Examples
     --------
@@ -52,4 +57,3 @@ class LearmonthClient(GenericClient):
             Observatory: [("Learmonth", "Learmonth Solar Observatory.")],
         }
         return adict
-
