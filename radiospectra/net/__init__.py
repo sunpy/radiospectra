@@ -2,11 +2,8 @@ from radiospectra.net.attrs import *
 from radiospectra.net.sources.ecallisto import eCALLISTOClient
 from radiospectra.net.sources.eovsa import EOVSAClient
 from radiospectra.net.sources.ilofar import ILOFARMode357Client
-<<<<<<< HEAD
 from radiospectra.net.sources.learmonth import LearmonthClient
-=======
 from radiospectra.net.sources.nda import NDAClient
->>>>>>> main
 from radiospectra.net.sources.psp import RFSClient
 from radiospectra.net.sources.rstn import RSTNClient
 from radiospectra.net.sources.wind import WAVESClient
