@@ -55,17 +55,17 @@ def test_learmonth_fido_provider():
         a.Time("2017/09/06 00:00", "2017/09/06 23:59"),
         a.Instrument("RSTN"),
         Observatory("Learmonth"),
-        a.Provider("SWS"),
+        a.Provider("ASWS"),
     )
 
     # Pinning Provider='SWS' should exclude RSTNClient (Provider='RSTN').
     all_providers = {row["Provider"] for block in query for row in block}
-    assert all_providers == {"SWS"}
+    assert all_providers == {"ASWS"}
 
     block = query["learmonth"]
     row = block[0]
     assert row["Instrument"] == "RSTN"
-    assert row["Provider"] == "SWS"
+    assert row["Provider"] == "ASWS"
     assert row["Observatory"] == "Learmonth"
     assert row["Start Time"] == Time("2017-09-06T00:00:00.000")
     assert row["End Time"] == Time("2017-09-06T23:59:59.999")
@@ -83,4 +83,4 @@ def test_learmonth_fido_both_archives():
         Observatory("Learmonth"),
     )
     providers = {row["Provider"] for block in query for row in block}
-    assert {"SWS", "RSTN"}.issubset(providers)
+    assert {"ASWS", "RSTN"}.issubset(providers)
