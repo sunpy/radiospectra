@@ -21,7 +21,7 @@ dependencies = [
   "gwcs>=0.24",
   "numpy>=1.26.0",
   "matplotlib>=3.8.0",
-  "scipy>=1.12.0",
+  "scipy>=1.14.1",
   "cdflib>=0.3.20"
 ]
 dynamic = ["version"]
