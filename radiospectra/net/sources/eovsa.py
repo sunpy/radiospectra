@@ -29,6 +29,7 @@ class EOVSAClient(GenericClient):
     <BLANKLINE>
     <BLANKLINE>
     """
+
     pattern = (
         "https://ovsa.njit.edu/fits/synoptic/{{year:4d}}/{{month:2d}}/{{day:2d}}/"
         "EOVSA_{{PolType:5l}}_{{year:4d}}{{month:2d}}{{day:2d}}.fts"
