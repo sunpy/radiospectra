@@ -7,7 +7,7 @@ Provide support for some type of radio spectra in solar physics.
 
 .. |Latest Version| image:: https://img.shields.io/pypi/v/radiospectra.svg
    :target: https://pypi.python.org/pypi/radiospectra/
-.. |matrix| image:: https://img.shields.io/matrix/sunpy:openastronomy.org.svg?colorB=%23FE7900&label=Chat&logo=matrix&server_fqdn=openastronomy.modular.im
+.. |matrix| image:: https://img.shields.io/matrix/sunpy:openastronomy.org.svg?colorB=%23FE7900&label=Chat&logo=matrix&server_fqdn=matrix.org
    :target: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
 .. |codecov| image:: https://codecov.io/gh/sunpy/radiospectra/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/sunpy/radiospectra
