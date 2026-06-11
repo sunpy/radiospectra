@@ -1,0 +1,1 @@
+Fix docs configuration so the change log is included.
