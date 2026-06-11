@@ -1,0 +1,1 @@
+Add Learmonth Solar Observatory Fido client `~radiospectra.net.sources.learmonth.ASWSClient` for accessing RSTN Learmonth data from the Australian Bureau of Meteorology Space Weather Services World Data Centre archive (not available from RSTN newwork post 2019.)
