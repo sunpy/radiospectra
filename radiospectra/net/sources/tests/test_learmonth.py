@@ -62,7 +62,7 @@ def test_learmonth_fido_provider():
     all_providers = {row["Provider"] for block in query for row in block}
     assert all_providers == {"ASWS"}
 
-    block = query["learmonth"]
+    block = query["asws"]
     row = block[0]
     assert row["Instrument"] == "RSTN"
     assert row["Provider"] == "ASWS"
