@@ -7,7 +7,7 @@ import pytest
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
 
-from radiospectra.spectrogram import Spectrogram
+from radiospectra.spectrogram import ILOFARMode357Spectrogram, Spectrogram
 
 
 @mock.patch("numpy.fromfile")
@@ -36,6 +36,7 @@ def test_ilofar(mock_is_file, mock_fromfile):
 def test_ilofar_spectrogram_online():
     spec = Spectrogram("https://data.lofar.ie/2018/06/01/bst/kbt/rcu357_1beam/20180601_100041_bst_00X.dat")
     spec = spec[0]
+    assert isinstance(spec, ILOFARMode357Spectrogram)
     assert spec.instrument == "ILOFAR"
     assert spec.times[0].isot == "2018-06-01T10:00:41.000"
     assert spec.times[-1].isot == "2018-06-01T10:26:20.000"

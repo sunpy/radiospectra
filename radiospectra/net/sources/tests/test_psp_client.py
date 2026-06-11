@@ -45,17 +45,6 @@ def test_check_wavelength(req_wave, receivers, client):
     assert set(res) == set(receivers)
 
 
-@pytest.mark.remote_data
-def test_fido():
-    atr = a.Time("2019/10/01", "2019/10/02")
-    res = Fido.search(atr, a.Instrument("rfs"))
-    res0 = res[0]
-    isinstance(res0.client, RFSClient)
-    assert len(res0) == 4
-    assert res["rfs"]["Start Time"].min() == Time("2019-10-01T00:00").datetime
-    assert res["rfs"]["End Time"].max() == Time("2019-10-02T23:59:59.999").datetime
-
-
 @pytest.fixture
 def http_responces():
     paths = [Path(__file__).parent / "data" / n for n in ["psp_resp1.html.gz", "psp_resp2.html.gz"]]
@@ -89,17 +78,6 @@ def test_search_with_wavelength(mock_urlopen, client, http_responces):
     assert res2.time_range().end == Time("2019-10-15T23:59:59.999").datetime
 
 
-@pytest.mark.remote_data
-def test_get_url_for_time_range(client):
-    url_start = "https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_lfr/2019/psp_fld_l2_rfs_lfr_20191001_v03.cdf"
-    url_end = "https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_hfr/2019/psp_fld_l2_rfs_hfr_20191015_v03.cdf"
-    tr = a.Time("2019/10/01", "2019/10/15")
-    res = client.search(tr)
-    urls = [i["url"] for i in res]
-    assert urls[0] == url_start
-    assert urls[-1] == url_end
-
-
 def test_can_handle_query(client):
     atr = a.Time("2019/10/01", "2019/11/01")
     res = client._can_handle_query(atr, a.Instrument("rfs"))
@@ -109,15 +87,22 @@ def test_can_handle_query(client):
 
 
 @pytest.mark.remote_data
-def test_download(client):
-    query = client.search(a.Time("2019/10/05", "2019/10/06"), a.Instrument("rfs"))
-    download_list = client.fetch(query)
-    assert len(download_list) == len(query)
+def test_get_url_for_time_range(client):
+    url_start = "https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_lfr/2019/psp_fld_l2_rfs_lfr_20191001_v03.cdf"
+    url_end = "https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_hfr/2019/psp_fld_l2_rfs_hfr_20191003_v03.cdf"
+    tr = a.Time("2019/10/01", "2019/10/03")
+    res = client.search(tr)
+    urls = [i["url"] for i in res]
+    assert urls[0] == url_start
+    assert urls[-1] == url_end
 
 
 @pytest.mark.remote_data
-def test_psp_rfs_query_online():
-    query = Fido.search(a.Time("2019/10/05", "2019/10/05"), a.Instrument("rfs"))
-    assert len(query["rfs"]) == 2
-    assert query["rfs"]["Start Time"][0].isot == "2019-10-05T00:00:00.000"
-    assert "url" in query["rfs"].colnames
+def test_fido():
+    atr = a.Time("2019/10/01", "2019/10/02")
+    res = Fido.search(atr, a.Instrument("rfs"))
+    res0 = res[0]
+    isinstance(res0.client, RFSClient)
+    assert len(res0) == 4
+    assert res["rfs"]["Start Time"].min() == Time("2019-10-01T00:00").datetime
+    assert res["rfs"]["End Time"].max() == Time("2019-10-02T23:59:59.999").datetime

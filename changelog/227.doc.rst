@@ -1,0 +1,1 @@
+Added a new Example Gallery to the documentation using `sphinx-gallery`, including an example that demonstrates how to search, download, load and plot WIND/WAVES data using `~sunpy.net.Fido` and `~radiospectra.spectrogram.Spectrogram`.
