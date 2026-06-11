@@ -17,43 +17,31 @@ The DOI ``10.5281/zenodo.10733996`` is a DOI that always resolves to the latest 
 Where possible, please cite the DOI of the **specific version** you used, which you can find on the
 `Zenodo record <https://doi.org/10.5281/zenodo.10733996>`__.
 
-Citation file
-=============
+How to get a citation
+=====================
 
-A `Citation File Format <https://citation-file-format.github.io/>`__ file (``CITATION.cff``) is included in the
-root of the `repository <https://github.com/sunpy/radiospectra>`__.
-On GitHub you can use the "Cite this repository" button to export the citation in APA or BibTeX format.
+Rather than copying a citation by hand, we recommend exporting it from one of the following, so that the
+author list, version, year, and DOI always match the release you used:
 
-BibTeX
-======
+- **Zenodo** — open the `Zenodo record <https://doi.org/10.5281/zenodo.10733996>`__, select the specific
+  version, and use the *Export* options (BibTeX, CSL, DataCite, and others) in the sidebar.
+- **GitHub** — on the `repository page <https://github.com/sunpy/radiospectra>`__, use the
+  *Cite this repository* button, which generates APA or BibTeX from the ``CITATION.cff`` file.
 
-You can use the following BibTeX entry to cite ``radiospectra`` (update the ``version``, ``year``, ``doi``, and ``url``
-fields to match the specific release you used):
+The ``CITATION.cff`` file in the root of the `repository <https://github.com/sunpy/radiospectra>`__
+contains the citation metadata in machine-readable form.
+
+Example BibTeX
+==============
+
+The entry below is provided only to illustrate the format.
+Please obtain the authoritative, version-specific entry from Zenodo or GitHub as described above:
 
 .. code:: bibtex
 
     @software{radiospectra,
-      author    = {Mayer, Florian and
-                   Freij, Nabil and
-                   Pérez-Suárez, David and
-                   Mumford, Stuart and
-                   Christe, Steven and
-                   Sipőcz, Brigitta and
-                   Ireland, Jack and
-                   Earnshaw, Matt and
-                   Hewett, Russell J. and
-                   Modi, Sanskar and
-                   Panda, Asish and
-                   Maloney, Shane and
-                   Chatterjee, Agneet and
-                   Shih, Albert Y. and
-                   Bray, E. M. and
-                   Gieseler, Jan and
-                   Hughitt, Keith and
-                   Lim, P. L. and
-                   Bennett, Samuel and
-                   Hayes, Laura},
-      title     = {sunpy/radiospectra},
+      author    = {{The radiospectra Community}},
+      title     = {radiospectra},
       publisher = {Zenodo},
       doi       = {10.5281/zenodo.10733996},
       url       = {https://doi.org/10.5281/zenodo.10733996}

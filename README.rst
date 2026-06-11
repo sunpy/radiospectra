@@ -50,14 +50,13 @@ Citing ``radiospectra``
 -----------------------
 
 If you use ``radiospectra`` in your scientific work, please cite it.
-``radiospectra`` is archived on Zenodo, and you can cite the specific version you used (or the DOI which always resolves to the latest release):
+``radiospectra`` is archived on Zenodo, and you can cite the specific version you used (and the DOI which always resolves to the latest release):
 
-https://zenodo.org/records/15022031
-(Need to fix this to always use newest one?)
+- https://zenodo.org/records/15022031
 
 You can find the citation metadata, including a BibTeX entry, on the
 `citation page <https://docs.sunpy.org/projects/radiospectra/en/latest/citation.html>`__
-of our documentation, or in the ``CITATION.cff`` file in the root of this repository.
+of our documentation.
 
 
 Usage of Generative AI
