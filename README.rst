@@ -49,8 +49,8 @@ For more information or to ask questions about ``radiospectra`` or any other Sun
 Citing ``radiospectra``
 -----------------------
 
-If you use ``radiospectra`` in your scientific work, we would appreciate citing it.
-``radiospectra`` is archived on Zenodo, and you can cite the specific version you used (or the concept DOI which always resolves to the latest release):
+If you use ``radiospectra`` in your scientific work, please cite it.
+``radiospectra`` is archived on Zenodo, and you can cite the specific version you used (or the DOI which always resolves to the latest release):
 
 https://zenodo.org/records/15022031
 (Need to fix this to always use newest one?)
