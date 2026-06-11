@@ -3,7 +3,7 @@
 
 Provide support for some type of radio spectra in solar physics.
 
-|Latest Version| |matrix| |codecov| |Powered by NumFOCUS| |Powered by SunPy|
+|Latest Version| |matrix| |codecov| |DOI| |Powered by NumFOCUS| |Powered by SunPy|
 
 .. |Latest Version| image:: https://img.shields.io/pypi/v/radiospectra.svg
    :target: https://pypi.python.org/pypi/radiospectra/
@@ -11,6 +11,8 @@ Provide support for some type of radio spectra in solar physics.
    :target: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
 .. |codecov| image:: https://codecov.io/gh/sunpy/radiospectra/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/sunpy/radiospectra
+.. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.10733996.svg
+   :target: https://doi.org/10.5281/zenodo.10733996
 .. |Binder| image:: https://mybinder.org/badge_logo.svg
    :target: https://mybinder.org/v2/gh/sunpy/sunpy/main?filepath=examples
 .. |Powered by NumFOCUS| image:: https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A
