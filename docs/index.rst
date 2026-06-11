@@ -58,4 +58,5 @@ When you are interacting with the SunPy community you are asked to follow our `C
    overview
    generated/gallery/index
    code_ref/index
+   citation
    whatsnew/index
