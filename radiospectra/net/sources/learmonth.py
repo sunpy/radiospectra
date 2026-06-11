@@ -34,8 +34,6 @@ class ASWSClient(GenericClient):
            Start Time               End Time        Provider Instrument Observatory
     ----------------------- ----------------------- -------- ---------- -----------
     2024-05-11 00:00:00.000 2024-05-11 23:59:59.999     ASWS       RSTN   Learmonth
-    1 Results from the LearmonthClient:
-    <BLANKLINE>
     <BLANKLINE>
     """
 
