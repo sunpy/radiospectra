@@ -503,6 +503,7 @@ def test_ecallisto_spectrogram_online():
     spec = Spectrogram(
         "http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/2019/10/05/ALASKA-COHOE_20191005_230000_00.fit.gz"
     )
+    assert isinstance(spec, CALISTOSpectrogram)
     assert spec.instrument == "E-CALLISTO"
     assert spec.times[0].isot == "2019-10-05T23:00:00.171"
     assert spec.times[-1].isot == "2019-10-05T23:14:59.921"
