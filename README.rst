@@ -44,6 +44,20 @@ For more information or to ask questions about ``radiospectra`` or any other Sun
 -  Our chat - `#sunpy:openastronomy.org`_
 -  `SunPy mailing list <https://groups.google.com/forum/#!forum/sunpy>`__
 
+Citing ``radiospectra``
+-----------------------
+
+If you use ``radiospectra`` in your scientific work, we would appreciate citing it.
+``radiospectra`` is archived on Zenodo, and you can cite the specific version you used (or the concept DOI which always resolves to the latest release):
+
+https://zenodo.org/records/15022031
+(Need to fix this to always use newest one?)
+
+You can find the citation metadata, including a BibTeX entry, on the
+`citation page <https://docs.sunpy.org/projects/radiospectra/en/latest/citation.html>`__
+of our documentation, or in the ``CITATION.cff`` file in the root of this repository.
+
+
 Usage of Generative AI
 ----------------------
 
