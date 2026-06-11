@@ -22,6 +22,7 @@ Citation file
 
 A `Citation File Format <https://citation-file-format.github.io/>`__ file (``CITATION.cff``) is included in the
 root of the `repository <https://github.com/sunpy/radiospectra>`__.
+On GitHub you can use the "Cite this repository" button to export the citation in APA or BibTeX format.
 
 BibTeX
 ======
