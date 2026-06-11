@@ -43,7 +43,7 @@ def test_learmonth_client_search(urlopen, client, learmonth_html_page):
 
     row = query[0]
     assert row["Instrument"] == "RSTN"
-    assert row["Provider"] == "SWS"
+    assert row["Provider"] == "ASWS"
     assert row["Observatory"] == "Learmonth"
     assert row["Start Time"] == Time("2017-09-06T00:00:00.000")
     assert row["End Time"] == Time("2017-09-06T23:59:59.999")
