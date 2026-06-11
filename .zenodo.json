@@ -21,9 +21,19 @@
             "affiliation": "University College London"
         },
         {
+            "name": "Shane Maloney",
+            "orcid": "0000-0002-4715-1805",
+            "affiliation": "Dublin Institute for Advanced Studies"
+        },
+        {
             "name": "Stuart Mumford",
             "orcid": "0000-0003-4217-4642",
             "affiliation": "Aperio Software Ltd."
+        },
+        {
+            "name": "Laura Hayes",
+            "orcid": "0000-0002-6835-2390",
+            "affiliation": "Dublin Institute for Advanced Studies"
         },
         {
             "name": "Steven Christe",
@@ -39,6 +49,11 @@
             "name": "Jack Ireland",
             "orcid": "0000-0002-2019-8881",
             "affiliation": "NASA Goddard Space Flight Center"
+        },
+        {
+            "name": "Kumar Amityush",
+            "orcid": "",
+            "affiliation": ""
         },
         {
             "name": "Matt Earnshaw",
@@ -61,24 +76,20 @@
             "affiliation": ""
         },
         {
-            "name": "Shane Maloney",
-            "orcid": "0000-0002-4715-1805",
-            "affiliation": "Dublin Institute for Advanced Studies"
-        },
-        {
             "name": "Agneet Chatterjee",
             "orcid": "0000-0002-0961-9569",
             "affiliation": "Jadavpur University, Kolkata"
         },
         {
-            "name": "Rajul",
-            "orcid": "",
-            "affiliation": ""
+            "name": "Herman le Roux",
+            "orcid": "0000-0002-1805-0706",
+            "affiliation": "Dublin Institute for Advanced Studies and the Technological University of the Shannon"
         },
         {
-            "name": "derdon",
-            "orcid": "",
-            "affiliation": ""
+            "name": "Rajul Srivastava"
+        },
+        {
+            "name": "Simon Liedtke"
         },
         {
             "name": "Albert Y. Shih",
@@ -86,7 +97,12 @@
             "affiliation": "NASA Goddard Space Flight Center"
         },
         {
-            "name": "E. M. Bray",
+            "name": "Erik Bray",
+            "orcid": "",
+            "affiliation": ""
+        },
+        {
+            "name": "HarshGamerZ-28",
             "orcid": "",
             "affiliation": ""
         },
@@ -96,9 +112,9 @@
             "affiliation": "University of Turku"
         },
         {
-            "name": "Keith Hughitt",
-            "orcid": "0000-0003-0787-9559",
-            "affiliation": "Center for Cancer Research, National Cancer Institute"
+            "name": "Mohamed Ali",
+            "orcid": "",
+            "affiliation": ""
         },
         {
             "name": "P. L. Lim",
@@ -111,34 +127,14 @@
             "affiliation": "Aperio Software Ltd."
         },
         {
-            "name": "Laura Hayes",
-            "orcid": "0000-0002-6835-2390",
-            "affiliation": "Dublin Institute for Advanced Studies"
-        },
-        {
-            "name": "Kumar Amityush",
-            "orcid": "",
-            "affiliation": ""
-        },
-        {
-            "name": "Herman le Roux",
-            "orcid": "0000-0002-1805-0706",
-            "affiliation": "Dublin Institute for Advanced Studies and the Technological University of the Shannon"
-        },
-        {
-            "name": "Mohamed Ali",
-            "orcid": "",
-            "affiliation": ""
-        },
-        {
             "name": "Shilpi Bhunia",
             "orcid": "",
             "affiliation": ""
         },
         {
-            "name": "HarshGamerZ-28",
-            "orcid": "",
-            "affiliation": ""
+            "name": "Keith Hughitt",
+            "orcid": "0000-0003-0787-9559",
+            "affiliation": "Center for Cancer Research, National Cancer Institute"
         }
     ]
 }
