@@ -31,10 +31,10 @@ class ASWSClient(GenericClient):
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
+           Start Time               End Time        Provider Instrument Observatory
+    ----------------------- ----------------------- -------- ---------- -----------
+    2024-05-11 00:00:00.000 2024-05-11 23:59:59.999     ASWS       RSTN   Learmonth
     1 Results from the LearmonthClient:
-           Start Time               End Time        Instrument Source Provider
-    ----------------------- ----------------------- ---------- ------ --------
-    2017-09-06 00:00:00.000 2017-09-06 23:59:59.999  LEARMONTH    SWS      SWS
     <BLANKLINE>
     <BLANKLINE>
     """
