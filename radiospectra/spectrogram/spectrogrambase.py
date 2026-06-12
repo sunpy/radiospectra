@@ -14,10 +14,12 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
     """
     Base spectrogram class backed by `ndcube.NDCube`.
 
-    This keeps the existing ``GenericSpectrogram(data, meta)`` construction
-    pattern while the factory and source-specific metadata design is still
-    being worked out. The time and frequency arrays are used to construct the
-    WCS and are also retained in ``meta`` for compatibility with existing code.
+    Attributes
+    ----------
+    meta : `dict-like`
+        Metadata for the spectrogram.
+    data : `numpy.ndarray`
+        The spectrogram data itself is a 2D array.
     """
 
     _registry = {}
@@ -32,18 +34,6 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
             self._validate_meta(meta)
             wcs = build_spectrogram_wcs(self._time_axis_from_meta(meta), meta["freqs"]).wcs
         super().__init__(data=data, wcs=wcs, meta=meta, **kwargs)
-
-    @classmethod
-    def from_arrays(cls, time, frequency, data, meta=None, **kwargs):
-        if meta is None:
-            meta = {}
-        meta = dict(meta)
-        meta.setdefault("times", time)
-        meta.setdefault("freqs", frequency)
-        meta.setdefault("start_time", time[0])
-        meta.setdefault("end_time", time[-1])
-        wcs = build_spectrogram_wcs(time, frequency).wcs
-        return cls(data=data, meta=meta, wcs=wcs, **kwargs)
 
     @property
     def observatory(self):
