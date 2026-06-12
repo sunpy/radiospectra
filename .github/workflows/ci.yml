@@ -91,6 +91,9 @@ jobs:
     if: github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/v')
     needs: [test]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2  # zizmor: ignore[unpinned-uses]
+    concurrency:
+      group: online-test  # One group for all online tests
+      cancel-in-progress: false # Queue don't cancel
     with:
       submodules: false
       coverage: codecov
