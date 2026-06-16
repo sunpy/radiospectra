@@ -1,1 +1,0 @@
-Remove legacy sunpy version check and fallback scraper pattern in `~radiospectra.net.sources.eovsa.EOVSAClient` since `sunpy[net]>=7.0` is now mandated.
