@@ -1,1 +1,0 @@
-Update test configuration to run tests marked with `remote_data` and fail tests that access the network without the mark.
