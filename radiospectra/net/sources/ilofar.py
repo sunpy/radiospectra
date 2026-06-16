@@ -117,7 +117,7 @@ class ILOFARMode357Client(GenericClient):
     @classmethod
     def register_values(cls):
         adict = {
-            a.Instrument: [("ILOFAR", "Irish LOFAR STATION (IE63)")],
+            a.Instrument: [("ILOFAR", "Irish LOFAR STATION (IE613)")],
             a.Source: [("ILOFAR", "Irish LOFAR Data Archive")],
             a.Provider: [("ILOFAR", "Irish LOFAR Data Archive")],
             a.Wavelength: [("*")],
