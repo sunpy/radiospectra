@@ -237,23 +237,25 @@ class SpectrogramFactory(BasicRegistrationFactory):
 
     def _read_file(self, file, **kwargs):
         file = Path(file)
-        extensions = file.suffixes
-        first_extension = extensions[0].lower()
-        if first_extension == ".dat":
+        extensions = [ext.lower() for ext in file.suffixes]
+        if ".dat" in extensions:
             return self._read_dat(file)
-        elif first_extension in (".r1", ".r2"):
+        elif ".r1" in extensions or ".r2" in extensions:
             return [self._read_idl_sav(file, instrument="waves")]
-        elif first_extension == ".cdf":
+        elif ".cdf" in extensions:
             cdf = self._read_cdf(file)
             if isinstance(cdf, list):
                 return cdf
             return [cdf]
-        elif first_extension == ".srs":
+        elif ".srs" in extensions:
             return [self._read_srs(file)]
-        elif first_extension in (".fits", ".fit", ".fts", "fit.gz"):
-            return [self._read_fits(file)]
+        elif any(ext in (".fits", ".fit", ".fts") for ext in extensions):
+            fits_res = self._read_fits(file)
+            if isinstance(fits_res, list):
+                return fits_res
+            return [fits_res]
         else:
-            raise ValueError(f"Extension {extensions[0]} not supported.")
+            raise ValueError(f"Extension {file.suffixes} not supported.")
 
     @staticmethod
     def _read_dat(file):
@@ -638,6 +640,26 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 "freqs": freqs,
             }
             return data, meta
+        elif hd_pairs[0].header.get("TELESCOP", "") == "NDA":
+            times = Time(hd_pairs[2].data["jd"], format="jd")
+            freqs = hd_pairs[1].data["frq"].flatten() * u.MHz
+            data = hd_pairs[2].data["data"]
+            res = []
+            for i, channel in enumerate(["LL", "RR"]):
+                meta = {
+                    "fits_meta": hd_pairs[0].header,
+                    "detector": hd_pairs[0].header.get("INSTRUME", "newroutine"),
+                    "instrument": "NDA",
+                    "observatory": "ORN",
+                    "start_time": times[0],
+                    "end_time": times[-1],
+                    "wavelength": a.Wavelength(freqs.min(), freqs.max()),
+                    "times": times,
+                    "freqs": freqs,
+                    "polarisation": channel,
+                }
+                res.append((data[:, :, i].T, meta))
+            return res
         # Semi standard - spec in primary and time and freq in 1st extension
         try:
             data = hd_pairs[0].data
