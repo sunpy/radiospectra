@@ -1,1 +1,0 @@
-Add Nançay Decameter Array (NDA) Fido client `radiospectra.net.sources.nda.NDAClient`.
