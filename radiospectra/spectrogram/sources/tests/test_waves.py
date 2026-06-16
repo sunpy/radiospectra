@@ -2,6 +2,7 @@ from pathlib import Path
 from datetime import datetime
 from unittest import mock
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 
@@ -13,6 +14,7 @@ from sunpy.net import attrs as a
 from radiospectra.spectrogram import Spectrogram
 from radiospectra.spectrogram.sources import WAVESSpectrogram
 from radiospectra.spectrogram.spectrogram_factory import SpectrogramFactory
+from radiospectra.tests.helpers import figure_test
 
 
 @mock.patch("radiospectra.spectrogram.spectrogram_factory.parse_path")
@@ -88,3 +90,25 @@ def test_waves_spectrogram_online():
     assert spec.frequencies[0] == 20.0 * u.kHz
     assert spec.frequencies[-1] == 1040.0 * u.kHz
     assert spec.data.shape == (256, 1440)
+
+
+@pytest.mark.remote_data
+@figure_test
+def test_waves_rad1_plot():
+    spec = Spectrogram(
+        "https://spdf.gsfc.nasa.gov/pub/data/wind/waves/rad1_idl_binary/2020/wind_waves_rad1_20200102.R1"
+    )
+    fig, ax = plt.subplots(figsize=(10, 5))
+    spec.plot(axes=ax)
+    return fig
+
+
+@pytest.mark.remote_data
+@figure_test
+def test_waves_rad2_plot():
+    spec = Spectrogram(
+        "https://spdf.gsfc.nasa.gov/pub/data/wind/waves/rad2_idl_binary/2020/wind_waves_rad2_20200102.R2"
+    )
+    fig, ax = plt.subplots(figsize=(10, 5))
+    spec.plot(axes=ax)
+    return fig

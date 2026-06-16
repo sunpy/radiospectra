@@ -30,6 +30,7 @@ tests = [
   "pytest-astropy",
   "pytest-doctestplus",
   "pytest-cov",
+  "pytest-mpl",
   "pytest-xdist",
   "sunpy-soar",
 ]
