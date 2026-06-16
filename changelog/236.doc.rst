@@ -1,0 +1,1 @@
+Added a ``CITATION.cff`` file, a Zenodo DOI badge and citation section to the README, and a citation page to the documentation.

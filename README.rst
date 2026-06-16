@@ -3,14 +3,16 @@
 
 Provide support for some type of radio spectra in solar physics.
 
-|Latest Version| |matrix| |codecov| |Powered by NumFOCUS| |Powered by SunPy|
+|Latest Version| |matrix| |codecov| |DOI| |Powered by NumFOCUS| |Powered by SunPy|
 
 .. |Latest Version| image:: https://img.shields.io/pypi/v/radiospectra.svg
    :target: https://pypi.python.org/pypi/radiospectra/
-.. |matrix| image:: https://img.shields.io/matrix/sunpy:openastronomy.org.svg?colorB=%23FE7900&label=Chat&logo=matrix&server_fqdn=openastronomy.modular.im
+.. |matrix| image:: https://img.shields.io/matrix/sunpy:openastronomy.org.svg?colorB=%23FE7900&label=Chat&logo=matrix&server_fqdn=matrix.org
    :target: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
 .. |codecov| image:: https://codecov.io/gh/sunpy/radiospectra/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/sunpy/radiospectra
+.. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.10733996.svg
+   :target: https://doi.org/10.5281/zenodo.10733996
 .. |Binder| image:: https://mybinder.org/badge_logo.svg
    :target: https://mybinder.org/v2/gh/sunpy/sunpy/main?filepath=examples
 .. |Powered by NumFOCUS| image:: https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A
@@ -43,6 +45,19 @@ For more information or to ask questions about ``radiospectra`` or any other Sun
 -  `radiospectra documentation <https://docs.sunpy.org/projects/radiospectra/>`__
 -  Our chat - `#sunpy:openastronomy.org`_
 -  `SunPy mailing list <https://groups.google.com/forum/#!forum/sunpy>`__
+
+Citing ``radiospectra``
+-----------------------
+
+If you use ``radiospectra`` in your scientific work, please cite it.
+``radiospectra`` is archived on Zenodo, and you can cite the specific version you used (and the DOI which always resolves to the latest release):
+
+- https://zenodo.org/records/15022031
+
+You can find the citation metadata, including a BibTeX entry, on the
+`citation page <https://docs.sunpy.org/projects/radiospectra/en/latest/citation.html>`__
+of our documentation.
+
 
 Usage of Generative AI
 ----------------------

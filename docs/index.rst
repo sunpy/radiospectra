@@ -39,6 +39,11 @@ Contributing
 If you would like to get involved, start by joining the `SunPy Chat`_ and check out our `Newcomers' guide <https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html>`__.
 This will walk you through getting set up for contributing.
 
+Citing radiospectra
+===================
+If you use ``radiospectra`` in your scientific work, we would appreciate it if you cite it.
+See the :ref:`citation page <radiospectra-citation>` for details.
+
 Code of Conduct
 ===============
 
@@ -53,4 +58,5 @@ When you are interacting with the SunPy community you are asked to follow our `C
    overview
    generated/gallery/index
    code_ref/index
+   citation
    whatsnew/index
