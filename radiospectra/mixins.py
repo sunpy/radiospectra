@@ -84,12 +84,12 @@ class PcolormeshPlotMixin:
             if converter_x is not None and not getattr(axes.xaxis, "_converter_is_explicit", False):
                 _set_axis_converter(axes.xaxis, converter_x)
 
-            axes.plot(self.time[[0, -1]], self.frequency[[0, -1]], linestyle="None", marker="None")
-            if self.frequency.shape[0] == self.data.shape[0] and self.time.shape[0] == self.data.shape[1]:
-                ret = axes.pcolormesh(self.time, self.frequency, data, shading="auto", **kwargs)
+            axes.plot(self.times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
+            if self.frequencies.shape[0] == self.data.shape[0] and self.times.shape[0] == self.data.shape[1]:
+                ret = axes.pcolormesh(self.times, self.frequencies, data, shading="auto", **kwargs)
             else:
-                ret = axes.pcolormesh(self.time, self.frequency, data[:-1, :-1], shading="auto", **kwargs)
-            axes.set_xlim(self.time[0], self.time[-1])
+                ret = axes.pcolormesh(self.times, self.frequencies, data[:-1, :-1], shading="auto", **kwargs)
+            axes.set_xlim(self.times[0], self.times[-1])
             fig.autofmt_xdate()
 
         # Set current axes/image if pyplot is being used (makes colorbar work)
@@ -120,12 +120,12 @@ class NonUniformImagePlotMixin:
             if converter_x is not None and not getattr(axes.xaxis, "_converter_is_explicit", False):
                 _set_axis_converter(axes.xaxis, converter_x)
 
-            axes.yaxis.update_units(self.frequency)
-            frequencies = axes.yaxis.convert_units(self.frequency)
+            axes.yaxis.update_units(self.frequencies)
+            frequencies = axes.yaxis.convert_units(self.frequencies)
 
-            axes.plot(self.time[[0, -1]], self.frequency[[0, -1]], linestyle="None", marker="None")
+            axes.plot(self.times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
             im = NonUniformImage(axes, interpolation="none", **kwargs)
-            im.set_data(axes.convert_xunits(self.time), frequencies, self.data)
+            im.set_data(axes.convert_xunits(self.times), frequencies, self.data)
             axes.add_image(im)
-            axes.set_xlim(self.time[0], self.time[-1])
+            axes.set_xlim(self.times[0], self.times[-1])
             axes.set_ylim(frequencies[0], frequencies[-1])
