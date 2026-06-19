@@ -82,21 +82,13 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
         """
         The times of the spectrogram.
         """
-        return self.time
+        return self.axis_world_coords("time")[0]
 
     @property
     def frequencies(self):
         """
         The frequencies of the spectrogram.
         """
-        return self.frequency
-
-    @property
-    def time(self):
-        return self.axis_world_coords("time")[0]
-
-    @property
-    def frequency(self):
         return self.axis_world_coords("em.freq")[0]
 
     def _validate_meta(self, meta):
