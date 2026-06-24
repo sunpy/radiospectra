@@ -15,9 +15,11 @@ from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 def make_spectrogram():
     """Factory fixture to create test spectrograms with given frequencies."""
 
-    def _make(frequencies, times=None, scale="utc"):
+    def _make(frequencies, times=None, scale="utc", data=None):
         if times is None:
             times = Time("2020-01-01T00:00:00", format="isot", scale=scale) + np.arange(4) * u.min
+        if data is None:
+            data = np.arange(16).reshape(4, 4)
         meta = {
             "observatory": "Test",
             "instrument": "TestInst",
@@ -28,6 +30,6 @@ def make_spectrogram():
             "times": times,
             "freqs": frequencies,
         }
-        return GenericSpectrogram(np.arange(16).reshape(4, 4), meta)
+        return GenericSpectrogram(data, meta)
 
     return _make

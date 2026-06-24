@@ -85,7 +85,7 @@ class PcolormeshPlotMixin:
                 _set_axis_converter(axes.xaxis, converter_x)
 
             axes.plot(self.times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
-            if self.times.shape[0] == self.data.shape[0] and self.frequencies.shape[0] == self.data.shape[1]:
+            if self.frequencies.shape[0] == self.data.shape[0] and self.times.shape[0] == self.data.shape[1]:
                 ret = axes.pcolormesh(self.times, self.frequencies, data, shading="auto", **kwargs)
             else:
                 ret = axes.pcolormesh(self.times, self.frequencies, data[:-1, :-1], shading="auto", **kwargs)

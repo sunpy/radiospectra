@@ -1,0 +1,1 @@
+`GenericSpectrogram` now inherits from `ndcube.NDCube` enabling standard slicing and coordinate features with WCS-aware `.time` and `.frequency` properties.
