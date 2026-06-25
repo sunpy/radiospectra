@@ -4,7 +4,7 @@ radiospectra Documentation
 
 ``radiospectra`` is a Python package for reading, storing, and visualising dynamic radio spectra in heliophysics, from both ground- and space-based instruments.
 
-.. warning::
+.. note::
 
     ``radiospectra`` is under active redevelopment, with more functionality and instrument support coming soon.
     The package is moving to build on `ndcube <https://docs.sunpy.org/projects/ndcube/>`__ under the hood, giving a coordinate-aware container for dynamic spectra that is consistent across instruments and with the wider SunPy ecosystem.
