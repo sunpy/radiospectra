@@ -31,7 +31,7 @@ def html_responses():
 @mock.patch("sunpy.net.scraper.urlopen")
 def test_ilofar_client(mock_urlopen, client, html_responses):
     mock_urlopen.return_value.read = mock.MagicMock()
-    mock_urlopen.return_value.read.side_effect = html_responses * 2
+    mock_urlopen.return_value.read.side_effect = html_responses * 4
     mock_urlopen.close = mock.MagicMock(return_value=None)
     atr = a.Time("2018/06/01", "2018/06/02")
     query = client.search(atr)
@@ -41,6 +41,8 @@ def test_ilofar_client(mock_urlopen, client, html_responses):
         "https://data.lofar.ie/2018/06/02/bst/kbt/rcu357_1beam/",
         "https://data.lofar.ie/2018/06/01/bst/kbt/rcu357_1beam_datastream/",
         "https://data.lofar.ie/2018/06/02/bst/kbt/rcu357_1beam_datastream/",
+        "https://data.lofar.ie/2018/06/01/bst/kbt/rcu357_1beam_datastream_fast/",
+        "https://data.lofar.ie/2018/06/02/bst/kbt/rcu357_1beam_datastream_fast/",
     ]
     assert called_urls == [call[0][0] for call in mock_urlopen.call_args_list]
     assert len(query) == 8
@@ -53,7 +55,7 @@ def test_ilofar_client(mock_urlopen, client, html_responses):
 @mock.patch("sunpy.net.scraper.urlopen")
 def test_ilofar_client_polarisation(mock_urlopen, client, html_responses):
     mock_urlopen.return_value.read = mock.MagicMock()
-    mock_urlopen.return_value.read.side_effect = html_responses * 2
+    mock_urlopen.return_value.read.side_effect = html_responses * 6
     mock_urlopen.close = mock.MagicMock(return_value=None)
     atr = a.Time("2018/06/01", "2018/06/02")
     query_x = client.search(atr, PolType("X"))
@@ -67,7 +69,7 @@ def test_ilofar_client_polarisation(mock_urlopen, client, html_responses):
 @mock.patch("sunpy.net.scraper.urlopen")
 def test_ilofar_client_wavelength(mock_urlopen, client, html_responses):
     mock_urlopen.return_value.read = mock.MagicMock()
-    mock_urlopen.return_value.read.side_effect = html_responses * 6
+    mock_urlopen.return_value.read.side_effect = html_responses * 12
     mock_urlopen.close = mock.MagicMock(return_value=None)
     atr = a.Time("2018/06/01", "2018/06/02")
     query_both_low = client.search(atr, a.Wavelength(1 * u.MHz, 5 * u.MHz))

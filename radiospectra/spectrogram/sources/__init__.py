@@ -9,6 +9,7 @@ from ..spectrogram_factory import Spectrogram  # NOQA
 from .callisto import *  # NOQA
 from .eovsa import *  # NOQA
 from .ilofar357 import *  # NOQA
+from .nda import *  # NOQA
 from .psp_rfs import *  # NOQA
 from .rpw import *  # NOQA
 from .rstn import *  # NOQA
@@ -23,4 +24,5 @@ __all__ = [
     "RSTNSpectrogram",
     "RPWSpectrogram",
     "ILOFARMode357Spectrogram",
+    "NDASpectrogram",
 ]
