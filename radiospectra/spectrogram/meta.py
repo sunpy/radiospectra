@@ -8,7 +8,6 @@ __all__ = ["SpectrogramMetaABC", "SpectrogramMeta"]
 class SpectrogramMetaABC(NDMetaABC):
     """
     Abstract base class for all spectrogram metadata.
-    Maps to LC Radio Workshop metadata requirements.
     """
 
     # Identification
@@ -45,7 +44,7 @@ class SpectrogramMetaABC(NDMetaABC):
         """The source filename."""
         pass
 
-    # 2.2 Time
+    # Time
     @property
     @abc.abstractmethod
     def date_start(self):
@@ -77,7 +76,7 @@ class SpectrogramMetaABC(NDMetaABC):
         """Frequency resolution, both raw and current."""
         pass
 
-    # 2.4 Calibration and signal
+    # Calibration and signal
     @property
     @abc.abstractmethod
     def data_units(self):
@@ -96,14 +95,14 @@ class SpectrogramMetaABC(NDMetaABC):
         """Stokes parameter convention or polarization."""
         pass
 
-    # 2.5 Quality
+    # Quality
     @property
     @abc.abstractmethod
     def data_mask(self):
         """Data mask."""
         pass
 
-    # 2.6 Position
+    # Position
     @property
     @abc.abstractmethod
     def observer_location(self):
@@ -116,7 +115,6 @@ class SpectrogramMeta(NDMeta, SpectrogramMetaABC):
     Base class for radio spectrogram metadata.
 
     Backed by `ndcube.meta.NDMeta` (a `dict` subclass).
-    Properties do key lookups with sensible defaults for optional fields.
     """
 
     @property
