@@ -71,7 +71,7 @@ jobs:
       # Add private key for deploying to the figure tests repo
       # NOTE: This fingerprint must be configured in CircleCI project settings for radiospectra
       - add_ssh_keys:
-          fingerprints: "7b:8f:c8:1c:13:a3:b4:46:ec:9a:a5:0d:3f:62:69:78"
+          fingerprints: "f3:1d:55:eb:71:6a:08:cc:0a:7a:89:cb:bc:23:bb:6c"
       - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run: git config --global user.email "sunpy@circleci" && git config --global user.name "SunPy Circle CI"
       - run: git clone git@github.com:sunpy/sunpy-figure-tests.git --depth 1 -b radiospectra-${CIRCLE_BRANCH} ~/sunpy-figure-tests/
