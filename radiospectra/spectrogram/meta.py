@@ -122,59 +122,59 @@ class SpectrogramMeta(NDMeta, SpectrogramMetaABC):
     """
 
     @property
-    def instrument(self):
+    def instrument(self) -> str:
         return self["instrument"]
 
     @property
-    def observatory(self):
+    def observatory(self) -> str:
         return self["observatory"]
 
     @property
-    def detector(self):
+    def detector(self) -> str:
         return self["detector"]
 
     @property
-    def date_start(self):
+    def date_start(self) -> Time:
         return self["start_time"]
 
     @property
-    def date_end(self):
+    def date_end(self) -> Time:
         return self["end_time"]
 
     @property
-    def processing_level(self):
+    def processing_level(self) -> str | None:
         return self.get("processing_level")
 
     @property
-    def version(self):
+    def version(self) -> str | None:
         return self.get("version")
 
     @property
-    def source_filename(self):
+    def source_filename(self) -> str | None:
         return self.get("source_filename")
 
     @property
-    def temporal_resolution(self):
+    def temporal_resolution(self) -> Quantity:
         return self.get("temporal_resolution")
 
     @property
-    def frequency_range(self):
+    def frequency_range(self) -> Quantity:
         return self.get("wavelength")
 
     @property
-    def frequency_resolution(self):
+    def frequency_resolution(self) -> Quantity:
         return self.get("frequency_resolution")
 
     @property
-    def data_units(self):
+    def data_units(self) -> Unit:
         return self.get("data_units")
 
     @property
-    def calibration_state(self):
+    def calibration_state(self) -> str | None:
         return self.get("calibration_state")
 
     @property
-    def polarisation(self):
+    def polarisation(self) -> str | None:
         return self.get("polarisation")
 
     @property
