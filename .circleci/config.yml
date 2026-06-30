@@ -101,7 +101,7 @@ workflows:
             parameters:
               jobname:
                 - "py312-figure"
-                - "py312-figure-devdeps"
+#                - "py312-figure-devdeps"
 
       - deploy-reference-images:
           name: baseline-<< matrix.jobname >>
@@ -109,7 +109,7 @@ workflows:
             parameters:
               jobname:
                 - "py312-figure"
-                - "py312-figure-devdeps"
+#                - "py312-figure-devdeps"
           requires:
             - << matrix.jobname >>
           filters:
