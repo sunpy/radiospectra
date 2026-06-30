@@ -2,6 +2,9 @@ import abc
 
 from ndcube.meta import NDMeta, NDMetaABC
 
+from astropy.time import Time
+from astropy.units import Quantity, Unit
+
 __all__ = ["SpectrogramMetaABC", "SpectrogramMeta"]
 
 
@@ -13,85 +16,86 @@ class SpectrogramMetaABC(NDMetaABC):
     # Identification
     @property
     @abc.abstractmethod
-    def instrument(self):
+    def instrument(self) -> str:
+        """Name of the instrument."""
         pass
 
     @property
     @abc.abstractmethod
-    def observatory(self):
+    def observatory(self) -> str:
+        """Name of the observatory."""
         pass
 
     @property
     @abc.abstractmethod
-    def detector(self):
+    def detector(self) -> str:
+        """Name of the detector."""
         pass
 
     @property
     @abc.abstractmethod
-    def processing_level(self):
+    def processing_level(self) -> str | None:
         """The level to which the data has been processed."""
         pass
 
     @property
     @abc.abstractmethod
-    def version(self):
+    def version(self) -> str | None:
         """The data version."""
         pass
 
     @property
     @abc.abstractmethod
-    def source_filename(self):
+    def source_filename(self) -> str | None:
         """The source filename."""
         pass
 
     # Time
     @property
     @abc.abstractmethod
-    def date_start(self):
-        """The start time of the observation."""
+    def date_start(self) -> Time:
+        """Start of the observation"""
         pass
 
     @property
     @abc.abstractmethod
-    def date_end(self):
-        """The end time of the observation."""
+    def date_end(self) -> Time:
+        """End of the observation"""
         pass
 
     @property
     @abc.abstractmethod
-    def temporal_resolution(self):
-        """Temporal resolution, both raw and current."""
+    def temporal_resolution(self) -> Quantity:
         pass
 
     # Frequency
     @property
     @abc.abstractmethod
-    def frequency_range(self):
-        """Start and end frequencies of the observation."""
+    def frequency_range(self) -> Quantity:
+        """Frequency range of observation"""
         pass
 
     @property
     @abc.abstractmethod
-    def frequency_resolution(self):
-        """Frequency resolution, both raw and current."""
+    def frequency_resolution(self) -> Quantity:
         pass
 
     # Calibration and signal
     @property
     @abc.abstractmethod
-    def data_units(self):
-        """Units of the data (e.g. arbitrary, V^2/Hz, sfu, dB)."""
+    def data_units(self) -> Unit:
+        """Unit for the data"""
         pass
 
     @property
     @abc.abstractmethod
-    def calibration_state(self):
+    def calibration_state(self) -> str | None:
         """Calibration state."""
         pass
 
     @property
     @abc.abstractmethod
-    def polarisation(self):
+    def polarisation(self) -> str | None:
         """Stokes parameter convention or polarization."""
         pass
 
