@@ -1,4 +1,6 @@
+from typing import Any, cast
 from datetime import datetime
+from collections import OrderedDict
 
 from astropy.time import Time
 
@@ -8,7 +10,7 @@ from sunpy.net.dataretriever import GenericClient
 __all__ = ["NDAClient"]
 
 
-class NDAClient(GenericClient):
+class NDAClient(GenericClient):  # type: ignore[misc]
     """
     Client for Nançay Decameter Array (NDA) solar radio observations.
 
@@ -47,11 +49,11 @@ class NDAClient(GenericClient):
     )
 
     @property
-    def info_url(self):
+    def info_url(self) -> str:
         return "https://cdn.obs-nancay.fr/repository/nda/newroutine/soleil/"
 
     @classmethod
-    def register_values(cls):
+    def register_values(cls) -> dict[Any, object]:
         return {
             a.Instrument: [("NDA", "Nançay Decameter Array")],
             a.Physobs: [("radio_flux", "Solar radio flux density")],
@@ -59,14 +61,14 @@ class NDAClient(GenericClient):
             a.Source: [("NDA", "Nançay Data Center")],
         }
 
-    def post_search_hook(self, exdict, matchdict):
-        rowdict = super().post_search_hook(exdict, matchdict)
+    def post_search_hook(self, exdict: dict[str, Any], matchdict: dict[str, Any]) -> OrderedDict[str, Any]:
+        rowdict = cast(OrderedDict[str, Any], super().post_search_hook(exdict, matchdict))
 
         # Fix End Time from filename (important correction)
-
-        rowdict["End Time"] = Time(
-            datetime(*[int(exdict.pop(f"end_{p}")) for p in ("year", "month", "day", "hour", "minute")])
+        year, month, day, hour, minute = (
+            int(exdict.pop(f"end_{p}")) for p in ("year", "month", "day", "hour", "minute")
         )
+        rowdict["End Time"] = Time(datetime(year, month, day, hour, minute))
         rowdict["Version"] = rowdict["version"][:]
 
         # Clean up helper fields

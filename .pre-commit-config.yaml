@@ -54,6 +54,18 @@ repos:
         args: [ "--write-changes" ]
         types_or: [python, rst]
         exclude: *exclude_dirs
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v2.1.0
+    hooks:
+      - id: mypy
+        exclude: ^.*/tests/
+        additional_dependencies:
+          - numpy
+          - pandas-stubs
+          - sunpy
+          - matplotlib
+        pass_filenames: false
+        args: [ --config-file=pyproject.toml, radiospectra ]
 ci:
   autofix_prs: false
   autoupdate_schedule: "quarterly"

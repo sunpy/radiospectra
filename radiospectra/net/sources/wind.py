@@ -1,6 +1,10 @@
+from typing import Any, cast
+from collections import OrderedDict
+
 import astropy.units as u
 
 from sunpy.net import attrs as a
+from sunpy.net._attrs import Wavelength
 from sunpy.net.dataretriever.client import GenericClient, QueryResponse
 from sunpy.net.scraper import Scraper
 from sunpy.time.timerange import TimeRange
@@ -18,7 +22,7 @@ RECEIVER_EXTENSIONS = {
 }
 
 
-class WAVESClient(GenericClient):
+class WAVESClient(GenericClient):  # type: ignore[misc]
     """
     Provides access to WIND/WAVES IDL binary data hosted at
     `NASA Goddard Space Physics Data Facility (SPDF)
@@ -53,7 +57,7 @@ class WAVESClient(GenericClient):
     )
 
     @classmethod
-    def _check_wavelengths(cls, wavelength):
+    def _check_wavelengths(cls, wavelength: Wavelength) -> list[str]:
         """
         Check for overlap between given wavelength and receiver frequency coverage
         defined in ``RECEIVER_FREQUENCIES``.
@@ -83,7 +87,7 @@ class WAVESClient(GenericClient):
                 receivers = ["rad1", "rad2"]
         return receivers
 
-    def search(self, *args, **kwargs):
+    def search(self, *args: Any, **kwargs: Any) -> QueryResponse:
         """
         Query this client for a list of results.
 
@@ -100,7 +104,7 @@ class WAVESClient(GenericClient):
         """
         matchdict = self._get_match_dict(*args, **kwargs)
         req_wave = matchdict.get("Wavelength", None)
-        receivers = RECEIVER_FREQUENCIES.keys()
+        receivers = list(RECEIVER_FREQUENCIES.keys())
         if req_wave is not None:
             receivers = self._check_wavelengths(req_wave)
 
@@ -124,18 +128,18 @@ class WAVESClient(GenericClient):
 
         return QueryResponse(metalist, client=self)
 
-    def post_search_hook(self, exdict, matchdict):
+    def post_search_hook(self, exdict: dict[str, Any], matchdict: dict[str, Any]) -> OrderedDict[str, Any]:
         """
         Convert receiver metadata to the receiver frequency ranges.
         """
-        rowdict = super().post_search_hook(exdict, matchdict)
+        rowdict = cast(OrderedDict[str, Any], super().post_search_hook(exdict, matchdict))
         receiver = rowdict.pop("receiver")
         fr = RECEIVER_FREQUENCIES[receiver]
         rowdict["Wavelength"] = u.Quantity([float(fr.min.value), float(fr.max.value)], unit=fr.unit)
         return rowdict
 
     @classmethod
-    def register_values(cls):
+    def register_values(cls) -> dict[Any, Any]:
         adict = {
             a.Instrument: [("WAVES", "WIND - WAVES")],
             a.Source: [("WIND", "WIND")],

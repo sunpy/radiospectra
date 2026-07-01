@@ -1,8 +1,12 @@
+from typing import Any
+from collections import OrderedDict
+
 import numpy as np
 
 import astropy.units as u
 
 from sunpy.net import attrs as a
+from sunpy.net._attrs import Wavelength
 from sunpy.net.dataretriever.client import GenericClient, QueryResponse
 from sunpy.net.scraper import Scraper
 from sunpy.time import TimeRange
@@ -15,7 +19,7 @@ RECEIVER_FREQUENCIES = a.Wavelength(10.546875 * u.MHz, 244.53125 * u.MHz)
 DATASET_NAMES = ["rcu357_1beam", "rcu357_1beam_datastream", "rcu357_1beam_datastream_fast"]
 
 
-class ILOFARMode357Client(GenericClient):
+class ILOFARMode357Client(GenericClient):  # type: ignore[misc]
     """
     Provides access to I-LOFAR mode 357 observations from the
     data `archive <https://data.lofar.ie>`__
@@ -55,7 +59,7 @@ class ILOFARMode357Client(GenericClient):
     )
 
     @classmethod
-    def _check_wavelengths(cls, wavelength):
+    def _check_wavelengths(cls, wavelength: Wavelength) -> bool:
         """
         Check for overlap between given wavelength and receiver frequency coverage defined in
         `RECEIVER_FREQUENCIES`.
@@ -69,9 +73,9 @@ class ILOFARMode357Client(GenericClient):
         -------
         `bool`
         """
-        return wavelength.min in RECEIVER_FREQUENCIES or wavelength.max in RECEIVER_FREQUENCIES
+        return bool(wavelength.min in RECEIVER_FREQUENCIES or wavelength.max in RECEIVER_FREQUENCIES)
 
-    def search(self, *args, **kwargs):
+    def search(self, *args: Any, **kwargs: Any) -> QueryResponse:
         """
         Query this client for a list of results.
 
@@ -87,7 +91,7 @@ class ILOFARMode357Client(GenericClient):
         A `QueryResponse` instance containing the query result.
         """
         matchdict = self._get_match_dict(*args, **kwargs)
-        metalist = []
+        metalist: list[OrderedDict[str, Any]] = []
 
         wavelentgh = matchdict.get("Wavelength", False)
         if wavelentgh and not self._check_wavelengths(wavelentgh):
@@ -115,7 +119,7 @@ class ILOFARMode357Client(GenericClient):
         return query_response[mask]
 
     @classmethod
-    def register_values(cls):
+    def register_values(cls) -> dict[Any, object]:
         adict = {
             a.Instrument: [("ILOFAR", "Irish LOFAR STATION (IE613)")],
             a.Source: [("ILOFAR", "Irish LOFAR Data Archive")],
