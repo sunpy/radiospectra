@@ -1,6 +1,21 @@
+from radiospectra.spectrogram.meta import SpectrogramMeta
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
-__all__ = ["WAVESSpectrogram"]
+__all__ = ["WAVESSpectrogram", "WAVESMeta"]
+
+
+class WAVESMeta(SpectrogramMeta):
+    """Metadata for WIND/WAVES spectrograms."""
+
+    @property
+    def background(self):
+        """The background subtracted from the data."""
+        return self.get("background")
+
+    @property
+    def receiver(self):
+        """The name of the receiver."""
+        return self.get("detector")
 
 
 class WAVESSpectrogram(GenericSpectrogram):
@@ -24,6 +39,8 @@ class WAVESSpectrogram(GenericSpectrogram):
     """
 
     def __init__(self, data, meta, **kwargs):
+        if not isinstance(meta, WAVESMeta):
+            meta = WAVESMeta(meta)
         super().__init__(meta=meta, data=data, **kwargs)
 
     @property
@@ -31,14 +48,14 @@ class WAVESSpectrogram(GenericSpectrogram):
         """
         The name of the receiver.
         """
-        return self.meta["receiver"]
+        return getattr(self.meta, "receiver", self.meta.get("receiver"))
 
     @property
     def background(self):
         """
         The background subtracted from the data.
         """
-        return self.meta.bg
+        return getattr(self.meta, "background", self.meta.get("bg"))
 
     @classmethod
     def is_datasource_for(cls, data, meta, **kwargs):

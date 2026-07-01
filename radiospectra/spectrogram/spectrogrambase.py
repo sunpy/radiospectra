@@ -5,6 +5,7 @@ from astropy.time import Time
 
 from radiospectra.exceptions import SpectraMetaValidationError
 from radiospectra.mixins import NonUniformImagePlotMixin, PcolormeshPlotMixin
+from radiospectra.spectrogram.meta import SpectrogramMeta
 from radiospectra.utils import build_spectrogram_wcs
 
 __all__ = ["GenericSpectrogram"]
@@ -30,6 +31,9 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
             cls._registry[cls] = cls.is_datasource_for
 
     def __init__(self, data, meta, wcs=None, **kwargs):
+        if not isinstance(meta, SpectrogramMeta):
+            meta = SpectrogramMeta(meta)
+
         if wcs is None:
             self._validate_meta(meta)
             wcs = build_spectrogram_wcs(self._time_axis_from_meta(meta), meta["freqs"]).wcs
@@ -40,42 +44,45 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
         """
         The name of the observatory which recorded the spectrogram.
         """
-        return self.meta["observatory"].upper()
+        val = getattr(self.meta, "observatory", self.meta.get("observatory"))
+        return val.upper() if val else None
 
     @property
     def instrument(self):
         """
         The name of the instrument which recorded the spectrogram.
         """
-        return self.meta["instrument"].upper()
+        val = getattr(self.meta, "instrument", self.meta.get("instrument"))
+        return val.upper() if val else None
 
     @property
     def detector(self):
         """
         The detector which recorded the spectrogram.
         """
-        return self.meta["detector"].upper()
+        val = getattr(self.meta, "detector", self.meta.get("detector"))
+        return val.upper() if val else None
 
     @property
     def start_time(self):
         """
         The start time of the spectrogram.
         """
-        return self.meta["start_time"]
+        return getattr(self.meta, "date_start", self.meta.get("start_time"))
 
     @property
     def end_time(self):
         """
         The end time of the spectrogram.
         """
-        return self.meta["end_time"]
+        return getattr(self.meta, "date_end", self.meta.get("end_time"))
 
     @property
     def wavelength(self):
         """
         The wavelength range of the spectrogram.
         """
-        return self.meta["wavelength"]
+        return getattr(self.meta, "frequency_range", self.meta.get("wavelength"))
 
     @property
     def times(self):
