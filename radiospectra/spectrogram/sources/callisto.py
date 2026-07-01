@@ -1,5 +1,5 @@
 import astropy.units as u
-from astropy.coordinates.earth import EarthLocation
+from astropy.coordinates import EarthLocation, SkyCoord
 
 from radiospectra.spectrogram.meta import SpectrogramMeta
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
@@ -11,8 +11,8 @@ class CALISTOMeta(SpectrogramMeta):
     """Metadata for e-CALLISTO spectrograms."""
 
     @property
-    def observer_location(self):
-        """The location of the observatory."""
+    def observer_coordinate(self) -> SkyCoord | None:
+        """The coordinate of the observatory."""
         fits_meta = self.get("fits_meta")
         if fits_meta:
             lat = fits_meta.get("OBS_LAT", 0) * u.deg * (1.0 if fits_meta.get("OBS_LAC") == "N" else -1.0)
@@ -49,7 +49,7 @@ class CALISTOSpectrogram(GenericSpectrogram):
 
     @property
     def observatory_location(self):
-        return self.meta.observer_location
+        return self.meta.observer_coordinate
 
     @classmethod
     def is_datasource_for(cls, data, meta, **kwargs):

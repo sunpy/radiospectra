@@ -2,8 +2,9 @@ import abc
 
 from ndcube.meta import NDMeta, NDMetaABC
 
+from astropy.coordinates import SkyCoord
 from astropy.time import Time
-from astropy.units import Quantity, Unit
+from astropy.units import Quantity
 
 __all__ = ["SpectrogramMetaABC", "SpectrogramMeta"]
 
@@ -83,12 +84,6 @@ class SpectrogramMetaABC(NDMetaABC):
     # Calibration and signal
     @property
     @abc.abstractmethod
-    def data_units(self) -> Unit:
-        """Unit for the data"""
-        pass
-
-    @property
-    @abc.abstractmethod
     def calibration_state(self) -> str | None:
         """Calibration state."""
         pass
@@ -109,8 +104,8 @@ class SpectrogramMetaABC(NDMetaABC):
     # Position
     @property
     @abc.abstractmethod
-    def observer_location(self):
-        """Observer location."""
+    def observer_coordinate(self) -> SkyCoord | None:
+        """Observer coordinate."""
         pass
 
 
@@ -166,10 +161,6 @@ class SpectrogramMeta(NDMeta, SpectrogramMetaABC):
         return self.get("frequency_resolution")
 
     @property
-    def data_units(self) -> Unit:
-        return self.get("data_units")
-
-    @property
     def calibration_state(self) -> str | None:
         return self.get("calibration_state")
 
@@ -182,5 +173,5 @@ class SpectrogramMeta(NDMeta, SpectrogramMetaABC):
         return self.get("data_mask")
 
     @property
-    def observer_location(self):
-        return self.get("observer_location")
+    def observer_coordinate(self) -> SkyCoord | None:
+        return self.get("observer_coordinate")
