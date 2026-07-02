@@ -1,19 +1,23 @@
+from typing import Any, cast
+from collections import OrderedDict
+
 import astropy.units as u
 
 from sunpy.net import attrs as a
+from sunpy.net._attrs import Wavelength
 from sunpy.net.dataretriever.client import GenericClient, QueryResponse
 from sunpy.net.scraper import Scraper
 from sunpy.time.timerange import TimeRange
 
 __all__ = ["RFSClient"]
 
-RECEIVER_FREQUENCIES = {
+RECEIVER_FREQUENCIES: dict[str, Wavelength] = {
     "rfs_lfr": a.Wavelength(10 * u.kHz, 1.7 * u.MHz),
     "rfs_hfr": a.Wavelength(1.3 * u.MHz, 19.2 * u.MHz),
 }
 
 
-class RFSClient(GenericClient):
+class RFSClient(GenericClient):  # type: ignore[misc]
     """
     Provides access to Parker Solar Probe FIELDS Radio Frequency Spectrometer data
     `archive <https://spdf.gsfc.nasa.gov/pub/data/psp/fields/>`__ at
@@ -52,7 +56,7 @@ class RFSClient(GenericClient):
     )
 
     @classmethod
-    def _check_wavelengths(cls, wavelength):
+    def _check_wavelengths(cls, wavelength: Wavelength) -> list[str]:
         """
         Check for overlap between given wavelength and receiver frequency coverage
         defined in ``RECEIVER_FREQUENCIES``.
@@ -83,7 +87,7 @@ class RFSClient(GenericClient):
             # If we get here the is no overlap so set to empty list
         return receivers
 
-    def search(self, *args, **kwargs):
+    def search(self, *args: Any, **kwargs: Any) -> QueryResponse:
         """
         Query this client for a list of results.
 
@@ -100,7 +104,7 @@ class RFSClient(GenericClient):
         """
         matchdict = self._get_match_dict(*args, **kwargs)
         req_wave = matchdict.get("Wavelength", None)
-        receivers = RECEIVER_FREQUENCIES.keys()
+        receivers = list(RECEIVER_FREQUENCIES.keys())
         if req_wave is not None:
             receivers = self._check_wavelengths(req_wave)
 
@@ -119,12 +123,12 @@ class RFSClient(GenericClient):
 
         return QueryResponse(metalist, client=self)
 
-    def post_search_hook(self, exdict, matchdict):
+    def post_search_hook(self, exdict: dict[str, Any], matchdict: dict[str, Any]) -> OrderedDict[str, Any]:
         """
         This method converts 'rfs_hfr' and 'rfs_lfr' in the url's metadata to the
         frequency ranges for low and high frequency receivers.
         """
-        rowdict = super().post_search_hook(exdict, matchdict)
+        rowdict = cast(OrderedDict[str, Any], super().post_search_hook(exdict, matchdict))
         if rowdict["Wavelength"] == "rfs_hfr":
             fr = RECEIVER_FREQUENCIES["rfs_hfr"]
             rowdict["Wavelength"] = u.Quantity([float(fr.min.value), float(fr.max.value)], unit=fr.unit)
@@ -134,7 +138,7 @@ class RFSClient(GenericClient):
         return rowdict
 
     @classmethod
-    def register_values(cls):
+    def register_values(cls) -> dict[Any, Any]:
         adict = {
             a.Instrument: [("RFS", ("Radio Frequency Spectrometer"))],
             a.Source: [("PSP", "Parker Solar Probe")],

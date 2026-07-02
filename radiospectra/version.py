@@ -1,6 +1,8 @@
 # NOTE: First try _dev.scm_version if it exists and setuptools_scm is installed
 # This file is not included in wheels/tarballs, so otherwise it will
 # fall back on the generated _version module.
+__all__ = ['version']
+
 try:
     try:
         from ._dev.scm_version import version

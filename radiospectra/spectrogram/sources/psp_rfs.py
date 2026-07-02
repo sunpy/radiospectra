@@ -1,3 +1,7 @@
+from typing import Any
+
+from astropy.units.typing import QuantityLike
+
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
 __all__ = ["RFSSpectrogram"]
@@ -21,25 +25,25 @@ class RFSSpectrogram(GenericSpectrogram):
     <matplotlib.collections.QuadMesh object at ...>
     """
 
-    def __init__(self, data, meta, **kwargs):
+    def __init__(self, data: QuantityLike, meta: dict[str, Any], **kwargs: Any) -> None:
         super().__init__(meta=meta, data=data, **kwargs)
 
     @property
-    def level(self):
+    def level(self) -> str:
         data_type = self.meta["cdf_globals"]["Data_type"]
         if isinstance(data_type, list) or hasattr(data_type, "tolist"):
             data_type = data_type[0]
-        return data_type.split(">")[0]
+        return str(data_type.split(">")[0])
 
     @property
-    def version(self):
+    def version(self) -> int:
         data_version = self.meta["cdf_globals"]["Data_version"]
         if isinstance(data_version, list) or hasattr(data_version, "tolist"):
             data_version = data_version[0]
         return int(data_version)
 
     @classmethod
-    def is_datasource_for(cls, data, meta, **kwargs):
-        return (
+    def is_datasource_for(cls, data: QuantityLike, meta: dict[str, Any], **kwargs: Any) -> bool:
+        return bool(
             meta["observatory"] == "PSP" and meta["instrument"] == "FIELDS/RFS" and meta["detector"] in ("lfr", "hfr")
         )

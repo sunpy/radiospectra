@@ -1,3 +1,6 @@
+from typing import Any, cast
+from collections import OrderedDict
+
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import GenericClient
 
@@ -6,7 +9,7 @@ from radiospectra.net.attrs import Observatory
 __all__ = ["ASWSClient"]
 
 
-class ASWSClient(GenericClient):
+class ASWSClient(GenericClient):  # type: ignore[misc]
     """
     Provides access to Learmonth Solar Observatory dynamic spectra
     (SRS format) hosted at the Australian Bureau of Meteorology
@@ -45,15 +48,15 @@ class ASWSClient(GenericClient):
         r"{{year:2d}}/LM{{year:2d}}{{month:2d}}{{day:2d}}.srs"
     )
 
-    def post_search_hook(self, exdict, matchdict):
+    def post_search_hook(self, exdict: dict[str, Any], matchdict: dict[str, Any]) -> dict[str, Any]:
         exdict = dict(exdict)
         exdict["year"] = int(exdict["year"]) + 2000
-        rowdict = super().post_search_hook(exdict, matchdict)
+        rowdict = cast(OrderedDict[str, Any], super().post_search_hook(exdict, matchdict))
         rowdict["Observatory"] = "Learmonth"
         return rowdict
 
     @classmethod
-    def register_values(cls):
+    def register_values(cls) -> dict[str, Any]:
         adict = {
             a.Provider: [("ASWS", "Australian Bureau of Meteorology Space Weather Services.")],
             a.Instrument: [("RSTN", "Radio Solar Telescope Network.")],

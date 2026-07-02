@@ -1,5 +1,8 @@
+from typing import Any
+
 import astropy.units as u
 from astropy.coordinates.earth import EarthLocation
+from astropy.units.typing import QuantityLike
 
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
@@ -28,15 +31,15 @@ class NDASpectrogram(GenericSpectrogram):
     <NDASpectrogram ORN, NDA, NEWROUTINE 10009.765625 kHz - 87988.28125 kHz, 2025-03-26T07:56:27.260 to 2025-03-26T15:55:59.892>
     """
 
-    def __init__(self, data, meta, **kwargs):
+    def __init__(self, data: QuantityLike, meta: dict[str, Any], **kwargs: Any) -> None:
         super().__init__(meta=meta, data=data, **kwargs)
 
     @property
-    def polarisation(self):
-        return self.meta.get("polarisation", "Unknown")
+    def polarisation(self) -> str:
+        return str(self.meta.get("polarisation", "Unknown"))
 
     @property
-    def observatory_location(self):
+    def observatory_location(self) -> EarthLocation:
         lat = self.meta["fits_meta"].get("OBSGEO-B")
         lon = self.meta["fits_meta"].get("OBSGEO-L")
         height = self.meta["fits_meta"].get("OBSGEO-H")
@@ -45,7 +48,7 @@ class NDASpectrogram(GenericSpectrogram):
         return None
 
     @classmethod
-    def is_datasource_for(cls, data, meta, **kwargs):
+    def is_datasource_for(cls, data: QuantityLike, meta: dict[str, Any], **kwargs: Any) -> bool:
         telescope = meta.get("fits_meta", {}).get("TELESCOP", "")
         instrument = meta.get("instrument", "")
-        return telescope == "NDA" or instrument == "NDA"
+        return bool(telescope == "NDA" or instrument == "NDA")

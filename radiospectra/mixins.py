@@ -1,12 +1,32 @@
+from typing import Any, Protocol, cast
+
+import numpy.typing as npt
 from matplotlib import pyplot as plt
+from matplotlib.axes import Axes
+from matplotlib.axis import Axis
+from matplotlib.collections import QuadMesh
+from matplotlib.figure import Figure
 from matplotlib.image import NonUniformImage
 
+from astropy.time import Time
+from astropy.units import Quantity
 from astropy.visualization import quantity_support, time_support
 
 __all__ = ["PcolormeshPlotMixin", "NonUniformImagePlotMixin"]
 
+from matplotlib.units import ConversionInterface
 
-def _get_axis_converter(axis):
+
+class _SpectrogramLike(Protocol):
+    data: npt.NDArray[Any]
+    times: Time
+    frequencies: Quantity
+    observatory: str
+    instrument: str
+    detector: str
+
+
+def _get_axis_converter(axis: Axis) -> ConversionInterface | None:
     """
     Safe method to get axis converter for older and newer MPL versions.
 
@@ -15,15 +35,15 @@ def _get_axis_converter(axis):
     >= 3.9 these helpers can be replaced by direct get/set calls.
     """
     try:
-        return axis.get_converter()
+        return cast(ConversionInterface, axis.get_converter())
     except AttributeError:
         try:
-            return axis.converter
+            return cast(ConversionInterface, axis.converter)
         except AttributeError:
             return None
 
 
-def _set_axis_converter(axis, converter):
+def _set_axis_converter(axis: Axis, converter: ConversionInterface) -> None:
     """
     Safe method to set axis converter for older and newer MPL versions.
 
@@ -33,8 +53,8 @@ def _set_axis_converter(axis, converter):
         axis.set_converter(converter)
     except AttributeError:
         try:
-            axis._set_converter(converter)
-            axis._converter_is_explicit = True
+            axis._set_converter(converter)  # type: ignore[attr-defined]
+            axis._converter_is_explicit = True  # type: ignore[attr-defined]
         except AttributeError:
             axis.converter = converter
 
@@ -44,7 +64,7 @@ class PcolormeshPlotMixin:
     Class provides plotting functions using `~matplotlib.pyplot.pcolormesh`.
     """
 
-    def plot(self, axes=None, **kwargs):
+    def plot(self: _SpectrogramLike, axes: Axes | None = None, **kwargs: Any) -> QuadMesh:
         """
         Plot the spectrogram.
 
@@ -63,7 +83,9 @@ class PcolormeshPlotMixin:
         if axes is None:
             fig, axes = plt.subplots()
         else:
-            fig = axes.get_figure()
+            maybe_fig = axes.get_figure()
+            if isinstance(maybe_fig, Figure):
+                fig = maybe_fig
 
         if hasattr(self.data, "value"):
             data = self.data.value
@@ -114,7 +136,7 @@ class NonUniformImagePlotMixin:
         Arguments pass to the plot call `~matplotlib.image.NonUniformImage`.
     """
 
-    def plotim(self, fig=None, axes=None, **kwargs):
+    def plotim(self: _SpectrogramLike, axes: Axes | None = None, **kwargs: Any) -> NonUniformImage:
 
         if axes is None:
             fig, axes = plt.subplots()
@@ -129,12 +151,13 @@ class NonUniformImagePlotMixin:
             if converter_x is not None and not getattr(axes.xaxis, "_converter_is_explicit", False):
                 _set_axis_converter(axes.xaxis, converter_x)
 
-            axes.yaxis.update_units(self.frequencies)
-            frequencies = axes.yaxis.convert_units(self.frequencies)
+            axes.yaxis.update_units(self.frequencies)  # type: ignore[no-untyped-call]
+            frequencies = axes.yaxis.convert_units(self.frequencies)  # type: ignore[no-untyped-call]
 
             axes.plot(self.times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
-            im = NonUniformImage(axes, interpolation="none", **kwargs)
-            im.set_data(axes.convert_xunits(self.times), frequencies, self.data)
+            im = NonUniformImage(axes, interpolation="nearest", **kwargs)
+            im.set_data(axes.convert_xunits(self.times), frequencies, self.data)  # type: ignore[no-untyped-call]
             axes.add_image(im)
             axes.set_xlim(self.times[0], self.times[-1])
             axes.set_ylim(frequencies[0], frequencies[-1])
+        return im

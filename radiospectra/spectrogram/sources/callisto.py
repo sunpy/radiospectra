@@ -1,5 +1,8 @@
+from typing import Any
+
 import astropy.units as u
 from astropy.coordinates.earth import EarthLocation
+from astropy.units.typing import QuantityLike
 
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
@@ -26,16 +29,16 @@ class CALISTOSpectrogram(GenericSpectrogram):
     <matplotlib.collections.QuadMesh object at ...>
     """
 
-    def __init__(self, data, meta, **kwargs):
+    def __init__(self, data: QuantityLike, meta: dict[str, Any], **kwargs: Any) -> None:
         super().__init__(meta=meta, data=data, **kwargs)
 
     @property
-    def observatory_location(self):
+    def observatory_location(self) -> EarthLocation:
         lat = self.meta["fits_meta"]["OBS_LAT"] * u.deg * (1.0 if self.meta["fits_meta"]["OBS_LAC"] == "N" else -1.0)
         lon = self.meta["fits_meta"]["OBS_LON"] * u.deg * (1.0 if self.meta["fits_meta"]["OBS_LOC"] == "E" else -1.0)
         height = self.meta["fits_meta"]["OBS_ALT"] * u.m
         return EarthLocation(lat=lat, lon=lon, height=height)
 
     @classmethod
-    def is_datasource_for(cls, data, meta, **kwargs):
-        return meta["instrument"] == "e-CALLISTO" or meta["detector"] == "e-CALLISTO"
+    def is_datasource_for(cls, data: QuantityLike, meta: dict[str, Any], **kwargs: Any) -> bool:
+        return bool(meta["instrument"] == "e-CALLISTO" or meta["detector"] == "e-CALLISTO")

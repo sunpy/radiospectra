@@ -60,6 +60,13 @@ exclude = ["radiospectra._dev*"]
 [tool.setuptools_scm]
 version_file = "radiospectra/_version.py"
 
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true
+exclude = "(^|/)tests/|spectrum"
+
 [tool.gilesbot]
   [tool.gilesbot.pull_requests]
   enabled = true

@@ -1,3 +1,7 @@
+from typing import Any
+
+from astropy.units.typing import QuantityLike
+
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
 __all__ = ["WAVESSpectrogram"]
@@ -23,23 +27,23 @@ class WAVESSpectrogram(GenericSpectrogram):
     <matplotlib.collections.QuadMesh object at ...>
     """
 
-    def __init__(self, data, meta, **kwargs):
+    def __init__(self, data: QuantityLike, meta: dict[str, Any], **kwargs: Any) -> None:
         super().__init__(meta=meta, data=data, **kwargs)
 
     @property
-    def receiver(self):
+    def receiver(self) -> str:
         """
         The name of the receiver.
         """
-        return self.meta["receiver"]
+        return str(self.meta["receiver"])
 
     @property
-    def background(self):
+    def background(self) -> QuantityLike:
         """
         The background subtracted from the data.
         """
-        return self.meta.bg
+        return self.meta["background"]
 
     @classmethod
-    def is_datasource_for(cls, data, meta, **kwargs):
-        return meta.get("instrument", None) == "WAVES"
+    def is_datasource_for(cls, data: QuantityLike, meta: dict[str, Any], **kwargs: Any) -> bool:
+        return bool(meta.get("instrument", None) == "WAVES")
