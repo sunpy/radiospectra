@@ -130,11 +130,11 @@ class SpectrogramFactory(BasicRegistrationFactory):  # type: ignore[misc]
                 expanded_args[i] = pathlib.Path(arg)
             i += 1
         # Parse the arguments
-        # Note that this list can also contain GenericMaps if they are directly given to the factory
+        # Note that this list can also contain GenericSpectrograms if they are directly given to the factory
         data_header_pairs: list[Any] = []
         for arg in expanded_args:
             try:
-                data_header_pairs += self._parse_arg(expanded_args, **kwargs)
+                data_header_pairs += self._parse_arg(arg, **kwargs)
             except NoSpectrogramInFileError as e:
                 if not silence_errors:
                     raise
@@ -164,7 +164,7 @@ class SpectrogramFactory(BasicRegistrationFactory):  # type: ignore[misc]
         return [pair]
 
     @_parse_arg.register(GenericSpectrogram)
-    def _parse_map(self, arg: GenericSpectrogram, **kwargs: Any) -> list[GenericSpectrogram]:
+    def _parse_spectrogram(self, arg: GenericSpectrogram, **kwargs: Any) -> list[GenericSpectrogram]:
         return [arg]
 
     @_parse_arg.register(Request)
