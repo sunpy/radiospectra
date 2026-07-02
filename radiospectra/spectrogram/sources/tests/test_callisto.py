@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 
 import astropy.units as u
+from astropy.coordinates import EarthLocation
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
 
@@ -14,6 +15,7 @@ from sunpy.net import attrs as a
 
 from radiospectra.spectrogram import Spectrogram
 from radiospectra.spectrogram.sources import CALISTOSpectrogram
+from radiospectra.spectrogram.sources.callisto import CALISTOMeta
 
 
 @mock.patch("radiospectra.spectrogram.spectrogram_factory.parse_path")
@@ -509,3 +511,22 @@ def test_ecallisto_spectrogram_online():
     assert_quantity_allclose(spec.frequencies[0], 92.938 * u.MHz, rtol=1e-3)
     assert spec.frequencies[-1] == 45.0 * u.MHz
     assert spec.data.shape == (200, 3600)
+
+
+def test_callisto_meta():
+    meta = CALISTOMeta(
+        {
+            "fits_meta": {
+                "OBS_LAC": "N",
+                "OBS_LAT": 53.0941390991211,
+                "OBS_LOC": "E",
+                "OBS_LON": 7.92012977600098,
+                "OBS_ALT": 416.5,
+            }
+        }
+    )
+    coord = meta.observer_coordinate
+    assert isinstance(coord, EarthLocation)
+    assert np.isclose(coord.lon.value, 7.92012977600098)
+    assert np.isclose(coord.lat.value, 53.0941390991211)
+    assert np.isclose(coord.height.value, 416.5)
