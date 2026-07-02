@@ -1,0 +1,1 @@
+Add type hints and type checking via `mypy <https://mypy.readthedocs.io/en/stable/>`_ as local pre-commit and as GitHub actions job.
