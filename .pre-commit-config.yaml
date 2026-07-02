@@ -69,3 +69,4 @@ repos:
 ci:
   autofix_prs: false
   autoupdate_schedule: "quarterly"
+  skip: [mypy]
