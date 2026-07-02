@@ -62,7 +62,7 @@ repos:
         additional_dependencies:
           - numpy
           - pandas-stubs
-          - sunpy
+          - sunpy[core]
           - matplotlib
         pass_filenames: false
         args: [ --config-file=pyproject.toml, radiospectra ]
