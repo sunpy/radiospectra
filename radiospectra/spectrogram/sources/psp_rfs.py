@@ -1,6 +1,37 @@
+from radiospectra.spectrogram.meta import SpectrogramMeta
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
-__all__ = ["RFSSpectrogram"]
+__all__ = ["RFSSpectrogram", "RFSMeta"]
+
+
+class RFSMeta(SpectrogramMeta):
+    """Metadata for PSP FIELDS/RFS spectrograms."""
+
+    @property
+    def level(self) -> str | None:
+        """The data processing level."""
+        cdf_globals = self.get("cdf_globals")
+        if cdf_globals:
+            data_type = cdf_globals.get("Data_type")
+            if data_type is None:
+                return None
+            if isinstance(data_type, list) or hasattr(data_type, "tolist"):
+                data_type = data_type[0]
+            return data_type.split(">")[0]
+        return None
+
+    @property
+    def version(self) -> int | None:
+        """The data version."""
+        cdf_globals = self.get("cdf_globals")
+        if cdf_globals:
+            data_version = cdf_globals.get("Data_version")
+            if data_version is None:
+                return None
+            if isinstance(data_version, list) or hasattr(data_version, "tolist"):
+                data_version = data_version[0]
+            return int(data_version)
+        return None
 
 
 class RFSSpectrogram(GenericSpectrogram):
@@ -22,21 +53,17 @@ class RFSSpectrogram(GenericSpectrogram):
     """
 
     def __init__(self, data, meta, **kwargs):
+        if not isinstance(meta, RFSMeta):
+            meta = RFSMeta(meta)
         super().__init__(meta=meta, data=data, **kwargs)
 
     @property
     def level(self):
-        data_type = self.meta["cdf_globals"]["Data_type"]
-        if isinstance(data_type, list) or hasattr(data_type, "tolist"):
-            data_type = data_type[0]
-        return data_type.split(">")[0]
+        return self.meta.level
 
     @property
     def version(self):
-        data_version = self.meta["cdf_globals"]["Data_version"]
-        if isinstance(data_version, list) or hasattr(data_version, "tolist"):
-            data_version = data_version[0]
-        return int(data_version)
+        return self.meta.version
 
     @classmethod
     def is_datasource_for(cls, data, meta, **kwargs):

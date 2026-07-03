@@ -1,6 +1,16 @@
+from radiospectra.spectrogram.meta import SpectrogramMeta
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
-__all__ = ["SWAVESSpectrogram"]
+__all__ = ["SWAVESSpectrogram", "SWAVESMeta"]
+
+
+class SWAVESMeta(SpectrogramMeta):
+    """Metadata for STEREO/SWAVES spectrograms."""
+
+    @property
+    def receiver(self) -> str | None:
+        """The name of the receiver."""
+        return self.get("detector")
 
 
 class SWAVESSpectrogram(GenericSpectrogram):
@@ -24,14 +34,14 @@ class SWAVESSpectrogram(GenericSpectrogram):
     """
 
     def __init__(self, data, meta, **kwargs):
+        if not isinstance(meta, SWAVESMeta):
+            meta = SWAVESMeta(meta)
         super().__init__(meta=meta, data=data, **kwargs)
 
     @property
     def receiver(self):
-        """
-        The name of the receiver.
-        """
-        return self.meta["receiver"]
+        """The name of the receiver."""
+        return self.meta.receiver
 
     @classmethod
     def is_datasource_for(cls, data, meta, **kwargs):
