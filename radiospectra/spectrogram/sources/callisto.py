@@ -1,4 +1,5 @@
 from typing import Any
+from collections.abc import Mapping
 
 import astropy.units as u
 from astropy.coordinates.earth import EarthLocation
@@ -40,5 +41,5 @@ class CALISTOSpectrogram(GenericSpectrogram):
         return EarthLocation(lat=lat, lon=lon, height=height)
 
     @classmethod
-    def is_datasource_for(cls, data: QuantityLike, meta: dict[str, Any], **kwargs: Any) -> bool:
+    def is_datasource_for(cls, data: QuantityLike, meta: Mapping[str, Any], **kwargs: Any) -> bool:
         return bool(meta["instrument"] == "e-CALLISTO" or meta["detector"] == "e-CALLISTO")

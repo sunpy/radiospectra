@@ -20,7 +20,7 @@ class eCALLISTOClient(GenericClient):  # type: ignore[misc]
     `Specific information on the meaning of the filename. <http://soleil.i4ds.ch/solarradio/data/readme.txt>`__
 
     From the filename alone there's no way to tell about either the frequency or duration.
-    Therefore we only return a start time.
+    Therefore, we only return a start time.
 
     Examples
     --------
@@ -49,8 +49,12 @@ class eCALLISTOClient(GenericClient):  # type: ignore[misc]
     )
 
     @classmethod
-    def pre_search_hook(cls, *args: Any, **kwargs: Any) -> tuple[str, str, dict[str, Any]]:
-        baseurl, pattern, matchdict = super().pre_search_hook(*args, **kwargs)
+    def pre_search_hook(  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls, *args: Any, **kwargs: Any
+    ) -> tuple[str, str, dict[str, Any]]:
+        # GenericClient.baseurl/.pattern are `None` placeholders on the untyped base;
+        # by the time a concrete client runs this they are always strings.
+        baseurl, pattern, matchdict = cast(tuple[str, str, dict[str, Any]], super().pre_search_hook(*args, **kwargs))
         obs = matchdict["Observatory"]
         if obs[0] == "*":
             pattern = pattern.replace("{obs}", "{{Observatory}}")
@@ -71,7 +75,7 @@ class eCALLISTOClient(GenericClient):  # type: ignore[misc]
         return original
 
     @classmethod
-    def register_values(cls) -> dict[Any, Any]:
+    def register_values(cls) -> dict[Any, Any]:  # pyright: ignore[reportIncompatibleMethodOverride]
         adict = {
             a.Provider: [("eCALLISTO", "International Network of Solar Radio Spectrometers.")],
             a.Instrument: [("eCALLISTO", "e-Callisto - International Network of Solar Radio Spectrometers.")],

@@ -48,7 +48,7 @@ class ASWSClient(GenericClient):  # type: ignore[misc]
         r"{{year:2d}}/LM{{year:2d}}{{month:2d}}{{day:2d}}.srs"
     )
 
-    def post_search_hook(self, exdict: dict[str, Any], matchdict: dict[str, Any]) -> dict[str, Any]:
+    def post_search_hook(self, exdict: dict[str, Any], matchdict: dict[str, Any]) -> OrderedDict[str, Any]:
         exdict = dict(exdict)
         exdict["year"] = int(exdict["year"]) + 2000
         rowdict = cast(OrderedDict[str, Any], super().post_search_hook(exdict, matchdict))
@@ -56,7 +56,7 @@ class ASWSClient(GenericClient):  # type: ignore[misc]
         return rowdict
 
     @classmethod
-    def register_values(cls) -> dict[str, Any]:
+    def register_values(cls) -> dict[Any, Any]:  # pyright: ignore[reportIncompatibleMethodOverride]
         adict = {
             a.Provider: [("ASWS", "Australian Bureau of Meteorology Space Weather Services.")],
             a.Instrument: [("RSTN", "Radio Solar Telescope Network.")],

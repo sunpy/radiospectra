@@ -50,13 +50,15 @@ class RSTNClient(GenericClient):  # type: ignore[misc]
     observatory_map = {**observatory_map, **{v: k for k, v in observatory_map.items()}}
 
     def search(self, *args: Any, **kwargs: Any) -> QueryResponse:
-        _, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
+        # GenericClient.baseurl/.pattern are `None` placeholders on the untyped base;
+        # by the time a concrete client runs this they are always strings.
+        _, pattern, matchdict = cast(tuple[str, str, dict[str, Any]], self.pre_search_hook(*args, **kwargs))
         metalist = []
         for obs in matchdict["Observatory"]:
             obs_path = self.observatory_map[obs.title()]
             scraper = Scraper(format=pattern.replace("{obs}", obs_path))
             tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
-            filesmeta = scraper._extract_files_meta(tr, matcher=matchdict)
+            filesmeta = scraper._extract_files_meta(tr, matcher=matchdict)  # pyright: ignore[reportPrivateUsage]
 
             for i in filesmeta:
                 i["obs"] = obs_path
@@ -72,7 +74,7 @@ class RSTNClient(GenericClient):  # type: ignore[misc]
         return original
 
     @classmethod
-    def register_values(cls) -> dict[Any, list[tuple[str, str]]]:
+    def register_values(cls) -> dict[Any, list[tuple[str, str]]]:  # pyright: ignore[reportIncompatibleMethodOverride]
         adict = {
             a.Provider: [("RSTN", "Radio Solar Telescope Network.")],
             a.Instrument: [("RSTN", "Radio Solar Telescope Network.")],

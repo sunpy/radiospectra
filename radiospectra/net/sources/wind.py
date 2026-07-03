@@ -120,7 +120,7 @@ class WAVESClient(GenericClient):  # type: ignore[misc]
                     .replace("{year_path}", str(year))
                 )
                 scraper = Scraper(format=pattern)
-                filesmeta = scraper._extract_files_meta(tr)
+                filesmeta = scraper._extract_files_meta(tr)  # pyright: ignore[reportPrivateUsage]
                 for i in filesmeta:
                     i["receiver"] = receiver
                     rowdict = self.post_search_hook(i, matchdict)
@@ -139,7 +139,7 @@ class WAVESClient(GenericClient):  # type: ignore[misc]
         return rowdict
 
     @classmethod
-    def register_values(cls) -> dict[Any, Any]:
+    def register_values(cls) -> dict[Any, Any]:  # pyright: ignore[reportIncompatibleMethodOverride]
         adict = {
             a.Instrument: [("WAVES", "WIND - WAVES")],
             a.Source: [("WIND", "WIND")],

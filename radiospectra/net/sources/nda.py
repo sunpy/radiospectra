@@ -49,11 +49,11 @@ class NDAClient(GenericClient):  # type: ignore[misc]
     )
 
     @property
-    def info_url(self) -> str:
+    def info_url(self) -> str:  # pyright: ignore[reportIncompatibleMethodOverride]
         return "https://cdn.obs-nancay.fr/repository/nda/newroutine/soleil/"
 
     @classmethod
-    def register_values(cls) -> dict[Any, object]:
+    def register_values(cls) -> dict[Any, Any]:  # pyright: ignore[reportIncompatibleMethodOverride]
         return {
             a.Instrument: [("NDA", "Nançay Decameter Array")],
             a.Physobs: [("radio_flux", "Solar radio flux density")],

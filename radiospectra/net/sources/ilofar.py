@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, cast
 from collections import OrderedDict
 
 import numpy as np
@@ -101,14 +101,15 @@ class ILOFARMode357Client(GenericClient):  # type: ignore[misc]
 
         for dataset in DATASET_NAMES:
             scraper = Scraper(format=self.pattern.replace("{dataset}", dataset))
-            filesmeta = scraper._extract_files_meta(tr)
+            filesmeta = scraper._extract_files_meta(tr)  # pyright: ignore[reportPrivateUsage]
             for i in filesmeta:
                 rowdict = self.post_search_hook(i, matchdict)
                 metalist.append(rowdict)
 
         query_response = QueryResponse(metalist, client=self)
         mask = np.full(len(query_response), True)
-        pol = matchdict.get("PolType")
+        # PolType is a required attr for this client, so it is always present.
+        pol = matchdict["PolType"]
         if len(pol) == 1:
             pol = pol[0].upper()
             mask = mask & (query_response["Polarisation"] == pol)
@@ -116,10 +117,10 @@ class ILOFARMode357Client(GenericClient):  # type: ignore[misc]
         if query_response:
             query_response.remove_column("PolType")
 
-        return query_response[mask]
+        return cast(QueryResponse, query_response[mask])
 
     @classmethod
-    def register_values(cls) -> dict[Any, object]:
+    def register_values(cls) -> dict[Any, Any]:  # pyright: ignore[reportIncompatibleMethodOverride]
         adict = {
             a.Instrument: [("ILOFAR", "Irish LOFAR STATION (IE613)")],
             a.Source: [("ILOFAR", "Irish LOFAR Data Archive")],

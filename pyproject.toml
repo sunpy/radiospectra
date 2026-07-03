@@ -60,12 +60,31 @@ exclude = ["radiospectra._dev*"]
 [tool.setuptools_scm]
 version_file = "radiospectra/_version.py"
 
-
 [tool.mypy]
 python_version = "3.12"
 strict = true
 ignore_missing_imports = true
 exclude = "(^|/)tests/|spectrum"
+
+[tool.pyright]
+pythonVersion = "3.12"
+typeCheckingMode = "strict"
+
+# Stop errors when third-party libraries lack types/stubs
+reportMissingImports = "none"
+reportMissingTypeStubs = "none"
+
+# Corrected rules to silence "partially unknown" issues from external packages
+reportUnknownVariableType = "none"
+reportUnknownMemberType = "none"
+reportUnknownArgumentType = "none"
+reportUnknownParameterType = "none"
+
+ignore = [
+    "**/spectrum.py",
+    "**/tests/**",
+    "**/spectrum/**"
+]
 
 [tool.gilesbot]
   [tool.gilesbot.pull_requests]

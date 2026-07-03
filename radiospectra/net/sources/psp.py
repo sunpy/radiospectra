@@ -116,7 +116,7 @@ class RFSClient(GenericClient):  # type: ignore[misc]
             for year in range(start_year, end_year + 1):
                 pattern = self.pattern.replace("{receiver}", receiver).replace("{year_path}", str(year))
                 scraper = Scraper(format=pattern)
-                filesmeta = scraper._extract_files_meta(tr)
+                filesmeta = scraper._extract_files_meta(tr)  # pyright: ignore[reportPrivateUsage]
                 for i in filesmeta:
                     rowdict = self.post_search_hook(i, matchdict)
                     metalist.append(rowdict)
@@ -138,7 +138,7 @@ class RFSClient(GenericClient):  # type: ignore[misc]
         return rowdict
 
     @classmethod
-    def register_values(cls) -> dict[Any, Any]:
+    def register_values(cls) -> dict[Any, Any]:  # pyright: ignore[reportIncompatibleMethodOverride]
         adict = {
             a.Instrument: [("RFS", ("Radio Frequency Spectrometer"))],
             a.Source: [("PSP", "Parker Solar Probe")],

@@ -1,4 +1,5 @@
 from typing import Any
+from collections.abc import Mapping
 
 from astropy.units.typing import QuantityLike
 
@@ -43,7 +44,7 @@ class RFSSpectrogram(GenericSpectrogram):
         return int(data_version)
 
     @classmethod
-    def is_datasource_for(cls, data: QuantityLike, meta: dict[str, Any], **kwargs: Any) -> bool:
+    def is_datasource_for(cls, data: QuantityLike, meta: Mapping[str, Any], **kwargs: Any) -> bool:
         return bool(
             meta["observatory"] == "PSP" and meta["instrument"] == "FIELDS/RFS" and meta["detector"] in ("lfr", "hfr")
         )

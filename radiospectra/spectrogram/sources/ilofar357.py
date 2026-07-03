@@ -1,4 +1,5 @@
 from typing import Any
+from collections.abc import Mapping
 
 from astropy.units.typing import QuantityLike
 
@@ -23,5 +24,5 @@ class ILOFARMode357Spectrogram(GenericSpectrogram):
         return str(self.meta.get("polarisation"))
 
     @classmethod
-    def is_datasource_for(cls, data: QuantityLike, meta: dict[str, Any], **kwargs: Any) -> bool:
+    def is_datasource_for(cls, data: QuantityLike, meta: Mapping[str, Any], **kwargs: Any) -> bool:
         return bool(meta["instrument"] == "ILOFAR")

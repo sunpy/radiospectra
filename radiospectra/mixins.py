@@ -1,12 +1,12 @@
 from typing import Any, Protocol, cast
 
-import numpy.typing as npt
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 from matplotlib.axis import Axis
 from matplotlib.collections import QuadMesh
 from matplotlib.figure import Figure
 from matplotlib.image import NonUniformImage
+from numpy.typing import ArrayLike
 
 from astropy.time import Time
 from astropy.units import Quantity
@@ -18,7 +18,7 @@ from matplotlib.units import ConversionInterface
 
 
 class _SpectrogramLike(Protocol):
-    data: npt.NDArray[Any]
+    data: Quantity
     times: Time
     frequencies: Quantity
     observatory: str
@@ -80,6 +80,7 @@ class PcolormeshPlotMixin:
         `matplotlib.collections.QuadMesh`
         """
 
+        fig: Figure | None = None
         if axes is None:
             fig, axes = plt.subplots()
         else:
@@ -108,13 +109,16 @@ class PcolormeshPlotMixin:
             if converter_x is not None and not getattr(axes.xaxis, "_converter_is_explicit", False):
                 _set_axis_converter(axes.xaxis, converter_x)
 
-            axes.plot(self.times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
+            axes.plot(cast(ArrayLike, self.times[[0, -1]]), self.frequencies[[0, -1]], linestyle="None", marker="None")
             if self.times.shape[0] == self.data.shape[0] and self.frequencies.shape[0] == self.data.shape[1]:
-                ret = axes.pcolormesh(self.times, self.frequencies, data, shading="auto", **kwargs)
+                ret = axes.pcolormesh(cast(ArrayLike, self.times), self.frequencies, data, shading="auto", **kwargs)
             else:
-                ret = axes.pcolormesh(self.times, self.frequencies, data[:-1, :-1], shading="auto", **kwargs)
+                ret = axes.pcolormesh(
+                    cast(ArrayLike, self.times), self.frequencies, data[:-1, :-1], shading="auto", **kwargs
+                )
             axes.set_xlim(self.times[0], self.times[-1])
-            fig.autofmt_xdate()
+            if fig is not None:
+                fig.autofmt_xdate()
 
         # Set current axes/image if pyplot is being used (makes colorbar work)
         for i in plt.get_fignums():
@@ -139,7 +143,7 @@ class NonUniformImagePlotMixin:
     def plotim(self: _SpectrogramLike, axes: Axes | None = None, **kwargs: Any) -> NonUniformImage:
 
         if axes is None:
-            fig, axes = plt.subplots()
+            _, axes = plt.subplots()
 
         with time_support(), quantity_support():
             # Pin existing converters to avoid warnings when re-plotting on shared axes.
@@ -154,7 +158,7 @@ class NonUniformImagePlotMixin:
             axes.yaxis.update_units(self.frequencies)  # type: ignore[no-untyped-call]
             frequencies = axes.yaxis.convert_units(self.frequencies)  # type: ignore[no-untyped-call]
 
-            axes.plot(self.times[[0, -1]], self.frequencies[[0, -1]], linestyle="None", marker="None")
+            axes.plot(cast(ArrayLike, self.times[[0, -1]]), self.frequencies[[0, -1]], linestyle="None", marker="None")
             im = NonUniformImage(axes, interpolation="nearest", **kwargs)
             im.set_data(axes.convert_xunits(self.times), frequencies, self.data)  # type: ignore[no-untyped-call]
             axes.add_image(im)

@@ -1,5 +1,6 @@
 # doctest: +SKIP
 # mypy: ignore-errors
+# pyright: reportMissingParameterType=false, reportIncompatibleMethodOverride=false
 # Until client update for new EOVSA API
 
 from sunpy.net import attrs as a

@@ -1,4 +1,5 @@
 from typing import Any
+from collections.abc import Mapping
 
 from astropy.units.typing import QuantityLike
 
@@ -33,7 +34,7 @@ class EOVSASpectrogram(GenericSpectrogram):
         return str(self.meta["fits_meta"]["POLARIZA"])
 
     @classmethod
-    def is_datasource_for(cls, data: QuantityLike, meta: dict[str, Any], **kwargs: Any) -> bool:
+    def is_datasource_for(cls, data: QuantityLike, meta: Mapping[str, Any], **kwargs: Any) -> bool:
         return bool(meta["instrument"] == "EOVSA" or meta["detector"] == "EOVSA")
 
     # TODO fix time gaps for plots need to render them as gaps

@@ -1,4 +1,4 @@
-from typing import Any, ClassVar
+from typing import Any, ClassVar, cast
 from collections.abc import Mapping, Callable
 
 from astropy.time import Time
@@ -25,12 +25,21 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
         The spectrogram data itself is a 2D array.
     """
 
-    _registry: ClassVar[dict[type["GenericSpectrogram"], Callable[..., bool]]] = {}
+    registry: ClassVar[dict[type["GenericSpectrogram"], Callable[..., bool]]] = {}
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
-        if hasattr(cls, "is_datasource_for"):
-            cls._registry[cls] = cls.is_datasource_for
+        cls.registry[cls] = cls.is_datasource_for
+
+    @classmethod
+    def is_datasource_for(cls, data: QuantityLike, meta: Mapping[str, Any], **kwargs: Any) -> bool:
+        """
+        Determine if this class is the correct type to handle the given data and meta.
+
+        Subclasses must override this to register themselves as a candidate spectrogram
+        type in `~radiospectra.spectrogram.spectrogram_factory.SpectrogramFactory`.
+        """
+        return False
 
     def __init__(self, data: QuantityLike, meta: Mapping[str, Any], **kwargs: Any) -> None:
         self.data = data
@@ -63,14 +72,14 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
         """
         The start time of the spectrogram.
         """
-        return Time(self.meta["start_time"])
+        return cast(Time, Time(self.meta["start_time"]))
 
     @property
     def end_time(self) -> Time:
         """
         The end time of the spectrogram.
         """
-        return Time(self.meta["end_time"])
+        return cast(Time, Time(self.meta["end_time"]))
 
     @property
     def wavelength(self) -> Wavelength:
@@ -98,13 +107,13 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin):
         Validates the meta-information associated with a Spectrogram.
 
         This method includes very basic validation checks which apply to
-        all of the kinds of files that radiospectra can read.
+        all the kinds of files that radiospectra can read.
         Datasource-specific validation should be handled in the relevant
         file in radiospectra.spectrogram.sources.
         """
         msg = "Spectrogram coordinate units for {} axis not present in metadata."
         err_message = []
-        for i, ax in enumerate(["times", "freqs"]):
+        for ax in ["times", "freqs"]:
             if self.meta.get(ax) is None:
                 err_message.append(msg.format(ax))
         if err_message:
