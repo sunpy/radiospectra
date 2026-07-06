@@ -118,6 +118,34 @@ def test_swaves_hfr(parse_path_moc):
     assert spec.wavelength.max == 16025 * u.kHz
 
 
+@mock.patch("radiospectra.spectrogram.spectrogram_factory.parse_path")
+def test_swaves_cdaweb(parse_path_moc):
+    meta = {
+        "instrument": "swaves",
+        "observatory": "STEREO A",
+        "start_time": Time("2020-07-11 00:00:30"),
+        "end_time": Time("2020-07-11 23:59:30"),
+        "wavelength": a.Wavelength(2.61 * u.kHz, 16025.0 * u.kHz),
+        "detector": "LFR+HFR",
+        "freqs": np.linspace(2.61, 16025.0, 367) * u.kHz,
+        "times": np.arange(1440) * u.min,
+        "cdf_globals": {
+            "Project": ["STP>Solar Terrestrial Probes"],
+            "Source_name": ["STEREO>Solar TErrestrial RElations Observatory "],
+        },
+    }
+    array = np.zeros((367, 1440))
+    parse_path_moc.return_value = [(array, meta)]
+    file = Path("fake_cdaweb.cdf")
+    spec = Spectrogram(file)
+    assert isinstance(spec, SWAVESSpectrogram)
+    assert spec.observatory == "STEREO A"
+    assert spec.instrument == "SWAVES"
+    assert spec.detector == "LFR+HFR"
+    assert spec.start_time.datetime == datetime(2020, 7, 11, 0, 0, 30)
+    assert spec.end_time.datetime == datetime(2020, 7, 11, 23, 59, 30)
+
+
 @pytest.mark.skip(reason="SPDF website down")
 def test_swaves_spectrogram_online():
     spec = Spectrogram("")
