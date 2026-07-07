@@ -599,16 +599,14 @@ class SpectrogramFactory(BasicRegistrationFactory):
             epoch = cdf.varget("Epoch")
             times = Time("J2000.0", scale="tt") + (epoch << u.ns)
 
-            raw_freqs = cdf.varget("FREQUENCY")
+            raw_freqs = cdf.varget("FREQUENCY").astype(float)
             freq_fill = cdf.varattsget("FREQUENCY").get("FILLVAL", -1e31)
-            valid_freq_mask = raw_freqs > freq_fill
-            freqs = raw_freqs[valid_freq_mask] << u.Unit(cdf.varattsget("FREQUENCY").get("UNITS", "Hz"))
+            raw_freqs[raw_freqs <= freq_fill] = np.nan
+            freqs = raw_freqs << u.Unit(cdf.varattsget("FREQUENCY").get("UNITS", "Hz"))
 
-            raw_data = cdf.varget("PSD_V2_S")
+            raw_data = cdf.varget("PSD_V2_S").astype(float)
             data_fill = cdf.varattsget("PSD_V2_S").get("FILLVAL", -1e31)
-            raw_data = raw_data[:, valid_freq_mask]
-            raw_data[raw_data <= data_fill] = 0
-            raw_data = np.nan_to_num(raw_data, nan=0.0)
+            raw_data[raw_data <= data_fill] = np.nan
             data = raw_data.T << u.Unit(cdf.varattsget("PSD_V2_S").get("UNITS", "V^2/Hz"))
 
             meta = {
@@ -618,7 +616,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 "observatory": "WIND",
                 "start_time": times[0],
                 "end_time": times[-1],
-                "wavelength": a.Wavelength(freqs.min(), freqs.max()),
+                "wavelength": a.Wavelength(np.nanmin(freqs), np.nanmax(freqs)),
                 "times": times,
                 "freqs": freqs,
             }
@@ -627,24 +625,22 @@ class SpectrogramFactory(BasicRegistrationFactory):
             epoch = cdf.varget("Epoch")
             times = Time(cdflib.cdfepoch.to_datetime(epoch))
 
-            raw_freqs = cdf.varget("frequency")
+            raw_freqs = cdf.varget("frequency").astype(float)
             freq_fill = cdf.varattsget("frequency").get("FILLVAL", -1e31)
-            valid_freq_mask = raw_freqs > freq_fill
-            freqs = raw_freqs[valid_freq_mask] << u.Unit(cdf.varattsget("frequency").get("UNITS", "kHz"))
+            raw_freqs[raw_freqs <= freq_fill] = np.nan
+            freqs = raw_freqs << u.Unit(cdf.varattsget("frequency").get("UNITS", "kHz"))
 
             res = []
             for sc_id, sc_name in [("ahead", "STEREO A"), ("behind", "STEREO B")]:
                 var_name = f"avg_intens_{sc_id}"
                 if var_name in cdf.cdf_info().zVariables:
-                    raw_data = cdf.varget(var_name)
+                    raw_data = cdf.varget(var_name).astype(float)
                     data_fill = cdf.varattsget(var_name).get("FILLVAL", -1e31)
-                    raw_data = raw_data[:, valid_freq_mask]
 
                     if np.all(raw_data <= data_fill):
                         continue
 
-                    raw_data[raw_data <= data_fill] = 0
-                    raw_data = np.nan_to_num(raw_data, nan=0.0)
+                    raw_data[raw_data <= data_fill] = np.nan
 
                     unit_str = cdf.varattsget(var_name).get("UNITS", "dB")
                     try:
@@ -661,7 +657,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                         "observatory": sc_name,
                         "start_time": times[0],
                         "end_time": times[-1],
-                        "wavelength": a.Wavelength(freqs.min(), freqs.max()),
+                        "wavelength": a.Wavelength(np.nanmin(freqs), np.nanmax(freqs)),
                         "times": times,
                         "freqs": freqs,
                     }
