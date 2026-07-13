@@ -146,6 +146,18 @@ def test_swaves_cdaweb(parse_path_moc):
     assert spec.end_time.datetime == datetime(2020, 7, 11, 23, 59, 30)
 
 
+@pytest.mark.remote_data
+def test_swaves_spectrogram_cdaweb_online():
+    spec = Spectrogram(
+        "https://cdaweb.gsfc.nasa.gov/sp_phys/data/stereo/combined/swaves/level2_cdf/2020/stereo_level2_swaves_20200711_v02.cdf"
+    )
+    assert isinstance(spec, SWAVESSpectrogram)
+    assert spec.observatory == "STEREO A"
+    assert spec.instrument == "SWAVES"
+    assert spec.detector == "LFR+HFR"
+    assert spec.data.shape == (367, 1440)
+
+
 @pytest.mark.skip(reason="SPDF website down")
 def test_swaves_spectrogram_online():
     spec = Spectrogram("")

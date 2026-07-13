@@ -98,6 +98,18 @@ def test_waves_cdaweb(parse_path_moc):
     assert spec.end_time.datetime == datetime(2020, 7, 11, 23, 56, 9)
 
 
+@pytest.mark.remote_data
+def test_waves_spectrogram_cdaweb_online():
+    spec = Spectrogram(
+        "https://cdaweb.gsfc.nasa.gov/sp_phys/data/wind/waves/rad1_l2/2020/wi_l2_wav_rad1_20200711_v01.cdf"
+    )
+    assert isinstance(spec, WAVESSpectrogram)
+    assert spec.observatory == "WIND"
+    assert spec.instrument == "WAVES"
+    assert spec.detector == "RAD1"
+    assert spec.data.shape == (32, 1876)
+
+
 @mock.patch("radiospectra.spectrogram.spectrogram_factory.readsav")
 def test_waves_prefixed_filename_parses_date(readsav_mock):
     data_array = np.zeros((256, 1441))

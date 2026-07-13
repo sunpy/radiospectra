@@ -590,7 +590,9 @@ class SpectrogramFactory(BasicRegistrationFactory):
                     }
                     res.append((specs[1].T, meta2))
                 return res
-        elif "ISTP" in cdf_globals.get("Project", [""])[0] and "WIND" in cdf_globals.get("Source_name", [""])[0]:
+        elif "WIND" in cdf_globals.get("Source_name", [""])[0] and cdf_globals.get("Descriptor", [""])[0].startswith(
+            "WAV"
+        ):
             descriptor = cdf_globals.get("Descriptor", [""])[0]
             # Extract detector name from descriptor e.g. "WAV_RAD1>Wind/WAVES RAD1"
             short = descriptor.split(">")[0]  # "WAV_RAD1"
@@ -601,13 +603,13 @@ class SpectrogramFactory(BasicRegistrationFactory):
 
             raw_freqs = cdf.varget("FREQUENCY").astype(float)
             freq_fill = cdf.varattsget("FREQUENCY").get("FILLVAL", -1e31)
-            raw_freqs[raw_freqs <= freq_fill] = np.nan
-            freqs = raw_freqs << u.Unit(cdf.varattsget("FREQUENCY").get("UNITS", "Hz"))
+            valid = raw_freqs > freq_fill
+            freqs = raw_freqs[valid] << u.Unit(cdf.varattsget("FREQUENCY").get("UNITS", "Hz"))
 
             raw_data = cdf.varget("PSD_V2_S").astype(float)
-            data_fill = cdf.varattsget("PSD_V2_S").get("FILLVAL", -1e31)
-            raw_data[raw_data <= data_fill] = np.nan
-            data = raw_data.T << u.Unit(cdf.varattsget("PSD_V2_S").get("UNITS", "V^2/Hz"))
+            # PSD_V2_S: Power spectral density (S antenna)
+            # Other antennas like PSD_V2_Z or PSD_V2_SP exist
+            data = raw_data[:, valid].T << u.Unit(cdf.varattsget("PSD_V2_S").get("UNITS", "V^2/Hz"))
 
             meta = {
                 "cdf_globals": cdf_globals,
@@ -616,19 +618,22 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 "observatory": "WIND",
                 "start_time": times[0],
                 "end_time": times[-1],
-                "wavelength": a.Wavelength(np.nanmin(freqs), np.nanmax(freqs)),
+                "wavelength": a.Wavelength(freqs.min(), freqs.max()),
                 "times": times,
                 "freqs": freqs,
             }
             return data, meta
-        elif "STP" in cdf_globals.get("Project", [""])[0] and "STEREO" in cdf_globals.get("Source_name", [""])[0]:
+        elif "STEREO" in cdf_globals.get("Source_name", [""])[0] and cdf_globals.get("Descriptor", [""])[0].startswith(
+            "SWAVES"
+        ):
             epoch = cdf.varget("Epoch")
             times = Time(cdflib.cdfepoch.to_datetime(epoch))
+            times.format = "isot"
 
             raw_freqs = cdf.varget("frequency").astype(float)
             freq_fill = cdf.varattsget("frequency").get("FILLVAL", -1e31)
-            raw_freqs[raw_freqs <= freq_fill] = np.nan
-            freqs = raw_freqs << u.Unit(cdf.varattsget("frequency").get("UNITS", "kHz"))
+            valid = raw_freqs > freq_fill
+            freqs = raw_freqs[valid] << u.Unit(cdf.varattsget("frequency").get("UNITS", "kHz"))
 
             res = []
             for sc_id, sc_name in [("ahead", "STEREO A"), ("behind", "STEREO B")]:
@@ -640,15 +645,13 @@ class SpectrogramFactory(BasicRegistrationFactory):
                     if np.all(raw_data <= data_fill):
                         continue
 
-                    raw_data[raw_data <= data_fill] = np.nan
-
                     unit_str = cdf.varattsget(var_name).get("UNITS", "dB")
                     try:
                         unit = u.Unit(unit_str)
                     except ValueError:
                         unit = u.dB if "dB" in unit_str else u.dimensionless_unscaled
 
-                    data = raw_data.T << unit
+                    data = raw_data[:, valid].T << unit
 
                     meta = {
                         "cdf_globals": cdf_globals,
@@ -657,7 +660,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                         "observatory": sc_name,
                         "start_time": times[0],
                         "end_time": times[-1],
-                        "wavelength": a.Wavelength(np.nanmin(freqs), np.nanmax(freqs)),
+                        "wavelength": a.Wavelength(freqs.min(), freqs.max()),
                         "times": times,
                         "freqs": freqs,
                     }
