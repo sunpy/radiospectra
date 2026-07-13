@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 import astropy.units as u
-from astropy.coordinates import EarthLocation
+from astropy.coordinates import SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
 
@@ -252,8 +252,10 @@ def test_callisto(parse_path_moc):
     assert spec.end_time.datetime == datetime(2011, 6, 7, 6, 39)
     assert spec.wavelength.min.to(u.MHz) == 20 * u.MHz
     assert spec.wavelength.max.to(u.MHz).round(1) == 91.8 * u.MHz
-    assert spec.observatory_location.value.tolist() == (3801942.212601484, 528924.6036780173, 5077174.568618115)
-    assert spec.observatory_location.unit == u.m
+    loc = spec.observatory_location.itrs.earth_location
+    assert np.isclose(loc.lon.value, 7.92012977600098)
+    assert np.isclose(loc.lat.value, 53.0941390991211)
+    assert np.isclose(loc.height.value, 416.5)
 
 
 @mock.patch("sunpy.util.io.is_file")
@@ -496,8 +498,10 @@ def test_callisto_hour_rollover(hdul_moc, is_file_mock):
     assert spec.end_time.datetime == datetime(2011, 6, 8, 0, 1, 6, 0)
     assert spec.wavelength.min.to(u.MHz) == 20 * u.MHz
     assert spec.wavelength.max.to(u.MHz).round(1) == 91.8 * u.MHz
-    assert spec.observatory_location.value.tolist() == (3801942.212601484, 528924.6036780173, 5077174.568618115)
-    assert spec.observatory_location.unit == u.m
+    loc = spec.observatory_location.itrs.earth_location
+    assert np.isclose(loc.lon.value, 7.92012977600098)
+    assert np.isclose(loc.lat.value, 53.0941390991211)
+    assert np.isclose(loc.height.value, 416.5)
 
 
 @pytest.mark.remote_data
@@ -526,7 +530,8 @@ def test_callisto_meta():
         }
     )
     coord = meta.observer_coordinate
-    assert isinstance(coord, EarthLocation)
-    assert np.isclose(coord.lon.value, 7.92012977600098)
-    assert np.isclose(coord.lat.value, 53.0941390991211)
-    assert np.isclose(coord.height.value, 416.5)
+    assert isinstance(coord, SkyCoord)
+    loc = coord.earth_location
+    assert np.isclose(loc.lon.value, 7.92012977600098)
+    assert np.isclose(loc.lat.value, 53.0941390991211)
+    assert np.isclose(loc.height.value, 416.5)

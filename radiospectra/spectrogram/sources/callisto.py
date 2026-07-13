@@ -15,10 +15,18 @@ class CALISTOMeta(SpectrogramMeta):
         """The coordinate of the observatory."""
         fits_meta = self.get("fits_meta")
         if fits_meta:
-            lat = fits_meta.get("OBS_LAT", 0) * u.deg * (1.0 if fits_meta.get("OBS_LAC") == "N" else -1.0)
-            lon = fits_meta.get("OBS_LON", 0) * u.deg * (1.0 if fits_meta.get("OBS_LOC") == "E" else -1.0)
+            lat_val = fits_meta.get("OBS_LAT")
+            lon_val = fits_meta.get("OBS_LON")
+            if lat_val is None or lon_val is None:
+                return None
+            lat = lat_val * u.deg * (1.0 if fits_meta.get("OBS_LAC") == "N" else -1.0)
+            lon = lon_val * u.deg * (1.0 if fits_meta.get("OBS_LOC") == "E" else -1.0)
             height = fits_meta.get("OBS_ALT", 0) * u.m
-            return EarthLocation(lat=lat, lon=lon, height=height)
+            loc = EarthLocation(lat=lat, lon=lon, height=height)
+            obstime = self.get("start_time")
+            if obstime is not None:
+                return SkyCoord(loc.get_gcrs(obstime))
+            return SkyCoord(loc.get_itrs())
         return None
 
 

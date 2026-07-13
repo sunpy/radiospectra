@@ -8,7 +8,7 @@ class RFSMeta(SpectrogramMeta):
     """Metadata for PSP FIELDS/RFS spectrograms."""
 
     @property
-    def level(self) -> str | None:
+    def processing_level(self) -> str | None:
         """The data processing level."""
         cdf_globals = self.get("cdf_globals")
         if cdf_globals:
@@ -58,8 +58,8 @@ class RFSSpectrogram(GenericSpectrogram):
         super().__init__(meta=meta, data=data, **kwargs)
 
     @property
-    def level(self):
-        return self.meta.level
+    def processing_level(self):
+        return self.meta.processing_level
 
     @property
     def version(self):
