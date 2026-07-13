@@ -5,6 +5,11 @@ import numpy as np
 import pytest
 
 import astropy.units as u
+from astropy.time import Time
+
+from sunpy.net import attrs as a
+
+from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
 
 def test_plot_mixed_frequency_units_on_same_axes(make_spectrogram):
@@ -132,3 +137,32 @@ def test_plotim_uses_time_support_for_datetime_conversion(make_spectrogram):
     np.testing.assert_allclose(x_values, expected_tt)
     np.testing.assert_allclose(y_values, spec.frequencies.value)
     np.testing.assert_allclose(image, spec.data)
+
+
+def test_generic_spectrogram_from_dict():
+    """Test creating a GenericSpectrogram from a raw dict and check properties/types/slicing."""
+    times = Time("2021-01-01T00:00:00") + np.arange(10) * u.s
+    freqs = np.linspace(10, 20, 5) * u.MHz
+    data = np.random.rand(5, 10)
+
+    meta_dict = {
+        "instrument": "TestInstrument",
+        "observatory": "TestObservatory",
+        "detector": "TestDetector",
+        "start_time": times[0],
+        "end_time": times[-1],
+        "wavelength": a.Wavelength(freqs[0], freqs[-1]),
+        "times": times,
+        "freqs": freqs,
+    }
+
+    spec = GenericSpectrogram(data, meta_dict)
+    assert spec.instrument == "TESTINSTRUMENT"
+    assert spec.observatory == "TESTOBSERVATORY"
+    assert spec.detector == "TESTDETECTOR"
+    assert isinstance(spec.start_time, Time)
+    assert spec.start_time == times[0]
+    assert isinstance(spec.end_time, Time)
+    assert spec.end_time == times[-1]
+    sliced = spec[1:3, 2:5]
+    assert sliced.meta["instrument"] == "TestInstrument"
