@@ -44,7 +44,7 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
         """
         The name of the observatory which recorded the spectrogram.
         """
-        val = getattr(self.meta, "observatory", self.meta.get("observatory"))
+        val = self.meta.get("observatory")
         return val.upper() if val else None
 
     @property
@@ -52,7 +52,7 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
         """
         The name of the instrument which recorded the spectrogram.
         """
-        val = getattr(self.meta, "instrument", self.meta.get("instrument"))
+        val = self.meta.get("instrument")
         return val.upper() if val else None
 
     @property
@@ -60,7 +60,7 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
         """
         The detector which recorded the spectrogram.
         """
-        val = getattr(self.meta, "detector", self.meta.get("detector"))
+        val = self.meta.get("detector")
         return val.upper() if val else None
 
     @property
@@ -68,21 +68,21 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
         """
         The start time of the spectrogram.
         """
-        return getattr(self.meta, "date_start", self.meta.get("start_time"))
+        return self.meta.get("start_time")
 
     @property
     def end_time(self):
         """
         The end time of the spectrogram.
         """
-        return getattr(self.meta, "date_end", self.meta.get("end_time"))
+        return self.meta.get("end_time")
 
     @property
     def wavelength(self):
         """
         The wavelength range of the spectrogram.
         """
-        return getattr(self.meta, "frequency_range", self.meta.get("wavelength"))
+        return self.meta.get("wavelength")
 
     @property
     def times(self):

@@ -66,19 +66,19 @@ class SpectrogramMetaABC(NDMetaABC):
 
     @property
     @abc.abstractmethod
-    def temporal_resolution(self) -> Quantity:
+    def temporal_resolution(self) -> Quantity | None:
         pass
 
     # Frequency
     @property
     @abc.abstractmethod
-    def frequency_range(self) -> Quantity:
+    def frequency_range(self) -> Quantity | None:
         """Frequency range of observation"""
         pass
 
     @property
     @abc.abstractmethod
-    def frequency_resolution(self) -> Quantity:
+    def frequency_resolution(self) -> Quantity | None:
         pass
 
     # Calibration and signal
@@ -149,15 +149,15 @@ class SpectrogramMeta(NDMeta, SpectrogramMetaABC):
         return self.get("source_filename")
 
     @property
-    def temporal_resolution(self) -> Quantity:
+    def temporal_resolution(self) -> Quantity | None:
         return self.get("temporal_resolution")
 
     @property
-    def frequency_range(self) -> Quantity:
+    def frequency_range(self) -> Quantity | None:
         return self.get("wavelength")
 
     @property
-    def frequency_resolution(self) -> Quantity:
+    def frequency_resolution(self) -> Quantity | None:
         return self.get("frequency_resolution")
 
     @property
