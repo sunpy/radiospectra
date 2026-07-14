@@ -35,6 +35,12 @@ class SpectrogramMetaABC(NDMetaABC):
 
     @property
     @abc.abstractmethod
+    def receiver(self) -> str | None:
+        """Name of the receiver."""
+        pass
+
+    @property
+    @abc.abstractmethod
     def processing_level(self) -> str | None:
         """The level to which the data has been processed."""
         pass
@@ -108,6 +114,12 @@ class SpectrogramMetaABC(NDMetaABC):
         """Observer coordinate."""
         pass
 
+    @property
+    @abc.abstractmethod
+    def background(self):
+        """The background subtracted from the data."""
+        pass
+
 
 class SpectrogramMeta(NDMeta, SpectrogramMetaABC):
     """
@@ -130,11 +142,11 @@ class SpectrogramMeta(NDMeta, SpectrogramMetaABC):
 
     @property
     def date_start(self) -> Time:
-        return self["start_time"]
+        return Time(self["start_time"])
 
     @property
     def date_end(self) -> Time:
-        return self["end_time"]
+        return Time(self["end_time"])
 
     @property
     def processing_level(self) -> str | None:
@@ -175,3 +187,11 @@ class SpectrogramMeta(NDMeta, SpectrogramMetaABC):
     @property
     def observer_coordinate(self) -> SkyCoord | None:
         return self.get("observer_coordinate")
+
+    @property
+    def receiver(self) -> str | None:
+        return self.get("detector")
+
+    @property
+    def background(self):
+        return self.get("background")

@@ -7,15 +7,7 @@ __all__ = ["WAVESSpectrogram", "WAVESMeta"]
 class WAVESMeta(SpectrogramMeta):
     """Metadata for WIND/WAVES spectrograms."""
 
-    @property
-    def background(self):
-        """The background subtracted from the data."""
-        return self.get("background")
-
-    @property
-    def receiver(self):
-        """The name of the receiver."""
-        return self.get("detector")
+    pass
 
 
 class WAVESSpectrogram(GenericSpectrogram):
@@ -42,20 +34,6 @@ class WAVESSpectrogram(GenericSpectrogram):
         if not isinstance(meta, WAVESMeta):
             meta = WAVESMeta(meta)
         super().__init__(meta=meta, data=data, **kwargs)
-
-    @property
-    def receiver(self):
-        """
-        The name of the receiver.
-        """
-        return getattr(self.meta, "receiver", self.meta.get("receiver"))
-
-    @property
-    def background(self):
-        """
-        The background subtracted from the data.
-        """
-        return getattr(self.meta, "background", self.meta.get("bg"))
 
     @classmethod
     def is_datasource_for(cls, data, meta, **kwargs):

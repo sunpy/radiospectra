@@ -64,6 +64,21 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
         return val.upper() if val else None
 
     @property
+    def receiver(self):
+        """
+        The receiver which recorded the spectrogram.
+        """
+        val = self.meta.get("receiver")
+        return val.upper() if val else None
+
+    @property
+    def background(self):
+        """
+        The background subtracted from the data.
+        """
+        return self.meta.get("background")
+
+    @property
     def start_time(self):
         """
         The start time of the spectrogram.
