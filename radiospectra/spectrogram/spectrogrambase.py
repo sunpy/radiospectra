@@ -115,12 +115,36 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
     def crop_time(self, start_time, end_time):
         """
         Crop the spectrogram by time.
+
+        Parameters
+        ----------
+        start_time : `astropy.time.Time`
+            The start time of the crop.
+        end_time : `astropy.time.Time`
+            The end time of the crop.
+
+        Returns
+        -------
+        `radiospectra.spectrogram.GenericSpectrogram`
+            The cropped spectrogram.
         """
         return self.crop((start_time, None), (end_time, None))
 
     def crop_freq(self, low_freq, high_freq):
         """
         Crop the spectrogram by frequency.
+
+        Parameters
+        ----------
+        low_freq : `astropy.coordinates.SpectralCoord`
+            The low frequency of the crop.
+        high_freq : `astropy.coordinates.SpectralCoord`
+            The high frequency of the crop.
+
+        Returns
+        -------
+        `radiospectra.spectrogram.GenericSpectrogram`
+            The cropped spectrogram.
         """
         if not isinstance(low_freq, SpectralCoord):
             low_freq = SpectralCoord(low_freq)
