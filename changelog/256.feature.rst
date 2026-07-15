@@ -1,0 +1,1 @@
+Add `crop_time` and `crop_freq` wrappers to `GenericSpectrogram` to allow easy cropping of a spectrogram along a single axis.
