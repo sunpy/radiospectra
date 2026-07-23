@@ -1,0 +1,1 @@
+Add `~radiospectra.spectrogram.spectrogrambase.GenericSpectrogram.crop_time` and `~radiospectra.spectrogram.spectrogrambase.GenericSpectrogram.crop_freq` to allow easy cropping of a spectrogram along a single axis.

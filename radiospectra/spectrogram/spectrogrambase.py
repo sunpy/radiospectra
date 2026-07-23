@@ -1,6 +1,7 @@
 import ndcube
 
 import astropy.units as u
+from astropy.coordinates import SpectralCoord
 from astropy.time import Time
 
 from radiospectra.exceptions import SpectraMetaValidationError
@@ -110,6 +111,49 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
                 return meta["start_time"] + times
             return meta["start_time"] + times * u.s
         return Time(times)
+
+    def crop_time(self, start_time, end_time):
+        """
+        Crop the spectrogram by time.
+
+        Parameters
+        ----------
+        start_time : `astropy.time.Time`
+            The start time of the crop.
+        end_time : `astropy.time.Time`
+            The end time of the crop.
+
+        Returns
+        -------
+        `radiospectra.spectrogram.GenericSpectrogram`
+            The cropped spectrogram.
+        """
+        start_time = Time(start_time)
+        end_time = Time(end_time)
+        return self.crop((start_time, None), (end_time, None))
+
+    def crop_freq(self, low_freq, high_freq):
+        """
+        Crop the spectrogram by frequency.
+
+        Parameters
+        ----------
+        low_freq : `astropy.units.Quantity` or `astropy.coordinates.SpectralCoord`
+            The low frequency of the crop.
+        high_freq : `astropy.units.Quantity` or `astropy.coordinates.SpectralCoord`
+            The high frequency of the crop.
+
+        Returns
+        -------
+        `radiospectra.spectrogram.GenericSpectrogram`
+            The cropped spectrogram.
+        """
+        if not isinstance(low_freq, SpectralCoord):
+            low_freq = SpectralCoord(low_freq)
+        if not isinstance(high_freq, SpectralCoord):
+            high_freq = SpectralCoord(high_freq)
+
+        return self.crop((None, low_freq), (None, high_freq))
 
     def __repr__(self):
         return (
