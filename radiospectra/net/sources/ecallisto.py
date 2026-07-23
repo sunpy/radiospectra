@@ -1,3 +1,6 @@
+from typing import Any, cast
+from collections import OrderedDict
+
 from sunpy.net import attrs as a
 from sunpy.net.attr import SimpleAttr
 from sunpy.net.dataretriever.client import GenericClient
@@ -5,7 +8,7 @@ from sunpy.net.dataretriever.client import GenericClient
 from radiospectra.net.attrs import Observatory
 
 
-class eCALLISTOClient(GenericClient):
+class eCALLISTOClient(GenericClient):  # type: ignore[misc]
     """
     Provides access to `eCallisto radio spectrometer <http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/>`__
     `data archive <https://spdf.gsfc.nasa.gov>`__.
@@ -17,7 +20,7 @@ class eCALLISTOClient(GenericClient):
     `Specific information on the meaning of the filename. <http://soleil.i4ds.ch/solarradio/data/readme.txt>`__
 
     From the filename alone there's no way to tell about either the frequency or duration.
-    Therefore we only return a start time.
+    Therefore, we only return a start time.
 
     Examples
     --------
@@ -46,8 +49,12 @@ class eCALLISTOClient(GenericClient):
     )
 
     @classmethod
-    def pre_search_hook(cls, *args, **kwargs):
-        baseurl, pattern, matchdict = super().pre_search_hook(*args, **kwargs)
+    def pre_search_hook(  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls, *args: Any, **kwargs: Any
+    ) -> tuple[str, str, dict[str, Any]]:
+        # GenericClient.baseurl/.pattern are `None` placeholders on the untyped base;
+        # by the time a concrete client runs this they are always strings.
+        baseurl, pattern, matchdict = cast(tuple[str, str, dict[str, Any]], super().pre_search_hook(*args, **kwargs))
         obs = matchdict["Observatory"]
         if obs[0] == "*":
             pattern = pattern.replace("{obs}", "{{Observatory}}")
@@ -58,8 +65,8 @@ class eCALLISTOClient(GenericClient):
             pattern = pattern.replace("{obs}", obs_attr.value)
         return baseurl, pattern, matchdict
 
-    def post_search_hook(self, exdict, matchdict):
-        original = super().post_search_hook(exdict, matchdict)
+    def post_search_hook(self, exdict: dict[str, Any], matchdict: dict[str, Any]) -> OrderedDict[str, Any]:
+        original = cast(OrderedDict[str, Any], super().post_search_hook(exdict, matchdict))
         original["ID"] = original["suffix"].replace("_", "")
         del original["suffix"]
         # We don't know the end time for all files
@@ -68,7 +75,7 @@ class eCALLISTOClient(GenericClient):
         return original
 
     @classmethod
-    def register_values(cls):
+    def register_values(cls) -> dict[Any, Any]:  # pyright: ignore[reportIncompatibleMethodOverride]
         adict = {
             a.Provider: [("eCALLISTO", "International Network of Solar Radio Spectrometers.")],
             a.Instrument: [("eCALLISTO", "e-Callisto - International Network of Solar Radio Spectrometers.")],
@@ -77,7 +84,7 @@ class eCALLISTOClient(GenericClient):
         return adict
 
     @classmethod
-    def _can_handle_query(cls, *query):
+    def _can_handle_query(cls, *query: Any) -> bool:
         """
         Method the `sunpy.net.fido_factory.UnifiedDownloaderFactory` class uses
         to dispatch queries to this Client.

@@ -3,9 +3,11 @@ import struct
 import pathlib
 import warnings
 import functools
+from typing import Any, cast
 from pathlib import Path
 from collections import OrderedDict
 from urllib.request import Request
+from collections.abc import Mapping, Callable
 
 import cdflib
 import numpy as np
@@ -15,7 +17,8 @@ from scipy.io import readsav
 import astropy.units as u
 from astropy.io import fits
 from astropy.io.fits import Header
-from astropy.time import Time
+from astropy.time import Time, TimeDelta
+from astropy.units.typing import QuantityLike
 
 from sunpy import log
 from sunpy.data import cache
@@ -37,18 +40,53 @@ from radiospectra.exceptions import NoSpectrogramInFileError, SpectraMetaValidat
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 from radiospectra.utils import subband_to_freq
 
-SUPPORTED_ARRAY_TYPES = (np.ndarray,)
-try:
-    import dask.array
 
-    SUPPORTED_ARRAY_TYPES += (dask.array.Array,)
-except ImportError:
-    pass
+def _supported_array_types() -> tuple[type[Any], ...]:
+    types: tuple[type[Any], ...] = (np.ndarray,)
+    try:
+        import dask.array
+
+        types += (dask.array.Array,)
+    except ImportError:
+        pass
+    return types
+
+
+SUPPORTED_ARRAY_TYPES: tuple[type[Any], ...] = _supported_array_types()
+
+
+def _cdf_global_attr(cdf_globals: dict[str, list[str | np.ndarray]], key: str, default: str = "") -> str:
+    """
+    CDF global attributes accessed here are always scalar strings.
+    """
+    return str(cdf_globals.get(key, [default])[0])
+
+
+def _cdf_var_attr(cdf: cdflib.CDF, variable: str, attr: str, default: str = "") -> str:
+    """
+    CDF variable attributes (e.g. UNITS) accessed here are always strings.
+    """
+    return str(cdf.varattsget(variable).get(attr, default))
+
+
+def _cdf_var_data(cdf: cdflib.CDF, variable: str) -> np.ndarray:
+    """
+    CDF variables accessed here are always numeric arrays, never the scalar-string form.
+    """
+    return cast(np.ndarray, cdf.varget(variable))
+
+
+def _time_index(times: Time, key: Any) -> Time:
+    """
+    Work around pyright mis-inferring ``Time.__getitem__`` as returning ``None``.
+    """
+    return cast(Time, times[key])
+
 
 __all__ = ["SpectrogramFactory", "Spectrogram"]
 
 
-class SpectrogramFactory(BasicRegistrationFactory):
+class SpectrogramFactory(BasicRegistrationFactory):  # type: ignore[misc]
     """
     A factory for generating spectrograms.
 
@@ -63,7 +101,10 @@ class SpectrogramFactory(BasicRegistrationFactory):
         The spectrogram for the give file
     """
 
-    def _validate_meta(self, meta):
+    registry: dict[type[GenericSpectrogram], Callable[..., bool]]
+    default_widget_type: type[GenericSpectrogram] | None
+
+    def _validate_meta(self, meta: Mapping[str, Any]) -> bool:
         """
         Validate a meta argument.
         """
@@ -74,7 +115,9 @@ class SpectrogramFactory(BasicRegistrationFactory):
         else:
             return False
 
-    def _parse_args(self, *args, silence_errors=False, **kwargs):
+    def _parse_args(
+        self, *args: Any, silence_errors: bool = False, **kwargs: Any
+    ) -> list[tuple[QuantityLike, dict[str, Any]]]:
         """
         Parses an args list into data-header pairs.
 
@@ -101,30 +144,30 @@ class SpectrogramFactory(BasicRegistrationFactory):
                          '*.fits')
         """
         # Account for nested lists of items
-        args = expand_list(args)
-        # Sanitize the input so that each 'type' of input corresponds to a different
+        expanded_args: list[Any] = expand_list(args)
+        # Sanitise the input so that each 'type' of input corresponds to a different
         # class, so single dispatch can be used later
-        nargs = len(args)
+        nargs = len(expanded_args)
         i = 0
         while i < nargs:
-            arg = args[i]
+            arg = expanded_args[i]
             if isinstance(arg, SUPPORTED_ARRAY_TYPES):
                 # The next two items are data and a header
-                data = args.pop(i)
-                header = args.pop(i)
-                args.insert(i, (data, header))
+                data = expanded_args.pop(i)
+                header = expanded_args.pop(i)
+                expanded_args.insert(i, (data, header))
                 nargs -= 1
             elif isinstance(arg, str) and is_url(arg):
                 # Replace URL string with a Request object to dispatch on later
-                args[i] = Request(arg)
+                expanded_args[i] = Request(arg)
             elif possibly_a_path(arg):
                 # Replace path strings with Path objects
-                args[i] = pathlib.Path(arg)
+                expanded_args[i] = pathlib.Path(arg)
             i += 1
         # Parse the arguments
-        # Note that this list can also contain GenericMaps if they are directly given to the factory
-        data_header_pairs = []
-        for arg in args:
+        # Note that this list can also contain GenericSpectrograms if they are directly given to the factory
+        data_header_pairs: list[Any] = []
+        for arg in expanded_args:
             try:
                 data_header_pairs += self._parse_arg(arg, **kwargs)
             except NoSpectrogramInFileError as e:
@@ -134,7 +177,9 @@ class SpectrogramFactory(BasicRegistrationFactory):
         return data_header_pairs
 
     @functools.singledispatchmethod
-    def _parse_arg(self, arg, **kwargs):
+    def _parse_arg(
+        self, arg: Any, **kwargs: Any
+    ) -> list[tuple[QuantityLike, dict[str, Any]]] | list[GenericSpectrogram]:
         """
         Take a factory input and parse into (data, header) pairs.
 
@@ -143,7 +188,9 @@ class SpectrogramFactory(BasicRegistrationFactory):
         raise ValueError(f"Invalid input: {arg}")
 
     @_parse_arg.register(tuple)
-    def _parse_tuple(self, arg, **kwargs):
+    def _parse_tuple(
+        self, arg: tuple[QuantityLike, dict[str, Any]], **kwargs: Any
+    ) -> list[tuple[QuantityLike, dict[str, Any]]]:
         # Data-header
         data, header = arg
         pair = data, header
@@ -152,21 +199,23 @@ class SpectrogramFactory(BasicRegistrationFactory):
         return [pair]
 
     @_parse_arg.register(GenericSpectrogram)
-    def _parse_map(self, arg, **kwargs):
+    def _parse_spectrogram(self, arg: GenericSpectrogram, **kwargs: Any) -> list[GenericSpectrogram]:
         return [arg]
 
     @_parse_arg.register(Request)
-    def _parse_url(self, arg, **kwargs):
+    def _parse_url(self, arg: Request, **kwargs: Any) -> list[tuple[QuantityLike, dict[str, Any]]]:
         url = arg.full_url
         path = str(cache.download(url).absolute())
         pairs = self._read_file(path, **kwargs)
         return pairs
 
     @_parse_arg.register(pathlib.Path)
-    def _parse_path(self, arg, **kwargs):
-        return parse_path(arg, self._read_file, **kwargs)
+    def _parse_path(self, arg: Path, **kwargs: Any) -> list[tuple[QuantityLike, dict[str, Any]]]:
+        return cast(list[tuple[QuantityLike, dict[str, Any]]], parse_path(arg, self._read_file, **kwargs))
 
-    def __call__(self, *args, silence_errors=False, **kwargs):
+    def __call__(
+        self, *args: Any, silence_errors: bool = False, **kwargs: Any
+    ) -> GenericSpectrogram | list[GenericSpectrogram]:
         """
         Method for running the factory.
 
@@ -210,7 +259,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
             return new_maps[0]
         return new_maps
 
-    def _check_registered_widgets(self, data, meta, **kwargs):
+    def _check_registered_widgets(self, data: QuantityLike, meta: dict[str, Any], **kwargs: Any) -> GenericSpectrogram:
         candidate_widget_types = list()
         for key in self.registry:
             # Call the registered validation function for each registered class
@@ -235,10 +284,14 @@ class SpectrogramFactory(BasicRegistrationFactory):
         WidgetType = candidate_widget_types[0]
         return WidgetType(data, meta, **kwargs)
 
-    def _read_file(self, file, **kwargs):
+    def _read_file(self, file: str | Path, **kwargs: Any) -> list[tuple[QuantityLike, dict[str, Any]]]:
         file = Path(file)
         extensions = [ext.lower() for ext in file.suffixes]
         if ".dat" in extensions:
+            dat = self._read_dat(file)
+            if isinstance(dat, list):
+                return dat
+            return [dat]
             return self._read_dat(file)
         elif ".r1" in extensions or ".r2" in extensions:
             return [self._read_idl_sav(file, instrument="waves")]
@@ -258,7 +311,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
             raise ValueError(f"Extension {file.suffixes} not supported.")
 
     @staticmethod
-    def _read_dat(file):
+    def _read_dat(file: Path) -> tuple[QuantityLike, dict[str, Any]] | list[tuple[QuantityLike, dict[str, Any]]]:
         if "swaves" in file.name:
             name, prod, date, spacecraft, receiver = file.stem.split("_")
             # frequency range
@@ -327,7 +380,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
             raise ValueError(f"File {file} not supported.")
 
     @staticmethod
-    def _read_srs(file):
+    def _read_srs(file: Path) -> tuple[QuantityLike, dict[str, Any]]:
         with file.open("rb") as buff:
             data = buff.read()
             if file.suffixes[-1] == ".gz":
@@ -392,7 +445,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
         freq_a = (25 + 50 * (n - 1) / 400) * u.MHz
         freq_b = (75 + 105 * (n - 1) / 400) * u.MHz
         freqs = np.hstack([freq_a, freq_b])
-        data = np.hstack([np.vstack(df[name].to_numpy()) for name in ["spec1", "spec2"]]).T
+        spec_data = np.hstack([np.vstack(df[name].to_numpy()) for name in ["spec1", "spec2"]]).T  # type: ignore[call-overload]
         times = Time(
             Time(df["time"]), format="iso"
         )  # TODO update once datetime format is supported by current plotters
@@ -406,24 +459,24 @@ class SpectrogramFactory(BasicRegistrationFactory):
             "freqs": freqs,
             "times": times,
         }
-        return data, meta
+        return spec_data, meta
 
     @staticmethod
-    def _read_cdf(file):
+    def _read_cdf(file: Path) -> tuple[QuantityLike, dict[str, Any]] | list[tuple[QuantityLike, dict[str, Any]]]:
         cdf = cdflib.CDF(file)
 
         cdf_globals = cdf.globalattsget()
 
         if (
-            cdf_globals.get("Project", "")[0] == "PSP"
-            and cdf_globals.get("Source_name")[0] == "PSP_FLD>Parker Solar Probe FIELDS"
-            and "Radio Frequency Spectrometer" in cdf_globals.get("Descriptor")[0]
+            _cdf_global_attr(cdf_globals, "Project") == "PSP"
+            and _cdf_global_attr(cdf_globals, "Source_name") == "PSP_FLD>Parker Solar Probe FIELDS"
+            and "Radio Frequency Spectrometer" in _cdf_global_attr(cdf_globals, "Descriptor")
         ):
-            short, _long = cdf_globals["Descriptor"][0].split(">")
+            short, _long = _cdf_global_attr(cdf_globals, "Descriptor").split(">")
 
             detector = short[4:].lower()
             times, data, freqs = (
-                cdf.varget(name)
+                _cdf_var_data(cdf, name)
                 for name in [
                     f"epoch_{detector}_auto_averages_ch0_V1V2",
                     f"psp_fld_l2_rfs_{detector}_auto_averages_ch0_V1V2",
@@ -438,36 +491,36 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 "detector": detector,
                 "instrument": "FIELDS/RFS",
                 "observatory": "PSP",
-                "start_time": times[0],
-                "end_time": times[-1],
+                "start_time": _time_index(times, 0),
+                "end_time": _time_index(times, -1),
                 "wavelength": a.Wavelength(freqs.min(), freqs.max()),
                 "times": times,
                 "freqs": freqs,
             }
             return data, meta
-        elif "SOLO" in cdf_globals.get("Project", "")[0]:
-            data_type = cdf_globals.get("Data_type", [""])[0]
-            data_descriptor = cdf_globals.get("Descriptor", "")[0]
+        elif "SOLO" in _cdf_global_attr(cdf_globals, "Project"):
+            data_type = _cdf_global_attr(cdf_globals, "Data_type")
+            data_descriptor = _cdf_global_attr(cdf_globals, "Descriptor")
             if "RPW-HFR-SURV" not in data_descriptor and "RPW-TNR-SURV-FLUX" not in data_descriptor:
                 raise ValueError(
-                    f"Currently radiospectra supports Level 2 HFR survey data "
+                    f"Currently, radiospectra supports Level 2 HFR survey data "
                     "and Level 3 HFR, TNR survey data the file "
-                    f"{file.name} is {cdf_globals.get('Logical_source_description', [''])[0]}"
+                    f"{file.name} is {_cdf_global_attr(cdf_globals, 'Logical_source_description')}"
                 )
             if "L3" in data_type:
-                epoch = cdf.varget("Epoch")
+                epoch = _cdf_var_data(cdf, "Epoch")
                 times = Time("J2000.0") + epoch * u.ns
-                freqs = cdf.varget("FREQUENCY") << u.Unit(cdf.varattsget("FREQUENCY")["UNITS"])
-                data = cdf.varget("PSD_SFU")
+                freqs = _cdf_var_data(cdf, "FREQUENCY") << u.Unit(_cdf_var_attr(cdf, "FREQUENCY", "UNITS"))
+                data = _cdf_var_data(cdf, "PSD_SFU")
                 data = np.squeeze(data).T << sfu
-                detector = cdf_globals.get("Instrument", [""])[0].split(">")[0]
+                detector = _cdf_global_attr(cdf_globals, "Instrument").split(">")[0]
                 meta = {
                     "cdf_globals": cdf_globals,
                     "detector": detector,
                     "instrument": "RPW",
                     "observatory": "SOLO",
-                    "start_time": times[0],
-                    "end_time": times[-1],
+                    "start_time": _time_index(times, 0),
+                    "end_time": _time_index(times, -1),
                     "wavelength": a.Wavelength(freqs.min(), freqs.max()),
                     "times": times,
                     "freqs": freqs,
@@ -491,20 +544,20 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 }
 
                 # Extract variables
-                all_times = Time("J2000.0") + cdf.varget("EPOCH") * u.Unit(cdf.varattsget("EPOCH")["UNITS"])
-                all_freqs = cdf.varget("FREQUENCY") << u.Unit(cdf.varattsget("FREQUENCY")["UNITS"])
+                all_times = Time("J2000.0") + _cdf_var_data(cdf, "EPOCH") * u.Unit(_cdf_var_attr(cdf, "EPOCH", "UNITS"))
+                all_freqs = _cdf_var_data(cdf, "FREQUENCY") << u.Unit(_cdf_var_attr(cdf, "FREQUENCY", "UNITS"))
 
-                sweep_start_indices = np.asarray(np.diff(cdf.varget("SWEEP_NUM")) != 0).nonzero()
-                sweep_start_indices = np.insert((sweep_start_indices[0] + 1), 0, 0)
-                times = all_times[sweep_start_indices]
+                sweep_start_indices = np.asarray(np.diff(_cdf_var_data(cdf, "SWEEP_NUM")) != 0).nonzero()[0]
+                sweep_start_indices = np.insert((sweep_start_indices + 1), 0, 0)
+                times = _time_index(all_times, sweep_start_indices)
 
-                sensor = cdf.varget("SENSOR_CONFIG")
-                np.unique(cdf.varget("FREQUENCY"))
-                band = cdf.varget("HFR_BAND")
+                sensor = _cdf_var_data(cdf, "SENSOR_CONFIG")
+                np.unique(_cdf_var_data(cdf, "FREQUENCY"))
+                band = _cdf_var_data(cdf, "HFR_BAND")
 
-                u.Unit(cdf.varattsget("AGC1").get("UNIT", "V^2/Hz"))
-                agc1 = cdf.varget("AGC1")
-                agc2 = cdf.varget("AGC2")
+                u.Unit(_cdf_var_attr(cdf, "AGC1", "UNIT", "V^2/Hz"))
+                agc1 = _cdf_var_data(cdf, "AGC1")
+                agc2 = _cdf_var_data(cdf, "AGC2")
 
                 # Define number of records
                 n_rec = band.shape[0]
@@ -515,7 +568,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 hfr_frequency = 375 + 50 * np.arange(321)  # This is a guess something between 320 and 324
                 nf = len(hfr_frequency)
 
-                # Initialize output 2D array containing voltage spectral power values in V^2/Hz
+                # Initialise output 2D array containing voltage spectral power values in V^2/Hz
                 # Dims = (channels[2], time of the first sweep sample[len(time)], frequency[192])
                 specs = np.empty((2, nt, nf))
                 # Fill 2D array with NaN for HRF frequencies not actually measured in the file
@@ -540,9 +593,9 @@ class SpectrogramFactory(BasicRegistrationFactory):
                     i0 = isweep[i]
                     i1 = isweep[i + 1]
 
-                    ts = all_times[i0]
-                    te = all_times[i1 - 1]
-                    tt = (te - ts) * 0.5 + ts
+                    ts = _time_index(all_times, i0)
+                    te = _time_index(all_times, i1 - 1)
+                    tt = cast(TimeDelta, te - ts) * 0.5 + ts
                     tm.append(tt)
 
                     # Get indices of the actual frequency channels in the frequency vector
@@ -569,8 +622,8 @@ class SpectrogramFactory(BasicRegistrationFactory):
                         "detector": "RPW-AGC1",
                         "instrument": "RPW",
                         "observatory": "SOLO",
-                        "start_time": times[0],
-                        "end_time": times[-1],
+                        "start_time": _time_index(times, 0),
+                        "end_time": _time_index(times, -1),
                         "wavelength": a.Wavelength(hfr_frequency.min(), hfr_frequency.max()),
                         "times": times,
                         "freqs": hfr_frequency,
@@ -582,18 +635,29 @@ class SpectrogramFactory(BasicRegistrationFactory):
                         "detector": "RPW-AGC2",
                         "instrument": "RPW",
                         "observatory": "SOLO",
-                        "start_time": times[0],
-                        "end_time": times[-1],
+                        "start_time": _time_index(times, 0),
+                        "end_time": _time_index(times, -1),
                         "wavelength": a.Wavelength(hfr_frequency.min(), hfr_frequency.max()),
                         "times": times,
                         "freqs": hfr_frequency,
                     }
                     res.append((specs[1].T, meta2))
                 return res
+            else:
+                raise ValueError(
+                    f"Unsupported SOLO data type '{data_type}' in file {file.name}. "
+                    "Currently, radiospectra supports Level 2 and Level 3 data."
+                )
+        else:
+            raise ValueError(
+                f"Unsupported CDF file {file.name}: could not identify project as PSP or SOLO "
+                f"(Project={cdf_globals.get('Project', '')}, Source_name={cdf_globals.get('Source_name', '')})."
+            )
 
     @staticmethod
-    def _read_fits(file):
-        hd_pairs = fits.open(file)
+    def _read_fits(file: Path) -> tuple[QuantityLike, dict[str, Any]] | list[tuple[QuantityLike, dict[str, Any]]]:
+        # Always get HDU that has .header and .data
+        hd_pairs = cast(Any, fits.open(file))
         if "e-CALLISTO" in hd_pairs[0].header.get("CONTENT", ""):
             data = hd_pairs[0].data
             times = hd_pairs[1].data["TIME"].flatten() * u.s
@@ -607,7 +671,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 time_comps[0] = "00"
                 fixed_time = ":".join(time_comps)
                 date_offset = parse_time(hd_pairs[0].header["DATE-END"] + " " + fixed_time)
-                end_time = date_offset + 1 * u.day
+                end_time = date_offset + cast(u.Quantity, 1 * u.day)
 
             times = start_time + times
             meta = {
@@ -687,17 +751,17 @@ class SpectrogramFactory(BasicRegistrationFactory):
             raise ValueError(f"Could not load fits file: {file} into Spectrogram.") from e
 
     @staticmethod
-    def _read_idl_sav(file, instrument=None):
+    def _read_idl_sav(file: Path, instrument: str | None = None) -> tuple[QuantityLike, dict[str, Any]]:
         data = readsav(file)
         if instrument == "waves":
             # See https://solar-radio.gsfc.nasa.gov/wind/one_minute_doc.html
             data_array = data["arrayb"]
             # frequency range
             if file.suffix == ".R1":
-                freqs = np.linspace(20, 1040, 256) * u.kHz
+                freqs = cast(u.Quantity, np.linspace(20, 1040, 256) * u.kHz)
                 receiver = "RAD1"
             elif file.suffix == ".R2":
-                freqs = np.linspace(1.075, 13.825, 256) * u.MHz
+                freqs = cast(u.Quantity, np.linspace(1.075, 13.825, 256) * u.MHz)
                 receiver = "RAD2"
             else:
                 raise ValueError(f"Unknown WIND/WAVES file type: {file.suffix}")
@@ -723,4 +787,4 @@ class SpectrogramFactory(BasicRegistrationFactory):
             raise ValueError(f"Unrecognized IDL .save file: {file}")
 
 
-Spectrogram = SpectrogramFactory(registry=GenericSpectrogram._registry, default_widget_type=GenericSpectrogram)
+Spectrogram = SpectrogramFactory(registry=GenericSpectrogram.registry, default_widget_type=GenericSpectrogram)

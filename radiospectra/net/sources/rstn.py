@@ -1,3 +1,6 @@
+from typing import Any, cast
+from collections import OrderedDict
+
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import GenericClient, QueryResponse
 from sunpy.net.scraper import Scraper
@@ -8,7 +11,7 @@ from radiospectra.net.attrs import Observatory
 __all__ = ["RSTNClient"]
 
 
-class RSTNClient(GenericClient):
+class RSTNClient(GenericClient):  # type: ignore[misc]
     """
     Radio Spectrometer Telescope Network (RSTN) hosted at NOAA
     `National Geophysical Data <https://www.ngdc.noaa.gov>`__ (NGDC) archive.
@@ -37,23 +40,25 @@ class RSTNClient(GenericClient):
         r"{{obs_short:2l}}{{year2:2d}}{{month2:2d}}{{day:2d}}.SRS.gz"
     )
 
-    observatory_map = {
+    observatory_map: dict[str, str] = {
         "Holloman": "holloman",
         "Learmonth": "learmonth",
         "Palehua": "palehua",
         "Sagamore Hill": "sagamore",
         "San Vito": "san-vito",
     }
-    observatory_map = {**observatory_map, **dict(map(reversed, observatory_map.items()))}
+    observatory_map = {**observatory_map, **{v: k for k, v in observatory_map.items()}}
 
-    def search(self, *args, **kwargs):
-        _, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
+    def search(self, *args: Any, **kwargs: Any) -> QueryResponse:
+        # GenericClient.baseurl/.pattern are `None` placeholders on the untyped base;
+        # by the time a concrete client runs this they are always strings.
+        _, pattern, matchdict = cast(tuple[str, str, dict[str, Any]], self.pre_search_hook(*args, **kwargs))
         metalist = []
         for obs in matchdict["Observatory"]:
             obs_path = self.observatory_map[obs.title()]
             scraper = Scraper(format=pattern.replace("{obs}", obs_path))
             tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
-            filesmeta = scraper._extract_files_meta(tr, matcher=matchdict)
+            filesmeta = scraper._extract_files_meta(tr, matcher=matchdict)  # pyright: ignore[reportPrivateUsage]
 
             for i in filesmeta:
                 i["obs"] = obs_path
@@ -62,14 +67,14 @@ class RSTNClient(GenericClient):
 
         return QueryResponse(metalist, client=self)
 
-    def post_search_hook(self, exdict, matchdict):
-        original = super().post_search_hook(exdict, matchdict)
+    def post_search_hook(self, exdict: dict[str, Any], matchdict: dict[str, Any]) -> OrderedDict[str, Any]:
+        original = cast(OrderedDict[str, Any], super().post_search_hook(exdict, matchdict))
         obs, *_ = (original.pop(name) for name in ["obs", "year2", "month2", "obs_short"])
         original["Observatory"] = self.observatory_map[obs]
         return original
 
     @classmethod
-    def register_values(cls):
+    def register_values(cls) -> dict[Any, list[tuple[str, str]]]:  # pyright: ignore[reportIncompatibleMethodOverride]
         adict = {
             a.Provider: [("RSTN", "Radio Solar Telescope Network.")],
             a.Instrument: [("RSTN", "Radio Solar Telescope Network.")],

@@ -1,3 +1,8 @@
+from typing import Any
+from collections.abc import Mapping
+
+from astropy.units.typing import QuantityLike
+
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
 __all__ = [
@@ -11,13 +16,13 @@ class ILOFARMode357Spectrogram(GenericSpectrogram):
     """
 
     @property
-    def mode(self):
-        return self.meta.get("mode")
+    def mode(self) -> str:
+        return str(self.meta.get("mode"))
 
     @property
-    def polarisation(self):
-        return self.meta.get("polarisation")
+    def polarisation(self) -> str:
+        return str(self.meta.get("polarisation"))
 
     @classmethod
-    def is_datasource_for(cls, data, meta, **kwargs):
-        return meta["instrument"] == "ILOFAR"
+    def is_datasource_for(cls, data: QuantityLike, meta: Mapping[str, Any], **kwargs: Any) -> bool:
+        return bool(meta["instrument"] == "ILOFAR")

@@ -125,7 +125,7 @@ def test_plotim_uses_time_support_for_datetime_conversion(make_spectrogram):
         mock.patch("matplotlib.image.NonUniformImage.set_interpolation", autospec=True),
         mock.patch("matplotlib.image.NonUniformImage.set_data", autospec=True) as set_data,
     ):
-        spec.plotim(fig=fig, axes=axes)
+        spec.plotim(axes=axes)
 
     plt.close(fig)
 

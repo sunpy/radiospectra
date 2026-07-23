@@ -21,13 +21,13 @@ def test_ilofar(mock_is_file, mock_fromfile):
     assert spec[0].polarisation == "X"
     assert spec[0].start_time.iso == "2018-06-02 06:32:47.000"
     assert spec[0].end_time.iso == "2018-06-02 12:18:18.000"
-    assert spec[0].mode == 3
+    assert spec[0].mode == "3"
     assert spec[0].frequencies[0].to_value("MHz") == 10.546875
     assert spec[0].frequencies[-1].to_value("MHz") == 88.28125
-    assert spec[1].mode == 5
+    assert spec[1].mode == "5"
     assert spec[1].frequencies[0].to_value("MHz") == 110.546875
     assert spec[1].frequencies[-1].to_value("MHz") == 188.28125
-    assert spec[2].mode == 7
+    assert spec[2].mode == "7"
     assert spec[2].frequencies[0].to_value("MHz") == 210.546875
     assert spec[2].frequencies[-1].to_value("MHz") == 244.53125
 

@@ -1,3 +1,8 @@
+from typing import Any
+from collections.abc import Mapping
+
+from astropy.units.typing import QuantityLike
+
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
 __all__ = ["RPWSpectrogram"]
@@ -55,5 +60,5 @@ class RPWSpectrogram(GenericSpectrogram):
     """
 
     @classmethod
-    def is_datasource_for(cls, data, meta, **kwargs):
-        return meta["instrument"] == "RPW"
+    def is_datasource_for(cls, data: QuantityLike, meta: Mapping[str, Any], **kwargs: Any) -> bool:
+        return bool(meta["instrument"] == "RPW")
