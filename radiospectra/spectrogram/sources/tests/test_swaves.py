@@ -147,6 +147,7 @@ def test_swaves_cdaweb(parse_path_moc):
 
 
 @pytest.mark.remote_data
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_swaves_spectrogram_cdaweb_online():
     spec = Spectrogram(
         "https://cdaweb.gsfc.nasa.gov/sp_phys/data/stereo/combined/swaves/level2_cdf/2020/stereo_level2_swaves_20200711_v02.cdf"
