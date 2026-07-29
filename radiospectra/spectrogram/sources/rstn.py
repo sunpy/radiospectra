@@ -1,6 +1,13 @@
+from radiospectra.spectrogram.meta import SpectrogramMeta
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
-__all__ = ["RSTNSpectrogram"]
+__all__ = ["RSTNSpectrogram", "RSTNMeta"]
+
+
+class RSTNMeta(SpectrogramMeta):
+    """Metadata for RSTN spectrograms."""
+
+    pass
 
 
 class RSTNSpectrogram(GenericSpectrogram):
@@ -20,6 +27,11 @@ class RSTNSpectrogram(GenericSpectrogram):
     >>> spec.plot()  #doctest: +REMOTE_DATA
     <matplotlib.collections.QuadMesh object at ...>
     """
+
+    def __init__(self, data, meta, **kwargs):
+        if not isinstance(meta, RSTNMeta):
+            meta = RSTNMeta(meta)
+        super().__init__(meta=meta, data=data, **kwargs)
 
     @classmethod
     def is_datasource_for(cls, data, meta, **kwargs):

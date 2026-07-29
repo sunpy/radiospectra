@@ -12,6 +12,7 @@ from sunpy.net import attrs as a
 
 from radiospectra.spectrogram import Spectrogram
 from radiospectra.spectrogram.sources import WAVESSpectrogram
+from radiospectra.spectrogram.sources.waves import WAVESMeta
 from radiospectra.spectrogram.spectrogram_factory import SpectrogramFactory
 
 
@@ -88,3 +89,16 @@ def test_waves_spectrogram_online():
     assert spec.frequencies[0] == 20.0 * u.kHz
     assert spec.frequencies[-1] == 1040.0 * u.kHz
     assert spec.data.shape == (256, 1440)
+
+
+def test_waves_meta():
+    meta = WAVESMeta(
+        {
+            "instrument": "WAVES",
+            "background": "test_bg",
+            "detector": "rad1",
+        }
+    )
+    assert meta.instrument == "WAVES"
+    assert meta.background == "test_bg"
+    assert meta.receiver == "rad1"

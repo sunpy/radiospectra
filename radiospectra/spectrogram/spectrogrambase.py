@@ -6,6 +6,7 @@ from astropy.time import Time
 
 from radiospectra.exceptions import SpectraMetaValidationError
 from radiospectra.mixins import NonUniformImagePlotMixin, PcolormeshPlotMixin
+from radiospectra.spectrogram.meta import SpectrogramMeta
 from radiospectra.utils import build_spectrogram_wcs
 
 __all__ = ["GenericSpectrogram"]
@@ -31,6 +32,9 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
             cls._registry[cls] = cls.is_datasource_for
 
     def __init__(self, data, meta, wcs=None, **kwargs):
+        if not isinstance(meta, SpectrogramMeta):
+            meta = SpectrogramMeta(meta)
+
         if wcs is None:
             self._validate_meta(meta)
             wcs = build_spectrogram_wcs(self._time_axis_from_meta(meta), meta["freqs"]).wcs
@@ -41,42 +45,60 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
         """
         The name of the observatory which recorded the spectrogram.
         """
-        return self.meta["observatory"].upper()
+        val = self.meta.get("observatory")
+        return val.upper() if val else None
 
     @property
     def instrument(self):
         """
         The name of the instrument which recorded the spectrogram.
         """
-        return self.meta["instrument"].upper()
+        val = self.meta.get("instrument")
+        return val.upper() if val else None
 
     @property
     def detector(self):
         """
         The detector which recorded the spectrogram.
         """
-        return self.meta["detector"].upper()
+        val = self.meta.get("detector")
+        return val.upper() if val else None
+
+    @property
+    def receiver(self):
+        """
+        The receiver which recorded the spectrogram.
+        """
+        val = self.meta.get("receiver")
+        return val.upper() if val else None
+
+    @property
+    def background(self):
+        """
+        The background subtracted from the data.
+        """
+        return self.meta.get("background")
 
     @property
     def start_time(self):
         """
         The start time of the spectrogram.
         """
-        return self.meta["start_time"]
+        return self.meta.get("start_time")
 
     @property
     def end_time(self):
         """
         The end time of the spectrogram.
         """
-        return self.meta["end_time"]
+        return self.meta.get("end_time")
 
     @property
     def wavelength(self):
         """
         The wavelength range of the spectrogram.
         """
-        return self.meta["wavelength"]
+        return self.meta.get("wavelength")
 
     @property
     def times(self):

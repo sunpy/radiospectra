@@ -1,0 +1,1 @@
+Add ``SpectrogramMetaABC`` and ``SpectrogramMeta`` metadata classes backed by ``ndcube.meta.NDMeta`` with instrument specific subclasses for all supported instruments (``WAVESMeta``, ``CALISTOMeta``, ``EOVSAMeta``, ``RFSMeta``,etc) providing typed property access to spectrogram metadata.
