@@ -123,6 +123,13 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
         if err_message:
             raise SpectraMetaValidationError("\n".join(err_message))
 
+    @classmethod
+    def from_raw(cls, header, raw_object):
+        """
+        Parse raw file objects into a spectrogram. Override in subclasses.
+        """
+        raise NotImplementedError(f"{cls.__name__} does not implement from_raw")
+
     @staticmethod
     def _time_axis_from_meta(meta):
         times = meta["times"]

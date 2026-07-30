@@ -36,5 +36,46 @@ class WAVESSpectrogram(GenericSpectrogram):
         super().__init__(meta=meta, data=data, **kwargs)
 
     @classmethod
-    def is_datasource_for(cls, data, meta, **kwargs):
-        return meta.get("instrument", None) == "WAVES"
+    def is_datasource_for(cls, header, raw_object, **kwargs):
+        if hasattr(header, "get") and header.get("instrument") == "WAVES":
+            return True
+        return hasattr(header, "get") and header.get("file_type") == "idl_sav" and header.get("instrument") == "waves"
+
+    @classmethod
+    def from_raw(cls, header, raw_object):
+        import numpy as np
+
+        import astropy.units as u
+        from astropy.time import Time
+
+        from sunpy.net import attrs as a
+
+        file = header.get("file_path")
+        data = raw_object
+        data_array = data["arrayb"]
+        if file.suffix == ".R1":
+            freqs = np.linspace(20, 1040, 256) * u.kHz
+            receiver = "RAD1"
+        elif file.suffix == ".R2":
+            freqs = np.linspace(1.075, 13.825, 256) * u.MHz
+            receiver = "RAD2"
+        else:
+            raise ValueError(f"Unknown WIND/WAVES file type: {file.suffix}")
+
+        bg = data_array[:, -1]
+        data_vals = data_array[:, :-1]
+        start_time = Time.strptime(file.stem.split("_")[-1], "%Y%m%d")
+        end_time = start_time + 86399 * u.s
+        times = start_time + (np.arange(1440) * 60 + 30) * u.s
+        meta = {
+            "instrument": "WAVES",
+            "observatory": "WIND",
+            "start_time": start_time,
+            "end_time": end_time,
+            "wavelength": a.Wavelength(freqs[0], freqs[-1]),
+            "detector": receiver,
+            "freqs": freqs,
+            "times": times,
+            "background": bg,
+        }
+        return cls(data_vals, meta)

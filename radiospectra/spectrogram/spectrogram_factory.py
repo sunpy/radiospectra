@@ -30,7 +30,6 @@ from sunpy.util.datatype_factory_base import (
 )
 from sunpy.util.exceptions import SunpyUserWarning, warn_user
 from sunpy.util.io import is_url, parse_path, possibly_a_path
-from sunpy.util.metadata import MetaDict
 from sunpy.util.util import expand_list
 
 from radiospectra.exceptions import NoSpectrogramInFileError, SpectraMetaValidationError
@@ -189,16 +188,16 @@ class SpectrogramFactory(BasicRegistrationFactory):
         """
         data_header_pairs = self._parse_args(*args, silence_errors=silence_errors, **kwargs)
         new_maps = list()
-        # Loop over each registered type and check to see if WidgetType
-        # matches the arguments.  If it does, use that type.
         for pair in data_header_pairs:
             if isinstance(pair, GenericSpectrogram):
                 new_maps.append(pair)
                 continue
-            data, header = pair
-            meta = MetaDict(header)
+            # Detect whether the pair is (header, raw_object) or (data, meta).
+            # If the first element is a dict or FITS Header, it's a raw pair.
+            first = pair[0]
+            is_raw = isinstance(first, (dict, Header))
             try:
-                new_map = self._check_registered_widgets(data, meta, **kwargs)
+                new_map = self._check_registered_widgets(pair[0], pair[1], from_raw=is_raw, **kwargs)
                 new_maps.append(new_map)
             except (NoMatchError, MultipleMatchError, ValidationFunctionError, SpectraMetaValidationError) as e:
                 if not silence_errors:
@@ -210,12 +209,15 @@ class SpectrogramFactory(BasicRegistrationFactory):
             return new_maps[0]
         return new_maps
 
-    def _check_registered_widgets(self, data, meta, **kwargs):
+    def _check_registered_widgets(self, data_or_header, meta_or_raw, from_raw=False, **kwargs):
         candidate_widget_types = list()
         for key in self.registry:
-            # Call the registered validation function for each registered class
-            if self.registry[key](data, meta, **kwargs):
-                candidate_widget_types.append(key)
+            try:
+                if self.registry[key](data_or_header, meta_or_raw, **kwargs):
+                    candidate_widget_types.append(key)
+            except (KeyError, TypeError, IndexError, AttributeError):
+                # Validation function crashed — this widget doesn't match
+                continue
 
         n_matches = len(candidate_widget_types)
         if n_matches == 0:
@@ -231,9 +233,10 @@ class SpectrogramFactory(BasicRegistrationFactory):
                 "identification."
             )
 
-        # Only one is found
         WidgetType = candidate_widget_types[0]
-        return WidgetType(data, meta, **kwargs)
+        if from_raw:
+            return WidgetType.from_raw(data_or_header, meta_or_raw)
+        return WidgetType(data_or_header, meta_or_raw, **kwargs)
 
     def _read_file(self, file, **kwargs):
         file = Path(file)
@@ -593,33 +596,7 @@ class SpectrogramFactory(BasicRegistrationFactory):
     def _read_fits(file):
         hd_pairs = fits.open(file)
         if "e-CALLISTO" in hd_pairs[0].header.get("CONTENT", ""):
-            data = hd_pairs[0].data
-            times = hd_pairs[1].data["TIME"].flatten() * u.s
-            freqs = hd_pairs[1].data["FREQUENCY"].flatten() * u.MHz
-            start_time = parse_time(hd_pairs[0].header["DATE-OBS"] + " " + hd_pairs[0].header["TIME-OBS"])
-            try:
-                end_time = parse_time(hd_pairs[0].header["DATE-END"] + " " + hd_pairs[0].header["TIME-END"])
-            except ValueError:
-                # See https://github.com/sunpy/radiospectra/issues/74
-                time_comps = hd_pairs[0].header["TIME-END"].split(":")
-                time_comps[0] = "00"
-                fixed_time = ":".join(time_comps)
-                date_offset = parse_time(hd_pairs[0].header["DATE-END"] + " " + fixed_time)
-                end_time = date_offset + 1 * u.day
-
-            times = start_time + times
-            meta = {
-                "fits_meta": hd_pairs[0].header,
-                "detector": "e-CALLISTO",
-                "instrument": "e-CALLISTO",
-                "observatory": hd_pairs[0].header["INSTRUME"],
-                "start_time": start_time,
-                "end_time": end_time,
-                "wavelength": a.Wavelength(freqs.min(), freqs.max()),
-                "times": times,
-                "freqs": freqs,
-            }
-            return data, meta
+            return hd_pairs[0].header, hd_pairs
         elif hd_pairs[0].header.get("TELESCOP", "") == "EOVSA":
             times = Time(hd_pairs[2].data["mjd"] + hd_pairs[2].data["time"] / 1000.0 / 86400.0, format="mjd")
             freqs = hd_pairs[1].data["sfreq"] * u.GHz
@@ -667,38 +644,9 @@ class SpectrogramFactory(BasicRegistrationFactory):
     @staticmethod
     def _read_idl_sav(file, instrument=None):
         data = readsav(file)
-        if instrument == "waves":
-            # See https://solar-radio.gsfc.nasa.gov/wind/one_minute_doc.html
-            data_array = data["arrayb"]
-            # frequency range
-            if file.suffix == ".R1":
-                freqs = np.linspace(20, 1040, 256) * u.kHz
-                receiver = "RAD1"
-            elif file.suffix == ".R2":
-                freqs = np.linspace(1.075, 13.825, 256) * u.MHz
-                receiver = "RAD2"
-            else:
-                raise ValueError(f"Unknown WIND/WAVES file type: {file.suffix}")
-            # bg which is already subtracted from data ?
-            bg = data_array[:, -1]
-            data = data_array[:, :-1]
-            start_time = Time.strptime(file.stem.split("_")[-1], "%Y%m%d")
-            end_time = start_time + 86399 * u.s
-            times = start_time + (np.arange(1440) * 60 + 30) * u.s
-            meta = {
-                "instrument": "WAVES",
-                "observatory": "WIND",
-                "start_time": start_time,
-                "end_time": end_time,
-                "wavelength": a.Wavelength(freqs[0], freqs[-1]),
-                "detector": receiver,
-                "freqs": freqs,
-                "times": times,
-                "background": bg,
-            }
-            return data, meta
-        else:
-            raise ValueError(f"Unrecognized IDL .save file: {file}")
+        # Return (header, raw_object) — parsing moved to WAVESSpectrogram.from_raw
+        header = {"file_type": "idl_sav", "instrument": instrument, "file_path": file}
+        return header, data
 
 
 Spectrogram = SpectrogramFactory(registry=GenericSpectrogram._registry, default_widget_type=GenericSpectrogram)
