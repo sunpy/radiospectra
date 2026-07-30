@@ -1,6 +1,9 @@
 import astropy.units as u
 from astropy.coordinates import EarthLocation, SkyCoord
 
+from sunpy.net import attrs as a
+from sunpy.time import parse_time
+
 from radiospectra.spectrogram.meta import SpectrogramMeta
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
@@ -66,9 +69,6 @@ class CALISTOSpectrogram(GenericSpectrogram):
 
     @classmethod
     def from_raw(cls, header, raw_object):
-        from sunpy.net import attrs as a
-        from sunpy.time import parse_time
-
         hd_pairs = raw_object
         data = hd_pairs[0].data
         times = hd_pairs[1].data["TIME"].flatten() * u.s

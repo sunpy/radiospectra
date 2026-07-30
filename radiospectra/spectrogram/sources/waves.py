@@ -1,3 +1,10 @@
+import numpy as np
+
+import astropy.units as u
+from astropy.time import Time
+
+from sunpy.net import attrs as a
+
 from radiospectra.spectrogram.meta import SpectrogramMeta
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
@@ -43,13 +50,6 @@ class WAVESSpectrogram(GenericSpectrogram):
 
     @classmethod
     def from_raw(cls, header, raw_object):
-        import numpy as np
-
-        import astropy.units as u
-        from astropy.time import Time
-
-        from sunpy.net import attrs as a
-
         file = header.get("file_path")
         data = raw_object
         data_array = data["arrayb"]
