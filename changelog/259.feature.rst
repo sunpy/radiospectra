@@ -1,0 +1,1 @@
+Migrated `e-CALLISTO` and `WAVES` spectrogram creation to the new `from_raw` factory pattern, which extracts parsing logic out of the main `SpectrogramFactory`.
