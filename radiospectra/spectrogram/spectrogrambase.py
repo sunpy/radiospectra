@@ -1,4 +1,5 @@
 import ndcube
+import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import SpectralCoord
@@ -176,6 +177,65 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
             high_freq = SpectralCoord(high_freq)
 
         return self.crop((None, low_freq), (None, high_freq))
+
+    def time_profile(self, frequency):
+        """
+        Extract a time profile (intensity vs time) at a given frequency.
+
+        Parameters
+        ----------
+        frequency : `astropy.units.Quantity`
+            The frequency to extract the time profile at.
+
+        Returns
+        -------
+        `radiospectra.spectrogram.GenericSpectrogram`
+            The 1D time profile.
+        """
+
+        for i, axis_types in enumerate(self.array_axis_physical_types):
+            if "em.freq" in axis_types:
+                freqs = self.frequencies
+                if len(freqs) == 0:
+                    idx = 0
+                elif freqs[0] < freqs[-1]:
+                    idx = np.searchsorted(freqs, frequency)
+                else:
+                    idx = len(freqs) - np.searchsorted(freqs[::-1], frequency)
+                idx = int(np.clip(idx, 0, len(freqs) - 1))
+                item = [slice(None)] * len(self.shape)
+                item[i] = idx
+                return self[tuple(item)]
+        raise ValueError("Spectrogram does not have a frequency axis")
+
+    def line_profile(self, time):
+        """
+        Extract a line profile (intensity vs frequency) at a given time.
+
+        Parameters
+        ----------
+        time : `astropy.time.Time` or `str`
+            The time to extract the line profile at.
+
+        Returns
+        -------
+        `radiospectra.spectrogram.GenericSpectrogram`
+            The 1D line profile.
+        """
+        if isinstance(time, str):
+            time = Time(time)
+        for i, axis_types in enumerate(self.array_axis_physical_types):
+            if "time" in axis_types:
+                times = self.times
+                if len(times) == 0:
+                    idx = 0
+                else:
+                    idx = np.searchsorted(times, time)
+                idx = int(np.clip(idx, 0, len(times) - 1))
+                item = [slice(None)] * len(self.shape)
+                item[i] = idx
+                return self[tuple(item)]
+        raise ValueError("Spectrogram does not have a time axis")
 
     def __repr__(self):
         return (
