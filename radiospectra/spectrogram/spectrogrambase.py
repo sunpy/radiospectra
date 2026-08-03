@@ -192,19 +192,10 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
         `radiospectra.spectrogram.GenericSpectrogram`
             The 1D time profile.
         """
-
         for i, axis_types in enumerate(self.array_axis_physical_types):
             if "em.freq" in axis_types:
-                freqs = self.frequencies
-                if len(freqs) == 0:
-                    idx = 0
-                elif freqs[0] < freqs[-1]:
-                    idx = np.searchsorted(freqs, frequency)
-                else:
-                    idx = len(freqs) - np.searchsorted(freqs[::-1], frequency)
-                idx = int(np.clip(idx, 0, len(freqs) - 1))
                 item = [slice(None)] * len(self.shape)
-                item[i] = idx
+                item[i] = frequency
                 return self[tuple(item)]
         raise ValueError("Spectrogram does not have a frequency axis")
 
@@ -226,16 +217,62 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
             time = Time(time)
         for i, axis_types in enumerate(self.array_axis_physical_types):
             if "time" in axis_types:
-                times = self.times
-                if len(times) == 0:
-                    idx = 0
-                else:
-                    idx = np.searchsorted(times, time)
-                idx = int(np.clip(idx, 0, len(times) - 1))
                 item = [slice(None)] * len(self.shape)
-                item[i] = idx
+                item[i] = time
                 return self[tuple(item)]
         raise ValueError("Spectrogram does not have a time axis")
+
+    def _convert_slice_to_index(self, axis_idx, item):
+        """
+        Convert a single dimension's slice (which may contain physical units/Time)
+        into an integer slice.
+        """
+        if isinstance(item, slice):
+            start = self._convert_val_to_index(axis_idx, item.start)
+            stop = self._convert_val_to_index(axis_idx, item.stop)
+            return slice(start, stop, item.step)
+        else:
+            return self._convert_val_to_index(axis_idx, item)
+
+    def _convert_val_to_index(self, axis_idx, val):
+        if val is None:
+            return None
+
+        axis_types = self.array_axis_physical_types[axis_idx]
+
+        if "time" in axis_types:
+            if isinstance(val, str):
+                val = Time(val)
+            if isinstance(val, Time):
+                times = self.times
+                if len(times) == 0:
+                    return 0
+                idx = np.searchsorted(times, val)
+                return int(np.clip(idx, 0, len(times) - 1))
+
+        elif "em.freq" in axis_types:
+            if isinstance(val, u.Quantity):
+                freqs = self.frequencies
+                if len(freqs) == 0:
+                    return 0
+                if freqs[0] < freqs[-1]:
+                    idx = np.searchsorted(freqs, val)
+                else:
+                    idx = len(freqs) - np.searchsorted(freqs[::-1], val)
+                return int(np.clip(idx, 0, len(freqs) - 1))
+        return val
+
+    def __getitem__(self, item):
+        """
+        Override __getitem__ to support physical slicing with Time and Quantity.
+        """
+        if isinstance(item, tuple):
+            new_item = []
+            for i, it in enumerate(item):
+                new_item.append(self._convert_slice_to_index(i, it))
+            return super().__getitem__(tuple(new_item))
+        else:
+            return super().__getitem__(self._convert_slice_to_index(0, item))
 
     def __repr__(self):
         return (
