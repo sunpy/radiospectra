@@ -1,0 +1,1 @@
+Add support for physical slicing in `GenericSpectrogram` using `astropy.time.Time`, time strings and `astropy.units.Quantity` objects and also `time_profile(frequency)` and `line_profile(time)` convenience methods to extract 1D intensity profiles along specific frequencies or times.
