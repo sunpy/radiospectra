@@ -67,15 +67,17 @@ class WAVESSpectrogram(GenericSpectrogram):
         start_time = Time.strptime(file.stem.split("_")[-1], "%Y%m%d")
         end_time = start_time + 86399 * u.s
         times = start_time + (np.arange(1440) * 60 + 30) * u.s
-        meta = {
-            "instrument": "WAVES",
-            "observatory": "WIND",
-            "start_time": start_time,
-            "end_time": end_time,
-            "wavelength": a.Wavelength(freqs[0], freqs[-1]),
-            "detector": receiver,
-            "freqs": freqs,
-            "times": times,
-            "background": bg,
-        }
+        meta = WAVESMeta(
+            {
+                "instrument": "WAVES",
+                "observatory": "WIND",
+                "start_time": start_time,
+                "end_time": end_time,
+                "wavelength": a.Wavelength(freqs[0], freqs[-1]),
+                "detector": receiver,
+                "freqs": freqs,
+                "times": times,
+                "background": bg,
+            }
+        )
         return cls(data_vals, meta)

@@ -85,15 +85,17 @@ class CALISTOSpectrogram(GenericSpectrogram):
             end_time = date_offset + 1 * u.day
 
         times = start_time + times
-        meta = {
-            "fits_meta": hd_pairs[0].header,
-            "detector": "e-CALLISTO",
-            "instrument": "e-CALLISTO",
-            "observatory": hd_pairs[0].header["INSTRUME"],
-            "start_time": start_time,
-            "end_time": end_time,
-            "wavelength": a.Wavelength(freqs.min(), freqs.max()),
-            "times": times,
-            "freqs": freqs,
-        }
+        meta = CALISTOMeta(
+            {
+                "fits_meta": hd_pairs[0].header,
+                "detector": "e-CALLISTO",
+                "instrument": "e-CALLISTO",
+                "observatory": hd_pairs[0].header["INSTRUME"],
+                "start_time": start_time,
+                "end_time": end_time,
+                "wavelength": a.Wavelength(freqs.min(), freqs.max()),
+                "times": times,
+                "freqs": freqs,
+            }
+        )
         return cls(data, meta)
