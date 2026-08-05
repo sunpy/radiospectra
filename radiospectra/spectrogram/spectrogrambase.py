@@ -171,12 +171,18 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
         `radiospectra.spectrogram.GenericSpectrogram`
             The cropped spectrogram.
         """
-        if not isinstance(low_freq, SpectralCoord):
-            low_freq = SpectralCoord(low_freq)
-        if not isinstance(high_freq, SpectralCoord):
-            high_freq = SpectralCoord(high_freq)
+        if isinstance(low_freq, SpectralCoord):
+            low_freq = low_freq.quantity
+        if isinstance(high_freq, SpectralCoord):
+            high_freq = high_freq.quantity
 
-        return self.crop((None, low_freq), (None, high_freq))
+        lower = [None] * len(self.wcs.world_axis_physical_types)
+        upper = [None] * len(self.wcs.world_axis_physical_types)
+        for i, phys_type in enumerate(self.wcs.world_axis_physical_types):
+            if "em.freq" in phys_type:
+                lower[i] = low_freq
+                upper[i] = high_freq
+        return self.crop_by_values(lower, upper)
 
     def time_profile(self, frequency):
         """
@@ -192,12 +198,11 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
         `radiospectra.spectrogram.GenericSpectrogram`
             The 1D time profile.
         """
-        for i, axis_types in enumerate(self.array_axis_physical_types):
-            if "em.freq" in axis_types:
-                item = [slice(None)] * len(self.shape)
-                item[i] = frequency
-                return self[tuple(item)]
-        raise ValueError("Spectrogram does not have a frequency axis")
+        points = [None] * len(self.wcs.world_axis_physical_types)
+        for i, phys_type in enumerate(self.wcs.world_axis_physical_types):
+            if "em.freq" in phys_type:
+                points[i] = frequency
+        return self.crop_by_values(points, points)
 
     def line_profile(self, time):
         """
@@ -217,62 +222,16 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
             time = Time(time)
         for i, axis_types in enumerate(self.array_axis_physical_types):
             if "time" in axis_types:
-                item = [slice(None)] * len(self.shape)
-                item[i] = time
-                return self[tuple(item)]
-        raise ValueError("Spectrogram does not have a time axis")
-
-    def _convert_slice_to_index(self, axis_idx, item):
-        """
-        Convert a single dimension's slice (which may contain physical units/Time)
-        into an integer slice.
-        """
-        if isinstance(item, slice):
-            start = self._convert_val_to_index(axis_idx, item.start)
-            stop = self._convert_val_to_index(axis_idx, item.stop)
-            return slice(start, stop, item.step)
-        else:
-            return self._convert_val_to_index(axis_idx, item)
-
-    def _convert_val_to_index(self, axis_idx, val):
-        if val is None:
-            return None
-
-        axis_types = self.array_axis_physical_types[axis_idx]
-
-        if "time" in axis_types:
-            if isinstance(val, str):
-                val = Time(val)
-            if isinstance(val, Time):
                 times = self.times
                 if len(times) == 0:
-                    return 0
-                idx = np.searchsorted(times, val)
-                return int(np.clip(idx, 0, len(times) - 1))
-
-        elif "em.freq" in axis_types:
-            if isinstance(val, u.Quantity):
-                freqs = self.frequencies
-                if len(freqs) == 0:
-                    return 0
-                if freqs[0] < freqs[-1]:
-                    idx = np.searchsorted(freqs, val)
+                    idx = 0
                 else:
-                    idx = len(freqs) - np.searchsorted(freqs[::-1], val)
-                return int(np.clip(idx, 0, len(freqs) - 1))
-        return val
-
-    def __getitem__(self, item):
-        """
-        Override __getitem__ to support physical slicing with Time and Quantity.
-        """
-        if isinstance(item, tuple):
-            new_item = []
-            for i, it in enumerate(item):
-                new_item.append(self._convert_slice_to_index(i, it))
-            return super().__getitem__(tuple(new_item))
-        else:
-            return super().__getitem__(self._convert_slice_to_index(0, item))
+                    idx = np.searchsorted(times, time)
+                idx = int(np.clip(idx, 0, len(times) - 1))
+                item = [slice(None)] * len(self.shape)
+                item[i] = idx
+                return super().__getitem__(tuple(item))
+        raise ValueError("Spectrogram does not have a time axis")
 
     def __repr__(self):
         return (
