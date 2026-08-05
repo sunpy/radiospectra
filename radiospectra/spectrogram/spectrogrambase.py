@@ -1,8 +1,6 @@
 import ndcube
-import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import SpectralCoord
 from astropy.time import Time
 
 from radiospectra.exceptions import SpectraMetaValidationError
@@ -134,104 +132,6 @@ class GenericSpectrogram(PcolormeshPlotMixin, NonUniformImagePlotMixin, ndcube.N
                 return meta["start_time"] + times
             return meta["start_time"] + times * u.s
         return Time(times)
-
-    def crop_time(self, start_time, end_time):
-        """
-        Crop the spectrogram by time.
-
-        Parameters
-        ----------
-        start_time : `astropy.time.Time`
-            The start time of the crop.
-        end_time : `astropy.time.Time`
-            The end time of the crop.
-
-        Returns
-        -------
-        `radiospectra.spectrogram.GenericSpectrogram`
-            The cropped spectrogram.
-        """
-        start_time = Time(start_time)
-        end_time = Time(end_time)
-        return self.crop((start_time, None), (end_time, None))
-
-    def crop_freq(self, low_freq, high_freq):
-        """
-        Crop the spectrogram by frequency.
-
-        Parameters
-        ----------
-        low_freq : `astropy.units.Quantity` or `astropy.coordinates.SpectralCoord`
-            The low frequency of the crop.
-        high_freq : `astropy.units.Quantity` or `astropy.coordinates.SpectralCoord`
-            The high frequency of the crop.
-
-        Returns
-        -------
-        `radiospectra.spectrogram.GenericSpectrogram`
-            The cropped spectrogram.
-        """
-        if isinstance(low_freq, SpectralCoord):
-            low_freq = low_freq.quantity
-        if isinstance(high_freq, SpectralCoord):
-            high_freq = high_freq.quantity
-
-        lower = [None] * len(self.wcs.world_axis_physical_types)
-        upper = [None] * len(self.wcs.world_axis_physical_types)
-        for i, phys_type in enumerate(self.wcs.world_axis_physical_types):
-            if "em.freq" in phys_type:
-                lower[i] = low_freq
-                upper[i] = high_freq
-        return self.crop_by_values(lower, upper)
-
-    def time_profile(self, frequency):
-        """
-        Extract a time profile (intensity vs time) at a given frequency.
-
-        Parameters
-        ----------
-        frequency : `astropy.units.Quantity`
-            The frequency to extract the time profile at.
-
-        Returns
-        -------
-        `radiospectra.spectrogram.GenericSpectrogram`
-            The 1D time profile.
-        """
-        points = [None] * len(self.wcs.world_axis_physical_types)
-        for i, phys_type in enumerate(self.wcs.world_axis_physical_types):
-            if "em.freq" in phys_type:
-                points[i] = frequency
-        return self.crop_by_values(points, points)
-
-    def line_profile(self, time):
-        """
-        Extract a line profile (intensity vs frequency) at a given time.
-
-        Parameters
-        ----------
-        time : `astropy.time.Time` or `str`
-            The time to extract the line profile at.
-
-        Returns
-        -------
-        `radiospectra.spectrogram.GenericSpectrogram`
-            The 1D line profile.
-        """
-        if isinstance(time, str):
-            time = Time(time)
-        for i, axis_types in enumerate(self.array_axis_physical_types):
-            if "time" in axis_types:
-                times = self.times
-                if len(times) == 0:
-                    idx = 0
-                else:
-                    idx = np.searchsorted(times, time)
-                idx = int(np.clip(idx, 0, len(times) - 1))
-                item = [slice(None)] * len(self.shape)
-                item[i] = idx
-                return super().__getitem__(tuple(item))
-        raise ValueError("Spectrogram does not have a time axis")
 
     def __repr__(self):
         return (
