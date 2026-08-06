@@ -1,0 +1,1 @@
+Add two new gallery examples (`plot_cropping.py` and `plot_profiles.py`) demonstrating how to slice, crop and extract 1D profiles from a `~radiospectra.spectrogram.GenericSpectrogram` using native `ndcube` methods.
