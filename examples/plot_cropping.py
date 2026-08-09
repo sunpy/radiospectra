@@ -1,9 +1,10 @@
 """
-Cropping a WIND/WAVES spectrogram
-=================================
+Cropping a Spectrogram
+======================
 
 This example demonstrates how to crop a spectrogram by time and frequency
-using native `ndcube` methods (`~ndcube.NDCube.crop` and `~ndcube.NDCube.crop_by_values`).
+and how to extract 1D profiles using native `ndcube` methods
+(`~ndcube.NDCube.crop` and `~ndcube.NDCube.crop_by_values`).
 """
 
 ###############################################################################
@@ -12,15 +13,16 @@ using native `ndcube` methods (`~ndcube.NDCube.crop` and `~ndcube.NDCube.crop_by
 # Two key methods are available:
 #
 # * `~ndcube.NDCube.crop` — accepts high-level coordinate objects
-#   (e.g. `~astropy.time.Time`).
+#   (e.g., `~astropy.time.Time` and `~astropy.coordinates.SpectralCoord`).
 # * `~ndcube.NDCube.crop_by_values` — accepts low-level physical values
 #   as `~astropy.units.Quantity`.
 #
-# Let's start by downloading a WIND/WAVES RAD1 spectrogram.
+# Let's start by downloading a WIND/WAVES RAD1 spectrogram to use for this example.
 
 import matplotlib.pyplot as plt
 
 import astropy.units as u
+from astropy.coordinates import SpectralCoord
 from astropy.time import Time
 
 from sunpy.net import Fido
@@ -42,6 +44,12 @@ waves_files = Fido.fetch(query["waves"])
 waves_specs = Spectrogram(sorted(waves_files))
 spec = waves_specs[0]
 
+fig = plt.figure()
+ax = fig.add_subplot(111)
+spec.plot(axes=ax)
+ax.set_title("Full Spectrogram")
+plt.show()
+
 ###############################################################################
 # Cropping by time
 # ----------------
@@ -55,10 +63,16 @@ end_time = Time("2017-09-02T17:00:00")
 
 time_cropped = spec.crop((start_time, None), (end_time, None))
 
+fig = plt.figure()
+ax = fig.add_subplot(111)
+time_cropped.plot(axes=ax)
+ax.set_title("Time Cropped Spectrogram")
+plt.show()
+
 ###############################################################################
 # Cropping by frequency
 # ---------------------
-# To crop by frequency we use `~ndcube.NDCube.crop_by_values`,
+# To crop by frequency we can use `~ndcube.NDCube.crop_by_values`,
 # which accepts `~astropy.units.Quantity` values directly.
 # Here we pass ``None`` for the time axis and provide the frequency
 # bounds as `~astropy.units.Quantity`.
@@ -68,22 +82,53 @@ high_freq = 600 * u.kHz
 
 freq_cropped = spec.crop_by_values((None, low_freq), (None, high_freq))
 
+fig = plt.figure()
+ax = fig.add_subplot(111)
+freq_cropped.plot(axes=ax)
+ax.set_title("Frequency Cropped Spectrogram")
+plt.show()
+
 ###############################################################################
-# Plotting the results
-# --------------------
-# Finally, let's visualise the original spectrogram alongside the cropped
-# versions.
+# Cropping by both time and frequency
+# -----------------------------------
+# We can also crop both axes simultaneously. Here we use `~ndcube.NDCube.crop`
+# with both `~astropy.time.Time` and `~astropy.coordinates.SpectralCoord`.
 
-fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+low_freq_coord = SpectralCoord(200 * u.kHz)
+high_freq_coord = SpectralCoord(600 * u.kHz)
 
-spec.plot(axes=axes[0])
-axes[0].set_title("Full Spectrogram")
+both_cropped = spec.crop((start_time, low_freq_coord), (end_time, high_freq_coord))
 
-time_cropped.plot(axes=axes[1])
-axes[1].set_title("Time Cropped")
+fig = plt.figure()
+ax = fig.add_subplot(111)
+both_cropped.plot(axes=ax)
+ax.set_title("Time and Frequency Cropped Spectrogram")
+plt.show()
 
-freq_cropped.plot(axes=axes[2])
-axes[2].set_title("Freq Cropped")
+###############################################################################
+# Extracting 1D profiles
+# ----------------------
+# A 1D profile can be extracted by setting the lower and upper bounds to the
+# same value. `ndcube` automatically collapses that dimension.
+# Let's extract a time profile at a specific frequency and a frequency profile
+# at a specific time.
 
-fig.tight_layout()
+target_freq = 250 * u.kHz
+time_profile = spec.crop_by_values((None, target_freq), (None, target_freq))
+
+target_time = Time("2017-09-02T16:00:00")
+freq_profile = spec.crop((target_time, None), (target_time, None))
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+
+ax1.plot(time_profile.times.datetime, time_profile.data)
+ax1.set_xlabel("Time")
+ax1.set_ylabel("Intensity")
+ax1.set_title(f"Time Profile at {target_freq}")
+
+ax2.plot(freq_profile.frequencies, freq_profile.data)
+ax2.set_xlabel("Frequency (kHz)")
+ax2.set_ylabel("Intensity")
+ax2.set_title(f"Freq Profile at {target_time.strftime('%H:%M:%S')}")
+
 plt.show()
