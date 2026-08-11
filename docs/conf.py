@@ -64,10 +64,14 @@ extensions = [
     "sphinx_automodapi.automodapi",
     "sphinx_automodapi.smart_resolver",
     "sphinx_changelog",
+    "sphinx_gallery.gen_gallery",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
 # templates_path = ["_templates"]
+# Set automodapi to generate files inside the generated directory
+automodapi_toctreedirnm = "generated/api"
+
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -87,7 +91,25 @@ default_role = "py:obj"
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {"python": ("https://docs.python.org/", None)}
+intersphinx_mapping = {
+    "python": (
+        "https://docs.python.org/3/",
+        (None, "http://www.astropy.org/astropy-data/intersphinx/python3.inv"),
+    ),
+    "numpy": (
+        "https://numpy.org/doc/stable/",
+        (None, "http://www.astropy.org/astropy-data/intersphinx/numpy.inv"),
+    ),
+    "scipy": (
+        "https://docs.scipy.org/doc/scipy/reference/",
+        (None, "http://www.astropy.org/astropy-data/intersphinx/scipy.inv"),
+    ),
+    "astropy": ("https://docs.astropy.org/en/stable/", None),
+    "matplotlib": ("https://matplotlib.org/stable", None),
+    "mpl_animators": ("https://docs.sunpy.org/projects/mpl-animators/en/stable/", None),
+    "ndcube": ("https://docs.sunpy.org/projects/ndcube/en/stable/", None),
+    "sunpy": ("https://docs.sunpy.org/en/stable/", None),
+}
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -122,3 +144,16 @@ graphviz_dot_args = [
 autoclass_content = "both"
 
 # -- Other options ----------------------------------------------------------
+# -- Sphinx Gallery ----------------------------------------------------------
+
+sphinx_gallery_conf = {
+    "backreferences_dir": os.path.join("generated", "modules"),
+    "filename_pattern": "^((?!skip_).)*$",
+    "examples_dirs": os.path.join("..", "examples"),
+    "gallery_dirs": os.path.join("generated", "gallery"),
+    "abort_on_example_error": False,
+    "plot_gallery": "True",
+    "remove_config_comments": True,
+    "doc_module": "radiospectra",
+    "only_warn_on_example_error": True,
+}
