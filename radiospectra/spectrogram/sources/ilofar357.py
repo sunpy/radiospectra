@@ -49,8 +49,11 @@ class ILOFARMode357Spectrogram(GenericSpectrogram):
         return self.meta.polarisation
 
     @classmethod
-    def is_datasource_for(cls, header, raw_object, **kwargs):
-        return hasattr(header, "get") and header.get("instrument") == "ILOFAR"
+    def is_datasource_for(cls, data_or_header, meta_or_raw, **kwargs):
+        meta = data_or_header if hasattr(data_or_header, "get") else meta_or_raw
+        if not hasattr(meta, "get"):
+            return False
+        return meta.get("instrument") == "ILOFAR"
 
     @classmethod
     def from_raw(cls, header, raw_object):

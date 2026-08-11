@@ -63,9 +63,11 @@ class CALISTOSpectrogram(GenericSpectrogram):
         return self.meta.observer_coordinate
 
     @classmethod
-    def is_datasource_for(cls, header, raw_object, **kwargs):
-        # The factory passes the FITS header as the first argument
-        return "e-CALLISTO" in header.get("CONTENT", "")
+    def is_datasource_for(cls, data_or_header, meta_or_raw, **kwargs):
+        meta = data_or_header if hasattr(data_or_header, "get") else meta_or_raw
+        if not hasattr(meta, "get"):
+            return False
+        return "e-CALLISTO" in meta.get("CONTENT", "") or meta.get("instrument") == "e-CALLISTO"
 
     @classmethod
     def from_raw(cls, header, raw_object):

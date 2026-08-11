@@ -43,10 +43,13 @@ class WAVESSpectrogram(GenericSpectrogram):
         super().__init__(meta=meta, data=data, **kwargs)
 
     @classmethod
-    def is_datasource_for(cls, header, raw_object, **kwargs):
-        if hasattr(header, "get") and header.get("instrument") == "WAVES":
+    def is_datasource_for(cls, data_or_header, meta_or_raw, **kwargs):
+        meta = data_or_header if hasattr(data_or_header, "get") else meta_or_raw
+        if not hasattr(meta, "get"):
+            return False
+        if meta.get("instrument") == "WAVES":
             return True
-        return hasattr(header, "get") and header.get("file_type") == "idl_sav" and header.get("instrument") == "waves"
+        return meta.get("file_type") == "idl_sav" and meta.get("instrument") == "waves"
 
     @classmethod
     def from_raw(cls, header, raw_object):

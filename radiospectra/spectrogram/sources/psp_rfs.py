@@ -71,8 +71,19 @@ class RFSSpectrogram(GenericSpectrogram):
         return self.meta.version
 
     @classmethod
-    def is_datasource_for(cls, header, raw_object, **kwargs):
-        cdf_globals = header.get("cdf_globals")
+    def is_datasource_for(cls, data_or_header, meta_or_raw, **kwargs):
+        meta = data_or_header if hasattr(data_or_header, "get") else meta_or_raw
+        if not hasattr(meta, "get"):
+            return False
+
+        if (
+            meta.get("observatory") == "PSP"
+            and meta.get("instrument") == "FIELDS/RFS"
+            and meta.get("detector") in ("lfr", "hfr")
+        ):
+            return True
+
+        cdf_globals = meta.get("cdf_globals")
         if not cdf_globals:
             return False
         return (

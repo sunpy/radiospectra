@@ -50,8 +50,15 @@ class EOVSASpectrogram(GenericSpectrogram):
         return self.meta.polarisation
 
     @classmethod
-    def is_datasource_for(cls, header, raw_object, **kwargs):
-        return header.get("TELESCOP", "") == "EOVSA"
+    def is_datasource_for(cls, data_or_header, meta_or_raw, **kwargs):
+        meta = data_or_header if hasattr(data_or_header, "get") else meta_or_raw
+        if not hasattr(meta, "get"):
+            return False
+        return (
+            meta.get("TELESCOP", "") == "EOVSA"
+            or meta.get("instrument", "") == "EOVSA"
+            or meta.get("detector", "") == "EOVSA"
+        )
 
     @classmethod
     def from_raw(cls, header, raw_object):
