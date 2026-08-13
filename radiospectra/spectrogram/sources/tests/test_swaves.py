@@ -3,6 +3,7 @@ from datetime import datetime
 from unittest import mock
 
 import numpy as np
+import pytest
 
 import astropy.units as u
 from astropy.time import Time
@@ -115,3 +116,14 @@ def test_swaves_hfr(parse_path_moc):
     assert spec.end_time.datetime == datetime(2020, 11, 28, 23, 59)
     assert spec.wavelength.min == 125 * u.kHz
     assert spec.wavelength.max == 16025 * u.kHz
+
+
+@pytest.mark.skip(reason="SPDF website down")
+def test_swaves_spectrogram_online():
+    spec = Spectrogram("")
+    assert spec.instrument == "WAVES"
+    assert spec.times[0].isot == "2020-01-02T00:00:30.000"
+    assert spec.times[-1].isot == "2020-01-02T23:59:30.000"
+    assert spec.frequencies[0] == 20.0 * u.kHz
+    assert spec.frequencies[-1] == 1040.0 * u.kHz
+    assert spec.data.shape == (256, 1440)

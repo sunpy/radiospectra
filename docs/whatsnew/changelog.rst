@@ -4,7 +4,7 @@
 Full Changelog
 **************
 
-.. _changelog::
+.. changelog::
     :towncrier: ../../
     :towncrier-skip-if-empty:
     :changelog_file: ../../CHANGELOG.rst

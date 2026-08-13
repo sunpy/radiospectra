@@ -47,6 +47,7 @@ def test_rstn_spectrogram_online():
     spec = Spectrogram(
         "https://www.ngdc.noaa.gov/stp/space-weather/solar-data/solar-features/solar-radio/rstn-spectral/san-vito/2003/03/SV030315.SRS.gz"
     )
+    assert isinstance(spec, RSTNSpectrogram)
     assert spec.instrument == "RSTN"
     assert spec.times[0].isot == "2003-03-15T05:06:21.000"
     assert spec.times[-1].isot == "2003-03-15T16:51:00.000"

@@ -3,6 +3,7 @@ from datetime import datetime
 from unittest import mock
 
 import numpy as np
+import pytest
 
 import astropy.units as u
 from astropy.time import Time
@@ -117,3 +118,19 @@ def test_solo_rpw_hfr(parse_path_moc):
     assert spec.end_time.datetime == datetime(2024, 3, 24, 0, 0, 0, 0)
     assert spec.wavelength.min == 425 * u.kHz
     assert spec.wavelength.max == 16325 * u.kHz
+
+
+@pytest.mark.remote_data
+def test_rpw_spectrogram_online():
+    specs = Spectrogram(
+        "https://rpw-lira.obspm.fr/roc/data/pub/solo/rpw/data/L2/thr/2022/02/solo_L2_rpw-hfr-surv_20220201_V04.cdf"
+    )
+    spec = specs[0]
+    assert isinstance(spec, RPWSpectrogram)
+    assert spec.observatory == "SOLO"
+    assert spec.instrument == "RPW"
+    assert spec.times[0].isot == "2022-02-01T00:00:02.723"
+    assert spec.times[-1].isot == "2022-02-01T23:59:55.140"
+    assert spec.frequencies[0] == 375.0 * u.kHz
+    assert spec.frequencies[-1] == 16375.0 * u.kHz
+    assert spec.data.shape == (321, 26653)
