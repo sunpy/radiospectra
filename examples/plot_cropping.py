@@ -62,6 +62,8 @@ start_time = Time("2017-09-02T15:30:00")
 end_time = Time("2017-09-02T17:00:00")
 
 time_cropped = spec.crop((start_time, None), (end_time, None))
+# Or equivalently using crop_by_values (which uses the WCS lookup table units of seconds):
+# time_cropped = spec.crop_by_values((2 * u.s, None), (5 * u.s, None))
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
@@ -81,6 +83,8 @@ low_freq = 200 * u.kHz
 high_freq = 600 * u.kHz
 
 freq_cropped = spec.crop_by_values((None, low_freq), (None, high_freq))
+# Or equivalently using crop with SpectralCoord:
+# freq_cropped = spec.crop((None, SpectralCoord(low_freq)), (None, SpectralCoord(high_freq)))
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
@@ -98,6 +102,8 @@ low_freq_coord = SpectralCoord(200 * u.kHz)
 high_freq_coord = SpectralCoord(600 * u.kHz)
 
 both_cropped = spec.crop((start_time, low_freq_coord), (end_time, high_freq_coord))
+# Or equivalently using crop_by_values:
+# both_cropped = spec.crop_by_values((start_time, 200 * u.kHz), (end_time, 600 * u.kHz))
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
