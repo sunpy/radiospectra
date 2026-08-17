@@ -1,1 +1,0 @@
-Remove custom `crop_time` and `crop_freq` wrappers from `GenericSpectrogram` in favor of using `ndcube.NDCube.crop` and `crop_by_values` methods
