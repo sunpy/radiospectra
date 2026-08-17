@@ -9,5 +9,4 @@
 
 .. automodapi:: radiospectra.spectrogram
     :no-main-docstr:
-    :inherited-members:
     :include-all-objects:
