@@ -12,7 +12,7 @@ from radiospectra.net.attrs import PolType
 __all__ = ["ILOFARMode357Client"]
 
 RECEIVER_FREQUENCIES = a.Wavelength(10.546875 * u.MHz, 244.53125 * u.MHz)
-DATASET_NAMES = ["rcu357_1beam", "rcu357_1beam_datastream"]
+DATASET_NAMES = ["rcu357_1beam", "rcu357_1beam_datastream", "rcu357_1beam_datastream_fast"]
 
 
 class ILOFARMode357Client(GenericClient):
@@ -117,10 +117,10 @@ class ILOFARMode357Client(GenericClient):
     @classmethod
     def register_values(cls):
         adict = {
-            a.Instrument: [("ILOFAR", "Irish LOFAR STATION (IE63)")],
+            a.Instrument: [("ILOFAR", "Irish LOFAR STATION (IE613)")],
             a.Source: [("ILOFAR", "Irish LOFAR Data Archive")],
             a.Provider: [("ILOFAR", "Irish LOFAR Data Archive")],
             a.Wavelength: [("*")],
-            PolType: [("X", "X"), ("X Linear Polarisation", "Y Linear Polarisation")],
+            PolType: [("X", "Y"), ("X Linear Polarisation", "Y Linear Polarisation")],
         }
         return adict

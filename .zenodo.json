@@ -1,0 +1,140 @@
+{
+    "title": "radiospectra",
+    "description": "Provide support for some type of radio spectra in solar physics.",
+    "license": "BSD-2-Clause",
+    "upload_type": "software",
+    "access_right": "open",
+    "creators": [
+        {
+            "name": "Florian Mayer",
+            "orcid": "",
+            "affiliation": ""
+        },
+        {
+            "name": "Nabil Freij",
+            "orcid": "0000-0002-6253-082X",
+            "affiliation": "SETI Institute & Lockheed Martin Solar and Astrophysics Laboratory"
+        },
+        {
+            "name": "David Pérez-Suárez",
+            "orcid": "0000-0003-0784-6909",
+            "affiliation": "University College London"
+        },
+        {
+            "name": "Shane Maloney",
+            "orcid": "0000-0002-4715-1805",
+            "affiliation": "Dublin Institute for Advanced Studies"
+        },
+        {
+            "name": "Stuart Mumford",
+            "orcid": "0000-0003-4217-4642",
+            "affiliation": "Aperio Software Ltd."
+        },
+        {
+            "name": "Laura Hayes",
+            "orcid": "0000-0002-6835-2390",
+            "affiliation": "Dublin Institute for Advanced Studies"
+        },
+        {
+            "name": "Steven Christe",
+            "orcid": "0000-0001-6127-795X",
+            "affiliation": "NASA Goddard Space Flight Center"
+        },
+        {
+            "name": "Brigitta Sipőcz",
+            "orcid": "0000-0002-3713-6337",
+            "affiliation": "DIRAC Institute, University of Washington"
+        },
+        {
+            "name": "Jack Ireland",
+            "orcid": "0000-0002-2019-8881",
+            "affiliation": "NASA Goddard Space Flight Center"
+        },
+        {
+            "name": "Kumar Amityush",
+            "orcid": "0009-0002-7950-0886",
+            "affiliation": "Indian Institute of Technology, Madras"          
+        },
+        {
+            "name": "Matt Earnshaw",
+            "orcid": "",
+            "affiliation": ""
+        },
+        {
+            "name": "Russell J. Hewett",
+            "orcid": "0000-0001-8944-4705",
+            "affiliation": "Department of Mathematics, Virginia Polytechnic Institute and State University"
+        },
+        {
+            "name": "Sanskar Modi",
+            "orcid": "",
+            "affiliation": ""
+        },
+        {
+            "name": "Asish Panda",
+            "orcid": "",
+            "affiliation": ""
+        },
+        {
+            "name": "Agneet Chatterjee",
+            "orcid": "0000-0002-0961-9569",
+            "affiliation": "Jadavpur University, Kolkata"
+        },
+        {
+            "name": "Herman le Roux",
+            "orcid": "0000-0002-1805-0706",
+            "affiliation": "Dublin Institute for Advanced Studies and the Technological University of the Shannon"
+        },
+        {
+            "name": "Rajul Srivastava"
+        },
+        {
+            "name": "Simon Liedtke"
+        },
+        {
+            "name": "Albert Y. Shih",
+            "orcid": "0000-0001-6874-2594",
+            "affiliation": "NASA Goddard Space Flight Center"
+        },
+        {
+            "name": "Erik Bray",
+            "orcid": "",
+            "affiliation": ""
+        },
+        {
+            "name": "HarshGamerZ-28",
+            "orcid": "",
+            "affiliation": ""
+        },
+        {
+            "name": "Jan Gieseler",
+            "orcid": "0000-0003-1848-7067",
+            "affiliation": "University of Turku"
+        },
+        {
+            "name": "Mohamed Ali",
+            "orcid": "0009-0004-8560-6673",
+            "affiliation": "National Institute of Applied Science and Technology, Tunis"
+        },
+        {
+            "name": "P. L. Lim",
+            "orcid": "0000-0003-0079-4114",
+            "affiliation": "Space Telescope Science Institute"            
+        },
+        {
+            "name": "Samuel Bennett",
+            "orcid": "0000-0001-6420-4422",
+            "affiliation": "Aperio Software Ltd."
+        },
+        {
+            "name": "Shilpi Bhunia",
+            "orcid": "0000-0001-8496-252X",
+            "affiliation": "Observatoire de Paris"
+        },
+        {
+            "name": "Keith Hughitt",
+            "orcid": "0000-0003-0787-9559",
+            "affiliation": "Center for Cancer Research, National Cancer Institute"
+        }
+    ]
+}

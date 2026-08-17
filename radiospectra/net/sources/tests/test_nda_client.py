@@ -28,27 +28,16 @@ def test_nda_client_search(urlopen, nda_html_pages):
 
     query = client.search(a.Time("2025-03-26", "2025-03-27"), a.Instrument("NDA"))
 
-    # scraper called
     assert urlopen.call_count == 1
-
-    # results
     assert len(query) == 2
 
     row0, row1 = query[0], query[1]
-
-    # ---- first file ----
     assert row0["Start Time"] == Time("2025-03-26T07:56:00")
     assert row0["End Time"] == Time("2025-03-26T15:56:00")
-
-    # ---- second file ----
     assert row1["Start Time"] == Time("2025-03-26T08:00:00")
     assert row1["End Time"] == Time("2025-03-26T16:00:00")
-
-    # metadata
     assert all(query["Instrument"] == "NDA")
     assert all(query["Source"] == "NDA")
-
-    # Version check
     assert all(query["Version"] == "1")
 
 
@@ -57,11 +46,11 @@ def test_nda_fido():
     query = Fido.search(a.Time("2025-03-26", "2025-03-27"), a.Instrument("NDA"))
 
     assert len(query) >= 1
+    assert isinstance(query["nda"].client, NDAClient)
+    nda_result = query["nda"]
+    assert len(nda_result) > 0
 
-    result_block = query["nda"]
-    assert len(result_block) > 0
-
-    row = result_block[0]
+    row = nda_result[0]
 
     assert row["Instrument"] == "NDA"
     assert row["Source"] == "NDA"
