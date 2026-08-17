@@ -3,6 +3,8 @@ from matplotlib.image import NonUniformImage
 
 from astropy.visualization import quantity_support, time_support
 
+__all__ = ["PcolormeshPlotMixin", "NonUniformImagePlotMixin"]
+
 
 def _get_axis_converter(axis):
     """
@@ -39,7 +41,7 @@ def _set_axis_converter(axis, converter):
 
 class PcolormeshPlotMixin:
     """
-    Class provides plotting functions using `~pcolormesh`.
+    Class provides plotting functions using `~matplotlib.pyplot.pcolormesh`.
     """
 
     def plot(self, axes=None, **kwargs):
@@ -48,10 +50,10 @@ class PcolormeshPlotMixin:
 
         Parameters
         ----------
-        axes : `matplotlib.axis.Axes`, optional
+        axes : `matplotlib.axes.Axes`, optional
             The axes where the plot will be added.
         kwargs :
-            Arguments pass to the plot call `pcolormesh`.
+            Arguments pass to the plot call `~matplotlib.pyplot.pcolormesh`.
 
         Returns
         -------
@@ -102,7 +104,14 @@ class PcolormeshPlotMixin:
 
 class NonUniformImagePlotMixin:
     """
-    Class provides plotting functions using `NonUniformImage`.
+    Class provides plotting functions using `~matplotlib.image.NonUniformImage`.
+
+    Parameters
+    ----------
+    axes : `matplotlib.axes.Axes`, optional
+        The axes where the plot will be added.
+    kwargs :
+        Arguments pass to the plot call `~matplotlib.image.NonUniformImage`.
     """
 
     def plotim(self, fig=None, axes=None, **kwargs):

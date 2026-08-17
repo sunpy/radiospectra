@@ -2,18 +2,13 @@
 radiospectra Documentation
 **************************
 
-``radiospectra`` is a Python software package that provides support for some type of radio spectra in solar physics.
+``radiospectra`` is a Python package for reading, storing, and visualising dynamic radio spectra in heliophysics, from both ground- and space-based instruments.
 
-.. warning::
+.. note::
 
-    ``radiospectra`` is currently undergoing a transition.
-    We have replaced the old spectragram class with a new one which is lacking in some features.
-
-    We also have to decide on the fututre of the ``radiospectra`` package.
-    This package does not see heavy development and is not used by many people.
-    It is also not clear what the future of radio spectra within the SunPy Project is going to be.
-    In addition, ``xarray`` or similar packages could offer a better data handling solution than the current ``radiospectra`` package.
-    We need and want users (of radio data in general) to chime in and to help us decide the future of this package.
+    ``radiospectra`` is under active redevelopment, with more functionality and instrument support coming soon.
+    The package is moving to build on `ndcube <https://docs.sunpy.org/projects/ndcube/>`__ under the hood, giving a coordinate-aware container for dynamic spectra that is consistent across instruments and with the wider SunPy ecosystem.
+    We welcome feedback from anyone working with radio data, if you use dynamic spectra, please get in touch via the `SunPy Chat <https://openastronomy.element.io/#/room/#sunpy:openastronomy.org>`_.
 
 Installation
 ============
@@ -39,6 +34,11 @@ Contributing
 If you would like to get involved, start by joining the `SunPy Chat`_ and check out our `Newcomers' guide <https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html>`__.
 This will walk you through getting set up for contributing.
 
+Citing radiospectra
+===================
+If you use ``radiospectra`` in your scientific work, we would appreciate it if you cite it.
+See the :ref:`citation page <radiospectra-citation>` for details.
+
 Code of Conduct
 ===============
 
@@ -53,4 +53,5 @@ When you are interacting with the SunPy community you are asked to follow our `C
    overview
    generated/gallery/index
    code_ref/index
+   citation
    whatsnew/index

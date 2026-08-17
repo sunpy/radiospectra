@@ -11,3 +11,4 @@ API
    net
    spectrogram
    spectrum
+   mixins

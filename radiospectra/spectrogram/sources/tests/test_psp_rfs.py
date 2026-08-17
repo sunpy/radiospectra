@@ -237,6 +237,7 @@ def test_psp_rfs_spectrogram_online():
     spec = Spectrogram(
         "https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_lfr/2019/psp_fld_l2_rfs_lfr_20191005_v03.cdf"
     )
+    assert isinstance(spec, RFSSpectrogram)
     assert spec.instrument == "FIELDS/RFS"
     assert spec.times[0].isot == "2019-10-05T00:01:32.395"
     assert spec.times[-1].isot == "2019-10-05T22:16:30.493"
