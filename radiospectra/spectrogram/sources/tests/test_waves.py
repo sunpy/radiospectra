@@ -2,6 +2,7 @@ from pathlib import Path
 from datetime import datetime
 from unittest import mock
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 
@@ -11,6 +12,7 @@ from radiospectra.spectrogram import Spectrogram
 from radiospectra.spectrogram.sources import WAVESSpectrogram
 from radiospectra.spectrogram.sources.waves import WAVESMeta
 from radiospectra.spectrogram.spectrogram_factory import SpectrogramFactory
+from radiospectra.tests.helpers import figure_test
 
 
 @mock.patch("radiospectra.spectrogram.spectrogram_factory.parse_path")
@@ -84,3 +86,25 @@ def test_waves_meta():
     assert meta.instrument == "WAVES"
     assert meta.background == "test_bg"
     assert meta.receiver == "rad1"
+
+
+@pytest.mark.remote_data
+@figure_test
+def test_waves_rad1_plot():
+    spec = Spectrogram(
+        "https://spdf.gsfc.nasa.gov/pub/data/wind/waves/rad1_idl_binary/2020/wind_waves_rad1_20200102.R1"
+    )
+    fig, ax = plt.subplots(figsize=(10, 5))
+    spec.plot(axes=ax)
+    return fig
+
+
+@pytest.mark.remote_data
+@figure_test
+def test_waves_rad2_plot():
+    spec = Spectrogram(
+        "https://spdf.gsfc.nasa.gov/pub/data/wind/waves/rad2_idl_binary/2020/wind_waves_rad2_20200102.R2"
+    )
+    fig, ax = plt.subplots(figsize=(10, 5))
+    spec.plot(axes=ax)
+    return fig
