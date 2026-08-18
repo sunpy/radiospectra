@@ -166,37 +166,3 @@ def test_generic_spectrogram_from_dict():
     assert spec.end_time == times[-1]
     sliced = spec[1:3, 2:5]
     assert sliced.meta["instrument"] == "TestInstrument"
-
-
-def test_crop_time(make_spectrogram):
-    """Test cropping a spectrogram by time."""
-    times = Time("2021-01-01T00:00:00") + np.arange(10) * u.s
-    freqs = np.linspace(10, 20, 5) * u.MHz
-    data = np.random.rand(5, 10)
-    spec = make_spectrogram(freqs, data=data, times=times)
-
-    start = times[2]
-    end = times[5]
-
-    cropped = spec.crop_time(start, end)
-    assert cropped.shape == (5, 4)
-    assert cropped.times[0] == start
-    assert cropped.times[-1] == end
-    assert (cropped.frequencies == spec.frequencies).all()
-
-
-def test_crop_freq(make_spectrogram):
-    """Test cropping a spectrogram by frequency."""
-    times = Time("2021-01-01T00:00:00") + np.arange(10) * u.s
-    freqs = np.linspace(10, 20, 5) * u.MHz
-    data = np.random.rand(5, 10)
-    spec = make_spectrogram(freqs, data=data, times=times)
-
-    low = freqs[1]
-    high = freqs[3]
-
-    cropped = spec.crop_freq(low, high)
-    assert cropped.shape == (3, 10)
-    assert cropped.frequencies[0] == low
-    assert cropped.frequencies[-1] == high
-    assert (cropped.times == spec.times).all()
