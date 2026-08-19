@@ -1,0 +1,1 @@
+Added a "Development Setup" section to the README to assist new contributors.
