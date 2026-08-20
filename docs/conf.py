@@ -73,6 +73,7 @@ automodapi_toctreedirnm = "generated/api"
 # Add any paths that contain templates here, relative to this directory.
 # templates_path = ["_templates"]
 
+
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
@@ -143,6 +144,7 @@ graphviz_dot_args = [
 # https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autoclass_content
 autoclass_content = "both"
 
+# -- Other options ----------------------------------------------------------
 # -- Sphinx Gallery ----------------------------------------------------------
 
 sphinx_gallery_conf = {
