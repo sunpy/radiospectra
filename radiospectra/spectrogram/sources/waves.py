@@ -1,3 +1,10 @@
+import numpy as np
+
+import astropy.units as u
+from astropy.time import Time
+
+from sunpy.net import attrs as a
+
 from radiospectra.spectrogram.meta import SpectrogramMeta
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
@@ -36,5 +43,44 @@ class WAVESSpectrogram(GenericSpectrogram):
         super().__init__(meta=meta, data=data, **kwargs)
 
     @classmethod
-    def is_datasource_for(cls, data, meta, **kwargs):
-        return meta.get("instrument", None) == "WAVES"
+    def is_datasource_for(cls, data_or_header, meta_or_raw, **kwargs):
+        meta = data_or_header if hasattr(data_or_header, "get") else meta_or_raw
+        if not hasattr(meta, "get"):
+            return False
+        if meta.get("instrument") == "WAVES":
+            return True
+        return meta.get("file_type") == "idl_sav" and meta.get("instrument") == "waves"
+
+    @classmethod
+    def from_raw(cls, header, raw_object):
+        file = header.get("file_path")
+        data = raw_object
+        data_array = data["arrayb"]
+        if file.suffix == ".R1":
+            freqs = np.linspace(20, 1040, 256) * u.kHz
+            receiver = "RAD1"
+        elif file.suffix == ".R2":
+            freqs = np.linspace(1.075, 13.825, 256) * u.MHz
+            receiver = "RAD2"
+        else:
+            raise ValueError(f"Unknown WIND/WAVES file type: {file.suffix}")
+
+        bg = data_array[:, -1]
+        data_vals = data_array[:, :-1]
+        start_time = Time.strptime(file.stem.split("_")[-1], "%Y%m%d")
+        end_time = start_time + 86399 * u.s
+        times = start_time + (np.arange(1440) * 60 + 30) * u.s
+        meta = WAVESMeta(
+            {
+                "instrument": "WAVES",
+                "observatory": "WIND",
+                "start_time": start_time,
+                "end_time": end_time,
+                "wavelength": a.Wavelength(freqs[0], freqs[-1]),
+                "detector": receiver,
+                "freqs": freqs,
+                "times": times,
+                "background": bg,
+            }
+        )
+        return cls(data_vals, meta)

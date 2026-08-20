@@ -1,3 +1,9 @@
+import astropy.units as u
+from astropy.time import Time
+
+from sunpy.net import attrs as a
+from sunpy.time import parse_time
+
 from radiospectra.spectrogram.meta import SpectrogramMeta
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
@@ -44,8 +50,35 @@ class EOVSASpectrogram(GenericSpectrogram):
         return self.meta.polarisation
 
     @classmethod
-    def is_datasource_for(cls, data, meta, **kwargs):
-        return meta["instrument"] == "EOVSA" or meta["detector"] == "EOVSA"
+    def is_datasource_for(cls, data_or_header, meta_or_raw, **kwargs):
+        meta = data_or_header if hasattr(data_or_header, "get") else meta_or_raw
+        if not hasattr(meta, "get"):
+            return False
+        return (
+            meta.get("TELESCOP", "") == "EOVSA"
+            or meta.get("instrument", "") == "EOVSA"
+            or meta.get("detector", "") == "EOVSA"
+        )
 
-    # TODO fix time gaps for plots need to render them as gaps
-    # can prob do when generateing proper pcolormesh grid but then prob doesn't belong here
+    @classmethod
+    def from_raw(cls, header, raw_object):
+        hd_pairs = raw_object
+        times = Time(hd_pairs[2].data["mjd"] + hd_pairs[2].data["time"] / 1000.0 / 86400.0, format="mjd")
+        freqs = hd_pairs[1].data["sfreq"] * u.GHz
+        data = hd_pairs[0].data
+        start_time = parse_time(hd_pairs[0].header["DATE_OBS"])
+        end_time = parse_time(hd_pairs[0].header["DATE_END"])
+        meta = EOVSAMeta(
+            {
+                "fits_meta": hd_pairs[0].header,
+                "detector": "EOVSA",
+                "instrument": "EOVSA",
+                "observatory": "Owens Valley",
+                "start_time": start_time,
+                "end_time": end_time,
+                "wavelength": a.Wavelength(freqs.min(), freqs.max()),
+                "times": times,
+                "freqs": freqs,
+            }
+        )
+        return cls(data, meta)

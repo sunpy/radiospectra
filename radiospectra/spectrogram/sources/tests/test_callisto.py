@@ -23,6 +23,12 @@ def test_callisto(parse_path_moc):
     start_time = Time("2011-06-07 06:24:00.213")
     meta = {
         "fits_meta": {
+            "CONTENT": "e-CALLISTO",
+            "DATE-OBS": "2011/06/07",
+            "TIME-OBS": "06:24:00.213",
+            "DATE-END": "2011/06/07",
+            "TIME-END": "06:39:00",
+            "INSTRUME": "BIR",
             "OBS_LAC": "N",
             "OBS_LAT": 53.0941390991211,
             "OBS_LOC": "E",
@@ -241,7 +247,15 @@ def test_callisto(parse_path_moc):
         * u.MHz,
     }
     array = np.zeros((200, 3600))
-    parse_path_moc.return_value = [(array, meta)]
+    hdu0 = MagicMock()
+    hdu1 = MagicMock()
+    hdu0.header = meta["fits_meta"]
+    hdu0.data = array
+    hdu1.data = {
+        "TIME": np.arange(3600) * 0.25,
+        "FREQUENCY": np.array(meta["freqs"].value),
+    }
+    parse_path_moc.return_value = [(meta["fits_meta"], [hdu0, hdu1])]
     file = Path("fake.fit.gz")
     spec = Spectrogram(file)
     assert isinstance(spec, CALISTOSpectrogram)

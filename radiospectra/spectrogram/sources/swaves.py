@@ -1,3 +1,10 @@
+import numpy as np
+
+import astropy.units as u
+from astropy.time import Time
+
+from sunpy.net import attrs as a
+
 from radiospectra.spectrogram.meta import SpectrogramMeta
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
@@ -36,5 +43,39 @@ class SWAVESSpectrogram(GenericSpectrogram):
         super().__init__(meta=meta, data=data, **kwargs)
 
     @classmethod
-    def is_datasource_for(cls, data, meta, **kwargs):
-        return meta["instrument"] == "swaves"
+    def is_datasource_for(cls, data_or_header, meta_or_raw, **kwargs):
+        meta = data_or_header if hasattr(data_or_header, "get") else meta_or_raw
+        if not hasattr(meta, "get"):
+            return False
+        return meta.get("instrument", "").lower() == "swaves"
+
+    @classmethod
+    def from_raw(cls, header, raw_object):
+        file = header["file_path"]
+        name, prod, date, spacecraft, receiver = file.stem.split("_")
+        # frequency range
+        freqs = np.genfromtxt(file, max_rows=1) * u.kHz
+        # bg which is already subtracted from data
+        bg = np.genfromtxt(file, skip_header=1, max_rows=1)
+        # data
+        data = np.genfromtxt(file, skip_header=2)
+        times = data[:, 0] * u.min
+        data = data[:, 1:].T
+        start_time = Time.strptime(date, "%Y%m%d")
+        end_time = start_time + times[-1]
+        times = start_time + times
+        meta = SWAVESMeta(
+            {
+                "instrument": name,
+                "observatory": f"STEREO {spacecraft.upper()}",
+                "product": prod,
+                "start_time": start_time,
+                "end_time": end_time,
+                "wavelength": a.Wavelength(freqs[0], freqs[-1]),
+                "detector": receiver,
+                "freqs": freqs,
+                "times": times,
+                "background": bg,
+            }
+        )
+        return cls(data, meta)

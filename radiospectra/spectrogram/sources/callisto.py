@@ -1,6 +1,9 @@
 import astropy.units as u
 from astropy.coordinates import EarthLocation, SkyCoord
 
+from sunpy.net import attrs as a
+from sunpy.time import parse_time
+
 from radiospectra.spectrogram.meta import SpectrogramMeta
 from radiospectra.spectrogram.spectrogrambase import GenericSpectrogram
 
@@ -60,5 +63,41 @@ class CALISTOSpectrogram(GenericSpectrogram):
         return self.meta.observer_coordinate
 
     @classmethod
-    def is_datasource_for(cls, data, meta, **kwargs):
-        return meta["instrument"] == "e-CALLISTO" or meta["detector"] == "e-CALLISTO"
+    def is_datasource_for(cls, data_or_header, meta_or_raw, **kwargs):
+        meta = data_or_header if hasattr(data_or_header, "get") else meta_or_raw
+        if not hasattr(meta, "get"):
+            return False
+        return "e-CALLISTO" in meta.get("CONTENT", "") or meta.get("instrument") == "e-CALLISTO"
+
+    @classmethod
+    def from_raw(cls, header, raw_object):
+        hd_pairs = raw_object
+        data = hd_pairs[0].data
+        times = hd_pairs[1].data["TIME"].flatten() * u.s
+        freqs = hd_pairs[1].data["FREQUENCY"].flatten() * u.MHz
+        start_time = parse_time(hd_pairs[0].header["DATE-OBS"] + " " + hd_pairs[0].header["TIME-OBS"])
+        try:
+            end_time = parse_time(hd_pairs[0].header["DATE-END"] + " " + hd_pairs[0].header["TIME-END"])
+        except ValueError:
+            # See https://github.com/sunpy/radiospectra/issues/74
+            time_comps = hd_pairs[0].header["TIME-END"].split(":")
+            time_comps[0] = "00"
+            fixed_time = ":".join(time_comps)
+            date_offset = parse_time(hd_pairs[0].header["DATE-END"] + " " + fixed_time)
+            end_time = date_offset + 1 * u.day
+
+        times = start_time + times
+        meta = CALISTOMeta(
+            {
+                "fits_meta": hd_pairs[0].header,
+                "detector": "e-CALLISTO",
+                "instrument": "e-CALLISTO",
+                "observatory": hd_pairs[0].header["INSTRUME"],
+                "start_time": start_time,
+                "end_time": end_time,
+                "wavelength": a.Wavelength(freqs.min(), freqs.max()),
+                "times": times,
+                "freqs": freqs,
+            }
+        )
+        return cls(data, meta)

@@ -45,7 +45,38 @@ class NDASpectrogram(GenericSpectrogram):
         return None
 
     @classmethod
-    def is_datasource_for(cls, data, meta, **kwargs):
-        telescope = meta.get("fits_meta", {}).get("TELESCOP", "")
+    def is_datasource_for(cls, data_or_header, meta_or_raw, **kwargs):
+        meta = data_or_header if hasattr(data_or_header, "get") else meta_or_raw
+        if not hasattr(meta, "get"):
+            return False
+        telescope = meta.get("fits_meta", {}).get("TELESCOP", "") if "fits_meta" in meta else meta.get("TELESCOP", "")
         instrument = meta.get("instrument", "")
         return telescope == "NDA" or instrument == "NDA"
+
+    @classmethod
+    def from_raw(cls, header, raw_object):
+        from astropy.time import Time
+
+        from sunpy.net import attrs as a
+
+        hd_pairs = raw_object
+        times = Time(hd_pairs[2].data["jd"], format="jd")
+        freqs = hd_pairs[1].data["frq"].flatten() * u.MHz
+        data = hd_pairs[2].data["data"]
+
+        res = []
+        for i, channel in enumerate(["LL", "RR"]):
+            meta = {
+                "fits_meta": hd_pairs[0].header,
+                "detector": hd_pairs[0].header.get("INSTRUME", "newroutine"),
+                "instrument": "NDA",
+                "observatory": "ORN",
+                "start_time": times[0],
+                "end_time": times[-1],
+                "wavelength": a.Wavelength(freqs.min(), freqs.max()),
+                "times": times,
+                "freqs": freqs,
+                "polarisation": channel,
+            }
+            res.append(cls(data[:, :, i].T, meta))
+        return res
