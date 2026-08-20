@@ -590,6 +590,82 @@ class SpectrogramFactory(BasicRegistrationFactory):
                     }
                     res.append((specs[1].T, meta2))
                 return res
+        elif "WIND" in cdf_globals.get("Source_name", [""])[0] and cdf_globals.get("Descriptor", [""])[0].startswith(
+            "WAV"
+        ):
+            descriptor = cdf_globals.get("Descriptor", [""])[0]
+            # Extract detector name from descriptor e.g. "WAV_RAD1>Wind/WAVES RAD1"
+            short = descriptor.split(">")[0]  # "WAV_RAD1"
+            detector = short.split("_")[-1]  # "RAD1"
+
+            epoch = cdf.varget("Epoch")
+            times = Time("J2000.0", scale="tt") + (epoch << u.ns)
+
+            raw_freqs = cdf.varget("FREQUENCY").astype(float)
+            freq_fill = cdf.varattsget("FREQUENCY").get("FILLVAL", -1e31)
+            valid = raw_freqs > freq_fill
+            freqs = raw_freqs[valid] << u.Unit(cdf.varattsget("FREQUENCY").get("UNITS", "Hz"))
+
+            raw_data = cdf.varget("PSD_V2_S").astype(float)
+            # PSD_V2_S: Power spectral density (S antenna)
+            # Other antennas like PSD_V2_Z or PSD_V2_SP exist
+            data = raw_data[:, valid].T << u.Unit(cdf.varattsget("PSD_V2_S").get("UNITS", "V^2/Hz"))
+
+            meta = {
+                "cdf_globals": cdf_globals,
+                "detector": detector,
+                "instrument": "WAVES",
+                "observatory": "WIND",
+                "start_time": times[0],
+                "end_time": times[-1],
+                "wavelength": a.Wavelength(freqs.min(), freqs.max()),
+                "times": times,
+                "freqs": freqs,
+            }
+            return data, meta
+        elif "STEREO" in cdf_globals.get("Source_name", [""])[0] and cdf_globals.get("Descriptor", [""])[0].startswith(
+            "SWAVES"
+        ):
+            epoch = cdf.varget("Epoch")
+            times = Time(cdflib.cdfepoch.to_datetime(epoch))
+            times.format = "isot"
+
+            raw_freqs = cdf.varget("frequency").astype(float)
+            freq_fill = cdf.varattsget("frequency").get("FILLVAL", -1e31)
+            valid = raw_freqs > freq_fill
+            freqs = raw_freqs[valid] << u.Unit(cdf.varattsget("frequency").get("UNITS", "kHz"))
+
+            res = []
+            for sc_id, sc_name in [("ahead", "STEREO A"), ("behind", "STEREO B")]:
+                var_name = f"avg_intens_{sc_id}"
+                if var_name in cdf.cdf_info().zVariables:
+                    raw_data = cdf.varget(var_name).astype(float)
+                    data_fill = cdf.varattsget(var_name).get("FILLVAL", -1e31)
+
+                    if np.all(raw_data <= data_fill):
+                        continue
+
+                    unit_str = cdf.varattsget(var_name).get("UNITS", "dB")
+                    try:
+                        unit = u.Unit(unit_str)
+                    except ValueError:
+                        unit = u.dB if "dB" in unit_str else u.dimensionless_unscaled
+
+                    data = raw_data[:, valid].T << unit
+
+                    meta = {
+                        "cdf_globals": cdf_globals,
+                        "detector": "LFR+HFR",
+                        "instrument": "swaves",
+                        "observatory": sc_name,
+                        "start_time": times[0],
+                        "end_time": times[-1],
+                        "wavelength": a.Wavelength(freqs.min(), freqs.max()),
+                        "times": times,
+                        "freqs": freqs,
+                    }
+                    res.append((data, meta))
+            return res
 
     @staticmethod
     def _read_fits(file):
