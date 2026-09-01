@@ -31,6 +31,3 @@ class EOVSASpectrogram(GenericSpectrogram):
     @classmethod
     def is_datasource_for(cls, data, meta, **kwargs):
         return meta["instrument"] == "EOVSA" or meta["detector"] == "EOVSA"
-
-    # TODO fix time gaps for plots need to render them as gaps
-    # can prob do when generateing proper pcolormesh grid but then prob doesn't belong here
