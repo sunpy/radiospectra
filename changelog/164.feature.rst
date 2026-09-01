@@ -1,0 +1,1 @@
+Added remote FITS header fetching for the e-Callisto client to provide accurate start and end times in search results.
