@@ -89,15 +89,17 @@ jobs:
 
   online:
     if: github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/v')
-    needs: [test]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2  # zizmor: ignore[unpinned-uses]
+    needs: [core]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@22ddf09dfabb443adddfb9f861b7d41a787d6b1a  # v3.0.3
     concurrency:
       group: online-test  # One group for all online tests
       cancel-in-progress: false # Queue don't cancel
+    permissions:
+      id-token: write
     with:
       submodules: false
-      coverage: codecov
       toxdeps: tox-pypi-filter
+      coverage: codecov-oidc
       envs: |
         - linux: py313-online
 
