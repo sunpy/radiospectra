@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import astropy.units as u
+from astropy.time import Time
 
 
 def test_plot_mixed_frequency_units_on_same_axes(make_spectrogram):
@@ -40,6 +41,27 @@ def test_plot_mixed_frequency_units_mhz_first(make_spectrogram):
     plt.close("all")
 
     assert y_max >= 4, "y-axis should cover up to 4 MHz"
+
+
+def test_plot_shared_x_axes_keep_all_spectrogram_times(make_spectrogram):
+    """Shared x axes should not be limited to whichever spectrogram plots last."""
+    times1 = Time("2020-01-01T00:00:00", format="isot") + np.arange(4) * u.min
+    times2 = Time("2020-01-01T00:10:00", format="isot") + np.arange(4) * u.min
+    specs = [
+        make_spectrogram(np.linspace(10, 40, 4) * u.MHz, times=times1),
+        make_spectrogram(np.linspace(50, 80, 4) * u.MHz, times=times2),
+    ]
+
+    for order in ((0, 1), (1, 0)):
+        fig, axes = plt.subplots(2, 1, sharex=True)
+
+        for index in order:
+            specs[index].plot(axes=axes[index])
+
+        expected_limits = axes[0].convert_xunits(Time([times1[0], times2[-1]]))
+        np.testing.assert_allclose(axes[0].get_xlim(), expected_limits)
+        np.testing.assert_allclose(axes[1].get_xlim(), expected_limits)
+        plt.close(fig)
 
 
 def test_plotim(make_spectrogram):
