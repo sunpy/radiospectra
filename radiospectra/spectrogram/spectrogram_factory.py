@@ -1,10 +1,10 @@
-import gzip
-import struct
-import pathlib
-import warnings
 import functools
-from pathlib import Path
+import gzip
+import pathlib
+import struct
+import warnings
 from collections import OrderedDict
+from pathlib import Path
 from urllib.request import Request
 
 import cdflib

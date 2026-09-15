@@ -1,4 +1,4 @@
-target-version = "py310"
+target-version = "py312"
 line-length = 120
 exclude = [
   ".git,",
@@ -14,8 +14,9 @@ select = [
   "W",
   "UP",
   "PT",
+  "I",
 ]
-extend-ignore = [
+ignore = [
   # pycodestyle (E, W)
   "E501", # ignore line length will use a formatter instead
   # pytest (PT)
@@ -30,6 +31,8 @@ extend-ignore = [
   "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
   "RUF013", # PEP 484 prohibits implicit `Optional`
   "RUF015", # Prefer `next(iter(...))` over single element slice
+  # Bugbear (B)
+  "B9", # Very opinionated checks
 ]
 
 [lint.per-file-ignores]
@@ -40,7 +43,8 @@ extend-ignore = [
   "INP001", # File is part of an implicit namespace package.
 ]
 "docs/conf.py" = [
-  "E402" # Module imports not at top of file
+  "E402", # Module imports not at top of file
+  "I", # isort
 ]
 "docs/*.py" = [
   "INP001", # File is part of an implicit namespace package.
@@ -54,6 +58,7 @@ extend-ignore = [
   "F401", # Unused import
   "F403", # from {name} import * used; unable to detect undefined names
   "F405", # {name} may be undefined, or defined from star imports
+  "I", # isort
 ]
 "test_*.py" = [
   "E402", # Module level import not at top of cell
@@ -61,3 +66,21 @@ extend-ignore = [
 
 [lint.pydocstyle]
 convention = "numpy"
+
+[lint.isort]
+default-section = "third-party"
+section-order = [
+  "future",
+  "standard-library",
+  "third-party",
+  "astropy",
+  "sunpy",
+  "first-party",
+  "local-folder",
+]
+known-first-party = ["radiospectra"]
+no-lines-before = ["local-folder"]
+
+[lint.isort.sections]
+"astropy" = ["astropy", "asdf", "gwcs", "reproject"]
+"sunpy" = ["sunpy"]
