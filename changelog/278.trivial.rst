@@ -1,0 +1,1 @@
+Add Giles configuration for CircleCI figure tests
