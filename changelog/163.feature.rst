@@ -1,0 +1,1 @@
+Improved default time axis formatting on spectrogram plots by using `matplotlib.dates.ConciseDateFormatter`. The time axis natively supports `astropy.time.Time` objects through a custom Matplotlib units converter (`ConciseAstropyConverter`), allowing use of `~matplotlib.axes.Axes.set_xlim` with `Time` objects.
