@@ -1,0 +1,1 @@
+Add support for  loading CDAWeb CDF files into `Spectrogram` for the WIND WAVES and STEREO S/WAVES instruments.
