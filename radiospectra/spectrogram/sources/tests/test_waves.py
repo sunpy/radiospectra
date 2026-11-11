@@ -69,6 +69,47 @@ def test_waves_rad2(parse_path_moc):
     assert spec.wavelength.max == 13.825 * u.MHz
 
 
+@mock.patch("radiospectra.spectrogram.spectrogram_factory.parse_path")
+def test_waves_cdaweb(parse_path_moc):
+    meta = {
+        "instrument": "WAVES",
+        "observatory": "WIND",
+        "start_time": Time("2020-07-11 00:01:20"),
+        "end_time": Time("2020-07-11 23:56:09"),
+        "wavelength": a.Wavelength(20.0 * u.kHz, 1040.0 * u.kHz),
+        "detector": "RAD1",
+        "freqs": np.linspace(20, 1040, 256) * u.kHz,
+        "times": np.arange(1440) * u.min,
+        "cdf_globals": {
+            "Project": ["ISTP>International Solar-Terrestrial Physics"],
+            "Source_name": ["WIND>Wind Interplanetary Plasma Laboratory"],
+            "Descriptor": ["WAV_RAD1>Wind/WAVES RAD1"],
+        },
+    }
+    array = np.zeros((256, 1440))
+    parse_path_moc.return_value = [(array, meta)]
+    file = Path("fake_cdaweb.cdf")
+    spec = Spectrogram(file)
+    assert isinstance(spec, WAVESSpectrogram)
+    assert spec.observatory == "WIND"
+    assert spec.instrument == "WAVES"
+    assert spec.detector == "RAD1"
+    assert spec.start_time.datetime == datetime(2020, 7, 11, 0, 1, 20)
+    assert spec.end_time.datetime == datetime(2020, 7, 11, 23, 56, 9)
+
+
+@pytest.mark.remote_data
+def test_waves_spectrogram_cdaweb_online():
+    spec = Spectrogram(
+        "https://cdaweb.gsfc.nasa.gov/sp_phys/data/wind/waves/rad1_l2/2020/wi_l2_wav_rad1_20200711_v01.cdf"
+    )
+    assert isinstance(spec, WAVESSpectrogram)
+    assert spec.observatory == "WIND"
+    assert spec.instrument == "WAVES"
+    assert spec.detector == "RAD1"
+    assert spec.data.shape == (32, 1876)
+
+
 @mock.patch("radiospectra.spectrogram.spectrogram_factory.readsav")
 def test_waves_prefixed_filename_parses_date(readsav_mock):
     data_array = np.zeros((256, 1441))
