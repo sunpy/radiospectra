@@ -102,11 +102,7 @@ jobs:
       toxdeps: tox-pypi-filter
       coverage: codecov-oidc
       envs: |
-<<<<<<<
-        - linux: py313-online
-=======
-
->>>>>>>
+        - linux: py314-online
 
   build_dists:
     # Build wheels on PRs only when labelled. Releases will only be published if tagged ^v.*
