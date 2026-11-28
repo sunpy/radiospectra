@@ -1,0 +1,1 @@
+Fixes time gap rendering in `~radiospectra.mixins.PcolormeshPlotMixin` spectrogram plots by inserting ``NaN`` rows at detected gaps so ``pcolormesh`` renders them as empty space instead of stretching data across them.
