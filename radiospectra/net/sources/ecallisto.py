@@ -3,7 +3,14 @@ from sunpy.net.attr import SimpleAttr
 from sunpy.net.dataretriever.client import GenericClient
 
 from radiospectra.net.attrs import Observatory
+import zlib
+import urllib.request
+import urllib.error
+import logging
+from astropy.io import fits
+from astropy.time import Time
 
+log = logging.getLogger(__name__)
 
 class eCALLISTOClient(GenericClient):
     """
@@ -41,8 +48,8 @@ class eCALLISTOClient(GenericClient):
 
     pattern = (
         r"http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto/"
-        r"{{year:4d}}/{{month:2d}}/{{day:2d}}/{obs}_{{year:4d}}{{month:2d}}{{day:2d}}"
-        r"_{{hour:2d}}{{minute:2d}}{{second:2d}}{{suffix}}.fit.gz"
+        r"{year:4d}/{month:2d}/{day:2d}/{obs}_{year:4d}{month:2d}{day:2d}"
+        r"_{hour:2d}{minute:2d}{second:2d}{suffix}.fit.gz"
     )
 
     @classmethod
@@ -50,10 +57,10 @@ class eCALLISTOClient(GenericClient):
         baseurl, pattern, matchdict = super().pre_search_hook(*args, **kwargs)
         obs = matchdict["Observatory"]
         if obs[0] == "*":
-            pattern = pattern.replace("{obs}", "{{Observatory}}")
+            pattern = pattern.replace("{obs}", "{Observatory}")
             matchdict.pop("Observatory")
         else:
-            # Need case sensitive so have to override
+            
             obs_attr = [a for a in args if isinstance(a, Observatory)][0]
             pattern = pattern.replace("{obs}", obs_attr.value)
         return baseurl, pattern, matchdict
@@ -62,10 +69,28 @@ class eCALLISTOClient(GenericClient):
         original = super().post_search_hook(exdict, matchdict)
         original["ID"] = original["suffix"].replace("_", "")
         del original["suffix"]
-        # We don't know the end time for all files
-        # https://github.com/sunpy/radiospectra/issues/60
-        del original["End Time"]
-        return original
+        url = exdict.get('url')
+        if url:
+            start_h, end_h = self._fetch_remote_header(url)
+            if start_h:
+                try:
+                    original["Start Time"] = Time(start_h)
+                except (ValueError, TypeError):
+                    pass
+
+            if end_h:
+                try:
+                    original["End Time"] = Time(end_h)
+                except (ValueError, TypeError):
+                    original["End Time"] = end_h
+            else:
+                if "End Time" in original:
+                    del original["End Time"]            
+        else:
+            if "End Time" in original:
+                del original["End Time"]
+        
+        return original        
 
     @classmethod
     def register_values(cls):
@@ -97,3 +122,34 @@ class eCALLISTOClient(GenericClient):
                 ):
                     return False
         return True
+    
+    def _fetch_remote_header(self, url):
+        headers = {'User-Agent': 'SunPy/Radiospectra', 'Range': 'bytes=0-15360'}
+        req = urllib.request.Request(url, headers=headers)
+        try:
+            with urllib.request.urlopen(req, timeout=5) as response:
+                if response.getcode() == 206:
+                    compressed_data = response.read()
+                    # e-Callisto files are .gz, so we need to decompress
+                    d = zlib.decompressobj(16 + zlib.MAX_WBITS)
+                    header_bytes = d.decompress(compressed_data)
+                    header = fits.Header.fromstring(header_bytes[:2880].decode('ascii', errors='ignore'))
+
+                    # Get Date and Time keywords
+                    date_obs = header.get('DATE-OBS')
+                    time_obs = header.get('TIME-OBS', '')
+                    date_end = header.get('DATE-END', date_obs)
+                    time_end = header.get('TIME-END', '')
+
+                    # Combine into strings for Astropy Time
+                    start = f"{date_obs} {time_obs}".strip()
+                    end = f"{date_end} {time_end}".strip()
+
+                    return (start if date_obs else None), (end if date_end else None)
+                
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
+            log.warning(f"Network error fetching e-Callisto header from {url}: {e}")
+        except (zlib.error, ValueError, KeyError) as e:
+            log.warning(f"Metadata parsing error for {url}: {e}")
+
+        return None, None
